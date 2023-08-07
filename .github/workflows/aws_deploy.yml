@@ -8,6 +8,11 @@ on:
   # trigger 없어도 수동 동작
   workflow_dispatch:
 
+env:
+  S3_BUCKET_NAME:
+  PROJECT_NAME: spring_boot_project
+  RESOURCE_PATH: 
+
 jobs:
   build:
     runs-on: ubuntu-latest
