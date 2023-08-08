@@ -5,14 +5,9 @@ on:
   push:
     branches: [main]
 
-  # trigger 없어도 수동 동작
+  # trigger 없어도 수동으로 동작
   workflow_dispatch:
-
-env:
-  S3_BUCKET_NAME:
-  PROJECT_NAME: spring_boot_project
-  RESOURCE_PATH: /home/runner/work/spring_boot_project/spring_boot_project/src/main/resources
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,23 +29,23 @@ jobs:
       run: ./gradlew build
       shell: bash
 
-    - name: Test Gradle
-      run: ./gradlew test
-      shell: bash
+    # - name: Test Gradle
+    #   run: ./gradlew test
+    #   shell: bash
 
-    - name: Make zip file
-      run: zip -qq -r ./$GITHUB_SHA.zip
-      shell: bash
+    # - name: Make zip file
+    #   run: zip -qq -r ./$GITHUB_SHA.zip
+    #   shell: bash
 
-    - name: AWS configure credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-        aws-secret-key-id: ${{ secrets.SECRET_KEY }}
-        aws-region: ${{ secrets.REGION }}
+    # - name: AWS configure credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+    #     aws-secret-key-id: ${{ secrets.SECRET_KEY }}
+    #     aws-region: ${{ secrets.REGION }}
 
-    - name: Upload to S3
-      run: aws s3 --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/spring_boot_project/$GITHUB_SHA.zip
+    # - name: Upload to S3
+    #   run: aws s3 --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/spring_boot_project/$GITHUB_SHA.zip
 
-    - name: Code Deploy
-      run: aws deploy create-deployment --code_deploy chabak-map-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --github_active_group
+    # - name: Code Deploy
+    #   run: aws deploy create-deployment --code_deploy chabak-map-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --github_active_group
