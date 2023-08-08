@@ -25,13 +25,13 @@ jobs:
       with:
         java-version: 17
 
-    - name: Grant excute permission for gradlew
-      run: chmod +x ./gradlew
-      shell: bash
+    # - name: Grant excute permission for gradlew
+    #   run: chmod +x ./gradlew
+    #   shell: bash
 
-    - name: Build Gradle
-      run: ./gradlew build
-      shell: bash
+    # - name: Build Gradle
+    #   run: ./gradlew build
+    #   shell: bash
 
     # - name: Test Gradle
     #   run: ./gradlew test
