@@ -25,12 +25,16 @@ jobs:
       with:
         java-version: 17
 
+    - name: application properties
+      run: touch ./src/main/resources/application.yml
+    - run: echo "${{secrets.APPLICATIONS}}" > ./src/main/resources/application.yml
+
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
       shell: bash
 
     - name: Build Gradle
-      run: ./gradlew build -Dspring.profiles.include=local
+      run: ./gradlew build -Dspring.profiles.include=server
       shell: bash
 
     # - name: Test Gradle
