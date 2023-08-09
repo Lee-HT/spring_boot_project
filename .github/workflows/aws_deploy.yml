@@ -27,7 +27,9 @@ jobs:
 
     - name: application properties
       run: touch ./src/main/resources/application.yml
-    - run: echo "${{secrets.APPLICATIONS}}" > ./src/main/resources/application.yml
+    - name: save properties
+      run: echo "${{secrets.APPLICATIONS}}" > ./src/main/resources/application.yml
+      shell: bash
 
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
