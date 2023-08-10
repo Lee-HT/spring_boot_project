@@ -29,7 +29,7 @@ jobs:
       uses: actions/checktout@v3
     - run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATIONS}}" > ./src/main/resources/application.yml
-    - uses: actions/uplaod-artifact@v3
+    - uses: actions/upload-artifact@v3
       with:
         name: application.yml
         path: ./src/main/resources/application.yml
