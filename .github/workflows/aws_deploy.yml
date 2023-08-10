@@ -29,10 +29,16 @@ jobs:
     - name: application yml
       run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
+    - run: touch ./src/main/resources/application-server.yml
+    - run: echo "${{secrets.APPLICATION_SERVER}}" > ./src/main/resources/application-server.yml
     - uses: actions/upload-artifact@v3
       with:
         name: application.yml
         path: ./src/main/resources/application.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application-server.yml
+        path: ./src/main/resources/application-server.yml
 
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
