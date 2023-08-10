@@ -1,4 +1,4 @@
-name: CD
+name: CI/CD
 
 # 지정한 branch ([main])에서 command(pull)가 수행되면 이 workflow가 동작
 on:
