@@ -26,8 +26,7 @@ jobs:
         java-version: 17
 
     - name: application yml
-      uses: actions/checktout@v3
-    - run: touch ./src/main/resources/application.yml
+      run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATIONS}}" > ./src/main/resources/application.yml
     - uses: actions/upload-artifact@v3
       with:
