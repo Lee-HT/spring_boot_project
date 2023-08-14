@@ -57,11 +57,11 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-        aws-secret-key-id: ${{ secrets.SECRET_KEY }}
+        aws-secret-access-key: ${{ secrets.SECRET_KEY }}
         aws-region: ${{ secrets.REGION }}
 
     - name: Upload to S3
-      run: aws s3 --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.PROJECT_NAME }}/${{ secrets.ZIP_NAME }}.zip
+      run: aws s3 cp --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.PROJECT_NAME }}/${{ secrets.ZIP_NAME }}.zip
 
     - name: Code Deploy
       run: aws deploy create-deployment --application-name code_deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name github_active_group --s3-location bucket=code_deploy,bundleType=zip,key=${{ secrets.PROJECT_NAME }}/${{ secrets.ZIP_NAME }}zip
