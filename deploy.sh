@@ -4,7 +4,7 @@ PROJECT_NAME=new
 cd $REPOSITORY || exit
 
 # 해당 디렉토리에서 -> jar 패턴 검색 -> 맨 마지막 라인 1줄 출력
-JAR_NAME=$(find ./build/libs -name "$REPOSITORY*[^(plain)].jar" | tail -n 1)
+JAR_NAME=$(find ./build/libs -name "$PROJECT_NAME*[^(plain)].jar" | tail -n 1)
 
 # 실행중인 프로세스 중 PROJECT_NAME 검색
 CURRENT_PID=$(pgrep -f ${PROJECT_NAME})
