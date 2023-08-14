@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /application
+    overwrite: yes
+
+permissions:
+  - object: /home/ubuntu/git-action-test
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
+
+hooks:
+  AfterInstall:
+    location: deploy.sh
+    timeout: 120
+    runas: root
