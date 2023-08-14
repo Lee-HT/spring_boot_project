@@ -4,8 +4,14 @@
 
 <mapper namespace="com.example.demo.Mapper.UserMapper">
   <insert id="insertUser">
-    INSERT INTO users(id,username,email)
-    VALUES(#{id},#{username},#{email})
+    INSERT INTO users(username,email)
+    VALUES(#{username},#{email})
   </insert>
+
+  <delete id="deleteUser">
+    DELETE FROM users
+    WHERE username=#{username},
+    email=#{email}
+  </delete>
 
 </mapper>
