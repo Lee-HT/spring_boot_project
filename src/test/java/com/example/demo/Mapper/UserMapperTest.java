@@ -1,6 +1,7 @@
 package com.example.demo.Mapper;
 
 import com.example.demo.Domain.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,24 @@ import org.springframework.test.context.ActiveProfiles;
 class UserMapperTest {
     @Autowired
     private UserMapper userMapper;
-    @Test
-    public void save_user_Test() {
-        User user = User.builder()
+
+    private static User user;
+
+    // beforeAll 사용 시 static 선언 필요
+    @BeforeAll
+    static void user(){
+        user = User.builder()
                 .username("username")
                 .email("email@gmail.com")
                 .build();
+    }
+    @Test
+    public void insert_user_Test() {
         userMapper.insertUser(user);
+    }
+
+    @Test
+    public void delete_user_test() {
+        userMapper.deleteUser(user);
     }
 }
