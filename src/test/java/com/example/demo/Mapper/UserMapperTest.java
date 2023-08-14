@@ -22,7 +22,6 @@ class UserMapperTest {
     @Test
     public void save_user_Test() {
         User user = User.builder()
-                .id(1L)
                 .username("username")
                 .email("email@gmail.com")
                 .build();
