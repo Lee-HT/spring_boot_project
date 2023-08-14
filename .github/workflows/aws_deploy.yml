@@ -48,8 +48,9 @@ jobs:
       run: ./gradlew build -Dspring.profiles.include=server
       shell: bash
 
+    # qq == 출력 x , r == 하위 폴더 같이 압축
     - name: Make zip file
-      run: zip -qq -r ./${{ secrets.ZIP_NAME }}.zip
+      run: zip -qq -r ./${{ secrets.ZIP_NAME }}.zip .
       shell: bash
 
     - name: AWS configure credentials
