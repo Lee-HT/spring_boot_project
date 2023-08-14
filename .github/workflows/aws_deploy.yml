@@ -1,4 +1,4 @@
-name: CD
+name: CI/CD
 
 # 지정한 branch ([main])에서 command(pull)가 수행되면 이 workflow가 동작
 on:
@@ -21,35 +21,47 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Jdk 17
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
         java-version: 17
+        distribution: "adopt"
+
+    - name: application yml
+      run: touch ./src/main/resources/application.yml
+    - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
+    - run: touch ./src/main/resources/application-server.yml
+    - run: echo "${{secrets.APPLICATION_SERVER}}" > ./src/main/resources/application-server.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application.yml
+        path: ./src/main/resources/application.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application-server.yml
+        path: ./src/main/resources/application-server.yml
 
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
       shell: bash
 
     - name: Build Gradle
-      run: ./gradlew build -Dspring.profiles.include=local
+      run: ./gradlew build -Dspring.profiles.include=server
       shell: bash
 
-    # - name: Test Gradle
-    #   run: ./gradlew test
-    #   shell: bash
+    # qq == 출력 x , r == 하위 폴더 같이 압축
+    - name: Make zip file
+      run: zip -qq -r ./${{ secrets.ZIP_NAME }}.zip .
+      shell: bash
 
-    # - name: Make zip file
-    #   run: zip -qq -r ./$GITHUB_SHA.zip
-    #   shell: bash
+    - name: AWS configure credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+        aws-secret-key-id: ${{ secrets.SECRET_KEY }}
+        aws-region: ${{ secrets.REGION }}
 
-    # - name: AWS configure credentials
-    #   uses: aws-actions/configure-aws-credentials@v1
-    #   with:
-    #     aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-    #     aws-secret-key-id: ${{ secrets.SECRET_KEY }}
-    #     aws-region: ${{ secrets.REGION }}
+    - name: Upload to S3
+      run: aws s3 --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.PROJECT_NAME }}/${{ secrets.ZIP_NAME }}.zip
 
-    # - name: Upload to S3
-    #   run: aws s3 --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/spring_boot_project/$GITHUB_SHA.zip
-
-    # - name: Code Deploy
-    #   run: aws deploy create-deployment --code_deploy chabak-map-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --github_active_group
+    - name: Code Deploy
+      run: aws deploy create-deployment --application-name code_deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name github_active_group --s3-location bucket=code_deploy,bundleType=zip,key=${{ secrets.PROJECT_NAME }}/${{ secrets.ZIP_NAME }}zip
