@@ -3,12 +3,12 @@ os: linux
 files:
   # 인스턴스에 복사 할 파일 or 디렉터리
   - source: /
-  # /home/root 우분투 home 디렉터리 /home/유저명
-    destination: /home/root/application
+  # 리눅스 최상위 dir -> root -> application
+    destination: /root/application
     overwrite: yes
 
 permissions:
-  - object: /home/root/application
+  - object: /root/application
     owner: ubuntu
     group: ubuntu
     mode: 755

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REPOSITORY=/home/root/application
+REPOSITORY=/root/application
 PROJECT_NAME=new
 cd $REPOSITORY || exit
 
