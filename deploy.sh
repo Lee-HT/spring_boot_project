@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REPOSITORY=/application
+REPOSITORY=/S3_BUILD
 PROJECT_NAME=new
 cd $REPOSITORY || exit
 
@@ -22,5 +22,5 @@ fi
 # background 실행
 echo "> new application deploy"
 # 2>&1 == 표준 에러만 표준 출력 , & == background 실행
-nohub java -jar "./build/libs/$JAR_NAME" application.log 2>&1 &
+sudo nohub java -jar "./build/libs/$JAR_NAME" application.log 2>&1 &
 

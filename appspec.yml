@@ -2,11 +2,11 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /application
+    destination: /S3_BUILD
     overwrite: yes
 
 permissions:
-  - object: /application
+  - object: /S3_BUILD
     owner: ubuntu
     group: ubuntu
     mode: 755
