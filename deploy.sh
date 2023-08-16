@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REPOSITORY=/S3_BUILD
+REPOSITORY=/home/root/application
 PROJECT_NAME=new
 cd $REPOSITORY || exit
 

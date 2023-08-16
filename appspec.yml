@@ -1,12 +1,14 @@
 version: 0.0
 os: linux
 files:
+  # 인스턴스에 복사 할 파일 or 디렉터리
   - source: /
-    destination: /S3_BUILD
+  # /home/root 우분투 home 디렉터리 /home/유저명
+    destination: /home/root/application
     overwrite: yes
 
 permissions:
-  - object: /S3_BUILD
+  - object: /home/root/application
     owner: ubuntu
     group: ubuntu
     mode: 755
