@@ -24,5 +24,5 @@ echo "> new application deploy"
 # 2>&1 == 표준 에러만 표준 출력 , & == background 실행
 nohup java -jar \
   -Dspring.profiles.active=server\
-  "./build/libs/$JAR_NAME" > /root/app_log.out 2>&1 &
+  "$JAR_NAME" > /root/app_log.out 2>&1 &
 
