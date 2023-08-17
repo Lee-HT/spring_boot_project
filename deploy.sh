@@ -7,7 +7,7 @@ cd $REPOSITORY || exit
 JAR_NAME=$(find ./build/libs -name "$PROJECT_NAME*[^(plain)].jar" | tail -n 1)
 
 # 실행중인 프로세스 중 PROJECT_NAME 검색
-CURRENT_PID=$(pgrep -f ${PROJECT_NAME})
+CURRENT_PID=$(pgrep -f "${PROJECT_NAME}" | head -n 1)
 
 echo "> $CURRENT_PID"
 # CURRENT_PID 의 길이가 0이면 참
@@ -22,5 +22,7 @@ fi
 # background 실행
 echo "> new application deploy"
 # 2>&1 == 표준 에러만 표준 출력 , & == background 실행
-sudo nohub java -jar "./build/libs/$JAR_NAME" $REPOSITORY/application.log 2>&1 &
+nohup java -jar \
+  -Dspring.profiles.active=server\
+  "./build/libs/$JAR_NAME" > /root/app_log.out 2>&1 &
 
