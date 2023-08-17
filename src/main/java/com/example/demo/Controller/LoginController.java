@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("")
 public class LoginController {
+
     @GetMapping("login.login")
-    public String Login(){
+    public String Login() {
         log.info("LoginController_Login");
         return "user/login";
     }

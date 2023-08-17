@@ -12,15 +12,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(
                 PathRequest.toStaticResources().atCommonLocations()
         ); // 정적 리소스 시큐리티 예외 처리
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // SpringSecurity 6.1.2
         // https://docs.spring.io/spring-security/reference/migration-7/configuration.html
         http.csrf(AbstractHttpConfigurer::disable);

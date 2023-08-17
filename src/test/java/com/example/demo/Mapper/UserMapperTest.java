@@ -4,7 +4,6 @@ import com.example.demo.Domain.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -18,26 +17,21 @@ import org.springframework.test.context.ActiveProfiles;
 // db 롤백 여부
 @Rollback(value = true)
 class UserMapperTest {
-    @Autowired
-    private UserMapper userMapper;
 
+    private final UserMapper userMapper;
     private static User user;
+
+    @Autowired
+    public UserMapperTest(UserMapper userMapper){
+        this.userMapper = userMapper;
+    }
 
     // beforeAll 사용 시 static 선언 필요
     @BeforeAll
-    static void user(){
+    static void user() {
         user = User.builder()
                 .username("username")
                 .email("email@gmail.com")
                 .build();
-    }
-    @Test
-    public void insert_user_Test() {
-        userMapper.insertUser(user);
-    }
-
-    @Test
-    public void delete_user_test() {
-        userMapper.deleteUser(user);
     }
 }

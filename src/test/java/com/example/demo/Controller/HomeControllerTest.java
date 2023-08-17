@@ -15,12 +15,17 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(HomeController.class)
 @WithMockUser
 class HomeControllerTest {
+
+    private final MockMvc mvc;
+
     @Autowired
-    private MockMvc mvc;
+    public HomeControllerTest(MockMvc mockMvc){
+        this.mvc = mockMvc;
+    }
 
     @Test
     @DisplayName("Home test")
-    public void Home_test() throws Exception{
+    public void Home_test() throws Exception {
         mvc.perform(get(""))
                 .andDo(print())
                 .andExpect(status().isOk())
