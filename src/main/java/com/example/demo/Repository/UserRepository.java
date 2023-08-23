@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-
-    @Nonnull
-    List<UserEntity> findByUsername(String name);
+    List<UserEntity> findByUsername(@Nonnull String name);
 
 }

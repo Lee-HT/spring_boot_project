@@ -14,20 +14,19 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@Table(name = "post")
+@Table(name = "comment")
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostEntity extends BaseTimeEntity {
+public class CommentEntity extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long pid;
+    private Long cid;
     @ManyToOne
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private UserEntity username;
-    @Column(nullable = false, length = 128)
-    private String title;
-    @Column(nullable = false, length = 1024)
+    // referencedColumnName 없을 시 기본 키 컬럼으로 지정
+    @JoinColumn(name = "uid")
+    private UserEntity uid;
+    @Column(nullable = false, length = 512)
     private String contents;
 
 }

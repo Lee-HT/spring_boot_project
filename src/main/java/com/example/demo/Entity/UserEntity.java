@@ -1,6 +1,6 @@
 package com.example.demo.Entity;
 
-import jakarta.annotation.Nonnull;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,16 +12,17 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
-@Table(name="user")
+@Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity extends BaseTimeEntity{
+public class UserEntity extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Nonnull
+    private Long uid;
+    @Column(nullable = false, length = 31, unique = true)
     private String username;
-    @Nonnull
+    @Column(nullable = false, length = 127, unique = true)
     private String email;
     private String roles;
     private String profilePic;

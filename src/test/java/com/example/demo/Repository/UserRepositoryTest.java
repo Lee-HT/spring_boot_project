@@ -3,7 +3,6 @@ package com.example.demo.Repository;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,15 @@ import org.springframework.test.context.ActiveProfiles;
 class UserRepositoryTest {
 
     private final UserRepository userRepository;
-    private static List<UserEntity> users;
+    private List<UserEntity> users = new ArrayList<>();
 
     @Autowired
     public UserRepositoryTest(UserRepository userRepository) {
         this.userRepository = userRepository;
+        setObjects();
     }
 
-    @BeforeAll
-    static void setUsers() {
-        users = new ArrayList<>();
+    void setObjects() {
         users.add(UserEntity.builder().username("user1").email("email1@gmail.com")
                 .roles("ROLE_USER").build());
         users.add(UserEntity.builder().username("user2").email("email2@gmail.com")
@@ -35,19 +33,25 @@ class UserRepositoryTest {
     }
 
     @BeforeEach
-    public void saveUsers() {
+    void setUsers() {
         userRepository.saveAll(users);
     }
 
     @Test
     public void findAll() {
         List<UserEntity> users = userRepository.findAll();
+
+        System.out.println("======== findAll ========");
+        System.out.println(users);
     }
 
     @Test
     public void findByUsername() {
-        String username = "name1";
+        String username = "user1";
         List<UserEntity> users = userRepository.findByUsername(username);
+
+        System.out.println("======== findByUsername ========");
+        System.out.println(users);
     }
 
     @Test
@@ -58,11 +62,11 @@ class UserRepositoryTest {
         newUsers.add(UserEntity.builder().username("user4").email("email4@gmail.com")
                 .roles("ROLE_USER").build());
         userRepository.saveAll(newUsers);
-    }
+        List<UserEntity> users = userRepository.findAll();
 
-    @Test
-    public void deleteAll() {
-        userRepository.deleteAll(users);
+        System.out.println("======== saveAll ========");
+        System.out.println(users);
+
     }
 
 }
