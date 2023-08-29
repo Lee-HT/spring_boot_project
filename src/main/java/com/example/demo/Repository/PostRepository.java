@@ -6,7 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
+    PostEntity findByPid(Long pid);
+    List<PostEntity> findByTitleContaining(String title);
     List<PostEntity> findByUsername(UserEntity username);
-    List<PostEntity> findByTitle(String title);
 
 }

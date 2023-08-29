@@ -8,15 +8,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Builder
 @Table(name = "post")
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@ToString
 public class PostEntity extends BaseTimeEntity {
 
     @Id
@@ -29,5 +34,10 @@ public class PostEntity extends BaseTimeEntity {
     private String title;
     @Column(nullable = false, length = 1024)
     private String contents;
+
+    public void updatePost(String title, String contents){
+        this.title = title;
+        this.contents = contents;
+    }
 
 }

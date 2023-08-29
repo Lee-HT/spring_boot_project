@@ -3,10 +3,14 @@ package com.example.demo.Repository;
 import com.example.demo.Entity.CommentEntity;
 import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.UserEntity;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -16,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("local")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
+@TestInstance(Lifecycle.PER_CLASS)
 class CommentLikeRepositoryTest {
 
     private final CommentLikeRepository commentLikeRepository;
@@ -23,7 +28,7 @@ class CommentLikeRepositoryTest {
     private final UserRepository userRepository;
     private List<CommentLikeEntity> commentLikes = new ArrayList<>();
     private List<CommentEntity> comments = new ArrayList<>();
-    private UserEntity uid;
+    private List<UserEntity> users = new ArrayList<>();
 
     @Autowired
     public CommentLikeRepositoryTest(CommentLikeRepository commentLikeRepository,
@@ -31,30 +36,31 @@ class CommentLikeRepositoryTest {
         this.commentLikeRepository = commentLikeRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
-        this.uid = UserEntity.builder().username("user1").email("email1@gmail.com").build();
-        setObjects();
     }
 
-    void setObjects() {
-        CommentEntity cid1 = CommentEntity.builder().contents("contents1").build();
-        CommentEntity cid2 = CommentEntity.builder().contents("contents2").build();
-        comments.add(cid1);
-        comments.add(cid2);
-        commentLikes.add(CommentLikeEntity.builder()
-                .uid(uid).cid(cid1).good(true).hate(false).build());
-        commentLikes.add(CommentLikeEntity.builder()
-                .uid(uid).cid(cid2).good(false).hate(true).build());
-    }
-     @BeforeEach
-     public void setCommentLikes(){
-        userRepository.save(uid);
+    @BeforeAll
+    public void setCommentLikes() {
+        users.add(UserEntity.builder().username("user1").email("email1@gmail.com").build());
+        users.add(UserEntity.builder().username("user2").email("email2@gmail.com").build());
+        comments.add(CommentEntity.builder().contents("contents1").build());
+        comments.add(CommentEntity.builder().contents("contents2").build());
+        commentLikes.add(
+                CommentLikeEntity.builder().uid(users.get(0)).cid(comments.get(0)).good(true)
+                        .hate(false).build());
+        commentLikes.add(
+                CommentLikeEntity.builder().uid(users.get(0)).cid(comments.get(1)).good(false)
+                        .hate(true).build());
+
+        userRepository.saveAll(users);
         commentRepository.saveAll(comments);
         commentLikeRepository.saveAll(commentLikes);
-     }
+    }
 
     @Test
     public void findAll() {
         List<CommentLikeEntity> commentLikes = commentLikeRepository.findAll();
+
+        Assertions.assertThat(commentLikes).usingRecursiveComparison().isEqualTo(this.commentLikes);
 
         System.out.println("======== findAll ========");
         System.out.println(commentLikes);
@@ -65,27 +71,24 @@ class CommentLikeRepositoryTest {
         UserEntity userEntity = UserEntity.builder().uid(1L).build();
         List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(userEntity);
 
+        Assertions.assertThat(commentLikes).usingRecursiveComparison().isEqualTo(this.commentLikes);
+
         System.out.println("======== findByUid ========");
         System.out.println(commentLikes);
     }
 
     @Test
     public void saveAll() {
-        List<CommentEntity> comments = new ArrayList<>();
         List<CommentLikeEntity> commentLikes = new ArrayList<>();
+        commentLikes.add(
+                CommentLikeEntity.builder().uid(users.get(1)).cid(comments.get(0)).good(true)
+                        .hate(false).build());
+        commentLikes.add(
+                CommentLikeEntity.builder().uid(users.get(1)).cid(comments.get(1)).good(false)
+                        .hate(true).build());
+        List<CommentLikeEntity> result = commentLikeRepository.saveAll(commentLikes);
 
-        UserEntity uid = UserEntity.builder().username("user2").email("email2@gmail.com").build();
-        CommentEntity cid1 = CommentEntity.builder().contents("contents1").build();
-        CommentEntity cid2 = CommentEntity.builder().contents("contents2").build();
-        comments.add(cid1);
-        comments.add(cid2);
-        commentLikes.add(CommentLikeEntity.builder().uid(uid).cid(cid1).good(true).hate(false).build());
-        commentLikes.add(CommentLikeEntity.builder().uid(uid).cid(cid2).good(false).hate(true).build());
-
-        userRepository.save(uid);
-        commentRepository.saveAll(comments);
-        commentLikeRepository.saveAll(commentLikes);
-        List<CommentLikeEntity> result = commentLikeRepository.findAll();
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentLikes);
 
         System.out.println("======== saveAll ========");
         System.out.println(result);
@@ -94,7 +97,9 @@ class CommentLikeRepositoryTest {
     @Test
     public void countByCid() {
         CommentEntity commentEntity = CommentEntity.builder().cid(1L).build();
-        Long countLikes = commentLikeRepository.countByCid(commentEntity);
+        int countLikes = commentLikeRepository.countByCid(commentEntity);
+
+        Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
 
         System.out.println("======== countByCid ========");
         System.out.println(countLikes);

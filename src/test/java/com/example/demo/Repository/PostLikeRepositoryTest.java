@@ -5,8 +5,11 @@ import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -16,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("local")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
+@TestInstance(Lifecycle.PER_CLASS)
 public class PostLikeRepositoryTest {
 
     private final PostLikeRepository postLikeRepository;
@@ -23,30 +27,30 @@ public class PostLikeRepositoryTest {
     private final UserRepository userRepository;
     private List<PostLikeEntity> postLikes = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
-    private UserEntity uid;
+    private List<UserEntity> users = new ArrayList<>();
 
     @Autowired
     public PostLikeRepositoryTest(PostLikeRepository postLikeRepository,
-            PostRepository postRepository,UserRepository userRepository) {
+            PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.postLikeRepository = postLikeRepository;
         this.userRepository = userRepository;
-        this.uid = UserEntity.builder().username("user1").email("email1@gmail.com").build();
-        setObjects();
     }
 
-    void setObjects() {
-        PostEntity pid1 = PostEntity.builder().title("title1").contents("contents1").build();
-        PostEntity pid2 = PostEntity.builder().title("title2").contents("contents2").build();
-        posts.add(pid1);
-        posts.add(pid2);
-        postLikes.add(PostLikeEntity.builder().uid(uid).pid(pid1).good(true).hate(false).build());
-        postLikes.add(PostLikeEntity.builder().uid(uid).pid(pid2).good(false).hate(true).build());
-    }
+    @BeforeAll
+    void setPostLikes() {
+        users.add(UserEntity.builder().username("user1").email("email1@gmail.com").build());
+        users.add(UserEntity.builder().username("user2").email("email2@gmail.com").build());
+        posts.add(PostEntity.builder().title("title1").contents("contents1").build());
+        posts.add(PostEntity.builder().title("title2").contents("contents2").build());
+        postLikes.add(
+                PostLikeEntity.builder().uid(users.get(0)).pid(posts.get(0)).good(true).hate(false)
+                        .build());
+        postLikes.add(
+                PostLikeEntity.builder().uid(users.get(0)).pid(posts.get(1)).good(false).hate(true)
+                        .build());
 
-    @BeforeEach
-    void setPostLikes(){
-        userRepository.save(uid);
+        userRepository.saveAll(users);
         postRepository.saveAll(posts);
         postLikeRepository.saveAll(postLikes);
     }
@@ -54,6 +58,8 @@ public class PostLikeRepositoryTest {
     @Test
     public void findAll() {
         List<PostLikeEntity> postLikes = postLikeRepository.findAll();
+
+        Assertions.assertThat(postLikes).usingRecursiveComparison().isEqualTo(this.postLikes);
 
         System.out.println("======== findAll ========");
         System.out.println(postLikes);
@@ -64,27 +70,24 @@ public class PostLikeRepositoryTest {
         UserEntity uid = UserEntity.builder().uid(1L).build();
         List<PostLikeEntity> postLikes = postLikeRepository.findByUid(uid);
 
+        Assertions.assertThat(postLikes).usingRecursiveComparison().isEqualTo(this.postLikes);
+
         System.out.println("======== findByUid ========");
         System.out.println(postLikes);
     }
 
     @Test
     public void saveAll() {
-        List<PostEntity> newPosts = new ArrayList<>();
-        List<PostLikeEntity> newPostLikes = new ArrayList<>();
+        List<PostLikeEntity> postLikes = new ArrayList<>();
+        postLikes.add(
+                PostLikeEntity.builder().uid(users.get(1)).pid(posts.get(0)).good(true).hate(false)
+                        .build());
+        postLikes.add(
+                PostLikeEntity.builder().uid(users.get(1)).pid(posts.get(1)).good(false).hate(true)
+                        .build());
+        List<PostLikeEntity> result = postLikeRepository.saveAll(postLikes);
 
-        UserEntity uid = UserEntity.builder().username("user2").email("email2@gmail.com").build();
-        PostEntity pid1 = PostEntity.builder().title("title1").contents("contents1").build();
-        PostEntity pid2 = PostEntity.builder().title("title2").contents("contents2").build();
-        newPosts.add(pid1);
-        newPosts.add(pid2);
-        newPostLikes.add(PostLikeEntity.builder().uid(uid).pid(pid1).good(true).hate(false).build());
-        newPostLikes.add(PostLikeEntity.builder().uid(uid).pid(pid2).good(false).hate(true).build());
-
-        userRepository.save(uid);
-        postRepository.saveAll(newPosts);
-        postLikeRepository.saveAll(newPostLikes);
-        List<PostLikeEntity> result = postLikeRepository.findAll();
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes);
 
         System.out.println("======== saveAll ========");
         System.out.println(result);
@@ -92,8 +95,9 @@ public class PostLikeRepositoryTest {
 
     @Test
     public void countByPid() {
-        PostEntity pid = PostEntity.builder().pid(1L).build();
-        Long countLikes = postLikeRepository.countByPid(pid);
+        int countLikes = postLikeRepository.countByPid(posts.get(0));
+
+        Assertions.assertThat(countLikes).isEqualTo(1);
 
         System.out.println("======== countByPid ========");
         System.out.println(countLikes);

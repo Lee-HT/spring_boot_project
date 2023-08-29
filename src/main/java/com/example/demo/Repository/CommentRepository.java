@@ -6,6 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<CommentEntity,Long> {
-    List<CommentEntity> findByUid(UserEntity uid);
+    List<CommentEntity> findByUsername(UserEntity uid);
 
 }

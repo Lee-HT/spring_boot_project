@@ -6,15 +6,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Builder
 @Table(name = "user")
 @AllArgsConstructor
-@NoArgsConstructor
+// new 로 생성 불가능
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@ToString
 public class UserEntity extends BaseTimeEntity {
 
     @Id
@@ -26,4 +32,10 @@ public class UserEntity extends BaseTimeEntity {
     private String email;
     private String roles;
     private String profilePic;
+
+    public void updateUser(String username,String email,String profilePic){
+        this.username = username;
+        this.email = email;
+        this.profilePic = profilePic;
+    }
 }

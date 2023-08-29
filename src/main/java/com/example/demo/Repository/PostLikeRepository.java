@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostLikeRepository extends JpaRepository<PostLikeEntity, UidPid> {
     List<PostLikeEntity> findByUid(UserEntity uid);
-    Long countByPid(PostEntity pid);
+    int countByPid(PostEntity pid);
 }
