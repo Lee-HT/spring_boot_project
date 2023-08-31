@@ -13,7 +13,7 @@ public interface UserService {
 
     UserEntity saveUser(UserDto userDto);
 
-    UserEntity updateUser(UserDto userDto);
+    UserDto updateUser(UserDto userDto);
 
     int deleteUsers(List<Long> uid);
 }

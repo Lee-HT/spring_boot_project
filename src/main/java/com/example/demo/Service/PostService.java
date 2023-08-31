@@ -1,17 +1,20 @@
 package com.example.demo.Service;
 
+import com.example.demo.DTO.PageDto;
 import com.example.demo.DTO.PostDto;
-import com.example.demo.Entity.PostEntity;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
+    PageDto findPost(Pageable pageable);
 
-    List<PostEntity> findPostByTitle(String title);
-    List<PostEntity> findPostByUsername(String username);
+    PageDto findPostByTitle(String title,Pageable pageable);
 
-    PostEntity savePost(PostDto postDto);
+    PageDto findPostByUsername(String username,Pageable pageable);
 
-    PostEntity updatePost(PostDto postDto);
+    PostDto savePost(PostDto postDto);
+
+    PostDto updatePost(PostDto postDto);
 
     int deletePosts(List<Long> pid);
 }

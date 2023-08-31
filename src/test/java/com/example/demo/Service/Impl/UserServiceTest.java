@@ -76,10 +76,10 @@ public class UserServiceTest {
     public void updateUser(){
         UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1").build();
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
-        when(userRepository.save(any(UserEntity.class))).thenReturn(users.get(0));
-        UserEntity user = userService.updateUser(userDto);
+        when(userConverter.toDto(any(UserEntity.class))).thenReturn(userDto);
+        UserDto user = userService.updateUser(userDto);
 
-        Assertions.assertThat(user).isEqualTo(users.get(0));
+        Assertions.assertThat(user).isEqualTo(userDto);
 
         System.out.println("======== updateUser ========");
         System.out.println(user);

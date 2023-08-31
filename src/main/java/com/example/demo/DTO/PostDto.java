@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 public class PostDto {
     private Long pid;
+    private String username;
     private String title;
     private String contents;
 }

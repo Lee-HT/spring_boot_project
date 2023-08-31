@@ -48,11 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserEntity updateUser(UserDto userDto) {
+    // save 삭제 필요
+    public UserDto updateUser(UserDto userDto) {
         UserEntity user = userRepository.findByUid(userDto.getUid());
         user.updateUser(userDto.getUsername(), userDto.getEmail(), user.getProfilePic());
 
-        return userRepository.save(user);
+        return userConverter.toDto(user);
     }
 
     @Override
