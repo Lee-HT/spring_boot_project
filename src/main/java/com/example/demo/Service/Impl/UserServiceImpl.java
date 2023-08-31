@@ -2,6 +2,7 @@ package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.UserConverter;
 import com.example.demo.DTO.UserDto;
+import com.example.demo.DTO.UserPageDto;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Repository.UserRepository;
@@ -9,6 +10,7 @@ import com.example.demo.Service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,21 +31,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserEntity findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserDto findByUsername(String username) {
+        return userConverter.toDto(userRepository.findByUsername(username));
     }
 
     @Override
     @Transactional
-    public List<UserEntity> findByUsernameContaining(String username) {
-        return userRepository.findByUsernameContaining(username);
+    public UserPageDto findByUsernameContaining(String username, Pageable pageable) {
+        return userConverter.toDto(userRepository.findByUsernameContaining(username,pageable));
     }
 
     @Override
     @Transactional
-    public UserEntity saveUser(UserDto userDto) {
+    public UserDto saveUser(UserDto userDto) {
         UserEntity user = userConverter.toEntity(userDto);
-        return userRepository.save(user);
+        return userConverter.toDto(userRepository.save(user));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.PostConverter;
-import com.example.demo.DTO.PageDto;
+import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
@@ -42,20 +42,20 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     // 테스트 코드 x
-    public PageDto findPost(Pageable pageable) {
+    public PostPageDto findPost(Pageable pageable) {
         return postConverter.toDto(postRepository.findAll(pageable));
     }
 
     @Override
     @Transactional
     // 테스트 코드 수정 필요
-    public PageDto findPostByTitle(String title,Pageable pageable) {
+    public PostPageDto findPostByTitle(String title,Pageable pageable) {
         return postConverter.toDto(postRepository.findByTitleContaining(title,pageable));
     }
 
     @Override
     @Transactional
-    public PageDto findPostByUsername(String username, Pageable pageable) {
+    public PostPageDto findPostByUsername(String username, Pageable pageable) {
         UserEntity user = userRepository.findByUsername(username);
         return postConverter.toDto(postRepository.findByUsername(user,pageable));
     }

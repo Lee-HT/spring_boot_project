@@ -12,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles(profiles = "local")
@@ -23,6 +28,7 @@ class UserRepositoryTest {
 
     private final UserRepository userRepository;
     private List<UserEntity> users = new ArrayList<>();
+    private Pageable pageable = PageRequest.of(0,3, Direction.ASC,"uid");
 
     @Autowired
     public UserRepositoryTest(UserRepository userRepository) {
@@ -72,12 +78,13 @@ class UserRepositoryTest {
     @Test
     public void findByUsernameContaining() {
         String username = "user";
-        List<UserEntity> users = userRepository.findByUsernameContaining(username);
+        Page<UserEntity> pages = new PageImpl<>(this.users,this.pageable,this.users.size());
+        Page<UserEntity> result = userRepository.findByUsernameContaining(username,this.pageable);
 
-        Assertions.assertThat(users).usingRecursiveComparison().isEqualTo(this.users);
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
         System.out.println("======== findByUsername ========");
-        System.out.println(users);
+        System.out.println(result);
     }
 
     @Test

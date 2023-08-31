@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.UserConverter;
 import com.example.demo.DTO.UserDto;
+import com.example.demo.DTO.UserPageDto;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Repository.UserRepository;
@@ -17,9 +18,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -29,52 +36,69 @@ public class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
     private List<UserEntity> users = new ArrayList<>();
+    private List<UserDto> userDtos = new ArrayList<>();
+    private Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
 
-    public UserServiceTest(){
-        users.add(UserEntity.builder().username("user1").email("email1@gmail.com").build());
-        users.add(UserEntity.builder().username("user2").email("email2@gmail.com").build());
+    public UserServiceTest() {
+        for (int i = 1; i < 6; i++) {
+            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com").build());
+        }
+        for (int i = 1; i < 6; i++) {
+            userDtos.add(UserDto.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com").build());
+        }
     }
 
     @Test
-    public void findByUsername(){
+    public void findByUsername() {
         String username = "user";
-        when(userRepository.findByUsername(any(String.class))).thenReturn(users.get(0));
-        UserEntity user = userService.findByUsername(username);
+        when(userRepository.findByUsername(any(String.class))).thenReturn(this.users.get(0));
+        when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
+        UserDto user = userService.findByUsername(username);
 
-        Assertions.assertThat(user).isEqualTo(users.get(0));
+        Assertions.assertThat(user).isEqualTo(this.userDtos.get(0));
 
         System.out.println("======== findByUsername ========");
         System.out.println(user);
     }
 
     @Test
-    public void findByUsernameContaining(){
+    public void findByUsernameContaining() {
         String username = "user";
-        when(userRepository.findByUsernameContaining(any(String.class))).thenReturn(this.users);
-        List<UserEntity> users = userService.findByUsernameContaining(username);
+        Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
+        UserPageDto pageDto = UserPageDto.builder()
+                .contents(new ArrayList<>(userDtos.subList(0, 3)))
+                .totalPages(pages.getTotalPages()).numberOfElements(pages.getNumberOfElements())
+                .sorted(pages.getSort()).size(pages.getSize()).build();
+        when(userRepository.findByUsernameContaining(username, this.pageable)).thenReturn(
+                pages);
+        when(userConverter.toDto(pages)).thenReturn(pageDto);
+        UserPageDto result = userService.findByUsernameContaining(username, this.pageable);
 
-        Assertions.assertThat(users).isEqualTo(this.users);
+        Assertions.assertThat(result).isEqualTo(pageDto);
 
         System.out.println("======== findByUsernameContaining ========");
-        System.out.println(users);
+        System.out.println(result);
     }
 
     @Test
-    public void saveUser(){
-        UserDto userDto = UserDto.builder().email("email1@gmail.com").username("user1").build();
-        when(userRepository.save(any(UserEntity.class))).thenReturn(users.get(0));
-        when(userConverter.toEntity(any(UserDto.class))).thenReturn(users.get(0));
-        UserEntity user = userService.saveUser(userDto);
+    public void saveUser() {
+        when(userConverter.toEntity(any(UserDto.class))).thenReturn(this.users.get(0));
+        when(userRepository.save(any(UserEntity.class))).thenReturn(this.users.get(0));
+        when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
+        UserDto result = userService.saveUser(this.userDtos.get(0));
 
-        Assertions.assertThat(user).isEqualTo(users.get(0));
+        Assertions.assertThat(result).isEqualTo(this.userDtos.get(0));
 
         System.out.println("======== saveUser ========");
-        System.out.println(user);
+        System.out.println(result);
     }
 
     @Test
-    public void updateUser(){
-        UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1").build();
+    public void updateUser() {
+        UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
+                .build();
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(userDto);
         UserDto user = userService.updateUser(userDto);
@@ -86,10 +110,10 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUser(){
-        List<Long> uid = Arrays.asList(1L,2L);
-        for (Long i:uid) {
-            when(userRepository.findByUid(i)).thenReturn(users.get(i.intValue()-1));
+    public void deleteUser() {
+        List<Long> uid = Arrays.asList(1L, 2L);
+        for (Long i : uid) {
+            when(userRepository.findByUid(i)).thenReturn(users.get(i.intValue() - 1));
         }
         int count = userService.deleteUsers(uid);
 

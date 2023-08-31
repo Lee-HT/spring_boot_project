@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
-import com.example.demo.DTO.PageDto;
+import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
@@ -71,14 +71,14 @@ class PostServiceTest {
     public void findPostByTitle() {
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
-        PageDto pageDto = PageDto.builder()
+        PostPageDto pageDto = PostPageDto.builder()
                 .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
                 .totalPages(pages.getTotalPages())
                 .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
                 .sorted(pages.getSort()).build();
         when(postRepository.findByTitleContaining("title", this.pageable)).thenReturn(pages);
         when(postConverter.toDto(pages)).thenReturn(pageDto);
-        PageDto result = postService.findPostByTitle("title", pageable);
+        PostPageDto result = postService.findPostByTitle("title", pageable);
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 
@@ -91,7 +91,7 @@ class PostServiceTest {
         String username = "user1";
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
-        PageDto pageDto = PageDto.builder()
+        PostPageDto pageDto = PostPageDto.builder()
                 .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
                 .totalPages(pages.getTotalPages())
                 .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
@@ -99,7 +99,7 @@ class PostServiceTest {
         when(userRepository.findByUsername(any(String.class))).thenReturn(users.get(0));
         when(postRepository.findByUsername(users.get(0), this.pageable)).thenReturn(pages);
         when(postConverter.toDto(pages)).thenReturn(pageDto);
-        PageDto result = postService.findPostByUsername(username, this.pageable);
+        PostPageDto result = postService.findPostByUsername(username, this.pageable);
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 

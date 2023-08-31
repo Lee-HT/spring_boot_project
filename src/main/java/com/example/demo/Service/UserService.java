@@ -1,17 +1,18 @@
 package com.example.demo.Service;
 
 import com.example.demo.DTO.UserDto;
-import com.example.demo.Entity.UserEntity;
+import com.example.demo.DTO.UserPageDto;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
 
-    UserEntity findByUsername(String username);
+    UserDto findByUsername(String username);
 
-    List<UserEntity> findByUsernameContaining(String username);
+    UserPageDto findByUsernameContaining(String username, Pageable pageable);
 
-    UserEntity saveUser(UserDto userDto);
+    UserDto saveUser(UserDto userDto);
 
     UserDto updateUser(UserDto userDto);
 

@@ -1,6 +1,6 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DTO.PageDto;
+import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Service.PostService;
@@ -30,9 +30,9 @@ public class PostController {
     }
 
     @GetMapping("/page")
-    public PageDto getPost(
+    public PostPageDto getPost(
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        PageDto posts = postService.findPost(pageable);
+        PostPageDto posts = postService.findPost(pageable);
         return posts;
     }
 

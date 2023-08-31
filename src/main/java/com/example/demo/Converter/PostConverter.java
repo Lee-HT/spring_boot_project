@@ -1,6 +1,6 @@
 package com.example.demo.Converter;
 
-import com.example.demo.DTO.PageDto;
+import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import java.util.ArrayList;
@@ -18,11 +18,8 @@ public class PostConverter {
 
     public List<PostEntity> toEntity(List<PostDto> postDto) {
         List<PostEntity> postEntities = new ArrayList<>();
-        for (PostDto post : postDto) {
-            postEntities.add(
-                    PostEntity.builder().pid(post.getPid()).title(post.getTitle())
-                            .contents(post.getContents()).build()
-            );
+        for (PostDto dto : postDto) {
+            postEntities.add(toEntity(dto));
         }
         return postEntities;
     }
@@ -34,18 +31,16 @@ public class PostConverter {
 
     public List<PostDto> toDto(List<PostEntity> postEntity) {
         List<PostDto> postDtos = new ArrayList<>();
-        for (PostEntity post : postEntity) {
-            postDtos.add(
-                    PostDto.builder().pid(post.getPid()).title(post.getTitle())
-                            .contents(post.getContents()).build()
-            );
+        for (PostEntity ett : postEntity) {
+            postDtos.add(toDto(ett));
         }
         return postDtos;
     }
 
     // 페이징
-    public PageDto toDto(Page<PostEntity> pages) {
-        return PageDto.builder().contents(toDto(pages.getContent())).totalPages(pages.getTotalPages())
+    public PostPageDto toDto(Page<PostEntity> pages) {
+        return PostPageDto.builder().contents(toDto(pages.getContent()))
+                .totalPages(pages.getTotalPages())
                 .sorted(pages.getSort()).numberOfElements(pages.getNumberOfElements())
                 .size(pages.getSize()).build();
     }
