@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -35,16 +36,19 @@ class CommentRepositoryTest {
 
     @BeforeAll
     void setComments() {
-        users.add(UserEntity.builder().username("user1").email("email1@gmail.com").build());
-        users.add(UserEntity.builder().username("user2").email("email2@gmail.com").build());
-        comments.add(CommentEntity.builder().username(users.get(0)).contents("contents1").build());
-        comments.add(CommentEntity.builder().username(users.get(0)).contents("contents2").build());
+        for (int i=1;i<4;i++) {
+            users.add(UserEntity.builder().uid((long) i ).username("user"+i).email("email"+i+"@gmail.com").build());
+        }
+        for (int i=0;i<4;i++){
+            comments.add(CommentEntity.builder().cid((long) (i+1)).username(users.get(i/2)).contents("contents"+(i+1)).build());
+        }
 
         userRepository.saveAll(users);
         commentRepository.saveAll(comments);
     }
 
     @Test
+    @DisplayName("전체 SELECT")
     public void findAll() {
         List<CommentEntity> comments = commentRepository.findAll();
 
@@ -55,24 +59,26 @@ class CommentRepositoryTest {
     }
 
     @Test
+    @DisplayName("USERNAME 기준 SELECT")
     public void findByUsername() {
         UserEntity user = UserEntity.builder().username("user1").email("email1@gmail.com")
                 .build();
         List<CommentEntity> comments = commentRepository.findByUsername(user);
 
-        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments);
+        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments.subList(0,2));
 
         System.out.println("======== findByUid ========");
         System.out.println(comments);
     }
 
     @Test
+    @DisplayName("INSERT")
     public void saveAll() {
         List<CommentEntity> comments = new ArrayList<>();
-        comments.add(CommentEntity.builder().username(users.get(1)).contents("contents3")
-                .build());
-        comments.add(CommentEntity.builder().username(users.get(1)).contents("contents4")
-                .build());
+        for (int i=1;i<3;i++){
+            comments.add(CommentEntity.builder().cid((long) i+4).username(users.get(2)).contents("contents"+i)
+                    .build());
+        }
         List<CommentEntity> result = commentRepository.saveAll(comments);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);

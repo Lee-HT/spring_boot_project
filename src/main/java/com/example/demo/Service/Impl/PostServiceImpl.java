@@ -4,6 +4,7 @@ import com.example.demo.Converter.PostConverter;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
+import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.PostMapper;
 import com.example.demo.Repository.PostLikeRepository;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -49,15 +49,15 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     // 테스트 코드 수정 필요
-    public PostPageDto findPostByTitle(String title,Pageable pageable) {
-        return postConverter.toDto(postRepository.findByTitleContaining(title,pageable));
+    public PostPageDto findPostByTitle(String title, Pageable pageable) {
+        return postConverter.toDto(postRepository.findByTitleContaining(title, pageable));
     }
 
     @Override
     @Transactional
     public PostPageDto findPostByUsername(String username, Pageable pageable) {
         UserEntity user = userRepository.findByUsername(username);
-        return postConverter.toDto(postRepository.findByUsername(user,pageable));
+        return postConverter.toDto(postRepository.findByUsername(user, pageable));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostDto updatePost(PostDto postDto) {
         PostEntity post = postRepository.findByPid(postDto.getPid());
-        post.updatePost(postDto.getTitle(), postDto.getContents());
+        post.updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
 
         return postConverter.toDto(post);
     }
@@ -93,5 +93,27 @@ public class PostServiceImpl implements PostService {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean likePost(Long pid, Long uid) {
+        PostEntity post = postRepository.findByPid(pid);
+        UserEntity user = userRepository.findByUid(uid);
+        PostLikeEntity postLike = postLikeRepository.findByPidAndUid(post, user);
+        postLike.updateLikes(!postLike.isLikes());
+
+        return postLike.isLikes();
+    }
+
+    @Override
+    @Transactional
+    public boolean hatePost(Long pid, Long uid) {
+        PostEntity post = postRepository.findByPid(pid);
+        UserEntity user = userRepository.findByUid(uid);
+        PostLikeEntity postLike = postLikeRepository.findByPidAndUid(post, user);
+        postLike.updateHate(!postLike.isHate());
+
+        return postLike.isHate();
     }
 }

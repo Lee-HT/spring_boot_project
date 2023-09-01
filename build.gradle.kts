@@ -29,6 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2")
     implementation("org.assertj:assertj-core")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")

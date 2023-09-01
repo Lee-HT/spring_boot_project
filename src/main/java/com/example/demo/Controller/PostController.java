@@ -2,20 +2,20 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
-import com.example.demo.Entity.PostEntity;
 import com.example.demo.Service.PostService;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @Slf4j
@@ -29,24 +29,43 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/page")
-    public PostPageDto getPost(
+    @GetMapping("")
+    public String postPage(Model model,
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
         PostPageDto posts = postService.findPost(pageable);
-        return posts;
+        model.addAllAttributes(posts.getAttr());
+        return "main/post";
     }
 
-    @PostMapping("/save")
+    @GetMapping("/save")
+    public String uploadPost() {
+        return "post/save";
+    }
+
+    @PostMapping("")
     public String savePost(@RequestBody PostDto postDto) {
         PostDto post = postService.savePost(postDto);
-        return post.getTitle();
+        return "redirect:post";
     }
 
     @GetMapping("/search/{title}")
-    public List<PostEntity> searchPost(@PathVariable("title") String title,
+    public String searchTitle(@PathVariable("title") String title, Model model,
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        postService.findPostByTitle(title,pageable);
-        return null;
+        PostPageDto posts = postService.findPostByTitle(title, pageable);
+        model.addAllAttributes(posts.getAttr());
+        return "main/post";
+    }
+
+    @GetMapping("/like")
+    @ResponseBody
+    public Boolean likePost(Long pid, Long uid) {
+        return postService.likePost(pid, uid);
+    }
+
+    @GetMapping("/hate")
+    @ResponseBody
+    public Boolean hatePost(Long pid, Long uid) {
+        return postService.hatePost(pid, uid);
     }
 
 

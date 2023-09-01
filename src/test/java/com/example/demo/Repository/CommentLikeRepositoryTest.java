@@ -3,11 +3,11 @@ package com.example.demo.Repository;
 import com.example.demo.Entity.CommentEntity;
 import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.UserEntity;
-import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -40,16 +40,20 @@ class CommentLikeRepositoryTest {
 
     @BeforeAll
     public void setCommentLikes() {
-        users.add(UserEntity.builder().username("user1").email("email1@gmail.com").build());
-        users.add(UserEntity.builder().username("user2").email("email2@gmail.com").build());
-        comments.add(CommentEntity.builder().contents("contents1").build());
-        comments.add(CommentEntity.builder().contents("contents2").build());
-        commentLikes.add(
-                CommentLikeEntity.builder().uid(users.get(0)).cid(comments.get(0)).good(true)
-                        .hate(false).build());
-        commentLikes.add(
-                CommentLikeEntity.builder().uid(users.get(0)).cid(comments.get(1)).good(false)
-                        .hate(true).build());
+        for (int i = 1; i < 4; i++) {
+            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com")
+                    .build());
+        }
+        for (int i = 1; i < 6; i++) {
+            comments.add(CommentEntity.builder().cid((long) i).contents("contents" + i).build());
+        }
+        for (int i = 0; i < 5; i++) {
+            commentLikes.add(
+                    CommentLikeEntity.builder().uid(users.get(i/3)).cid(comments.get(i))
+                            .likes(i % 2 == 0)
+                            .hate(i % 2 != 0).build());
+        }
 
         userRepository.saveAll(users);
         commentRepository.saveAll(comments);
@@ -57,6 +61,7 @@ class CommentLikeRepositoryTest {
     }
 
     @Test
+    @DisplayName("전체 SELECT")
     public void findAll() {
         List<CommentLikeEntity> commentLikes = commentLikeRepository.findAll();
 
@@ -67,25 +72,27 @@ class CommentLikeRepositoryTest {
     }
 
     @Test
+    @DisplayName("UID 기준 SELECT")
     public void findByUid() {
         UserEntity userEntity = UserEntity.builder().uid(1L).build();
         List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(userEntity);
 
-        Assertions.assertThat(commentLikes).usingRecursiveComparison().isEqualTo(this.commentLikes);
+        Assertions.assertThat(commentLikes).usingRecursiveComparison().isEqualTo(this.commentLikes.subList(0,3));
 
         System.out.println("======== findByUid ========");
         System.out.println(commentLikes);
     }
 
     @Test
+    @DisplayName("INSERT")
     public void saveAll() {
         List<CommentLikeEntity> commentLikes = new ArrayList<>();
-        commentLikes.add(
-                CommentLikeEntity.builder().uid(users.get(1)).cid(comments.get(0)).good(true)
-                        .hate(false).build());
-        commentLikes.add(
-                CommentLikeEntity.builder().uid(users.get(1)).cid(comments.get(1)).good(false)
-                        .hate(true).build());
+        for (int i = 0; i < 2; i++) {
+            commentLikes.add(
+                    CommentLikeEntity.builder().uid(users.get(2)).cid(comments.get(i))
+                            .likes(i % 2 == 0)
+                            .hate(i % 2 != 0).build());
+        }
         List<CommentLikeEntity> result = commentLikeRepository.saveAll(commentLikes);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentLikes);
@@ -95,6 +102,7 @@ class CommentLikeRepositoryTest {
     }
 
     @Test
+    @DisplayName("CID COUNT SELECT")
     public void countByCid() {
         CommentEntity commentEntity = CommentEntity.builder().cid(1L).build();
         int countLikes = commentLikeRepository.countByCid(commentEntity);

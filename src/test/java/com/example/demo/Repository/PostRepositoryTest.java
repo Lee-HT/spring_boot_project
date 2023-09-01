@@ -49,7 +49,7 @@ class PostRepositoryTest {
         }
         for (int i = 1; i < 6; i++) {
             posts.add(PostEntity.builder().pid((long) i).title("title" + i).contents("content" + i)
-                    .username(users.get(0)).build());
+                    .username(users.get(0)).category("category" + i).build());
         }
         this.maxIdx = this.posts.size();
 
@@ -112,12 +112,13 @@ class PostRepositoryTest {
     }
 
     @Test
+    @DisplayName("INSERT")
     public void saveAll() {
         List<PostEntity> Posts = new ArrayList<>();
-        Posts.add(PostEntity.builder().title("title3").contents("contents3")
-                .username(this.users.get(1)).build());
-        Posts.add(PostEntity.builder().title("title4").contents("contents4")
-                .username(this.users.get(1)).build());
+        for (int i = 0; i < 3; i++) {
+            Posts.add(PostEntity.builder().title("title3").contents("contents3")
+                    .username(this.users.get(1)).category("category3").build());
+        }
         List<PostEntity> result = postRepository.saveAll(Posts);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Posts);

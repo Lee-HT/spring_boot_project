@@ -10,9 +10,11 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Getter
 @Entity
 @Builder
 @Table(name = "postLike")
@@ -20,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(UidPid.class)
 @ToString
-public class PostLikeEntity extends BaseTimeEntity{
+public class PostLikeEntity extends BaseTimeEntity {
 
     @Id
     @ManyToOne
@@ -30,6 +32,14 @@ public class PostLikeEntity extends BaseTimeEntity{
     @ManyToOne
     @JoinColumn(name = "pid")
     private PostEntity pid;
-    private boolean good;
+    private boolean likes;
     private boolean hate;
+
+    public void updateLikes(boolean likes) {
+        this.likes = likes;
+    }
+
+    public void updateHate(boolean hate) {
+        this.hate = hate;
+    }
 }

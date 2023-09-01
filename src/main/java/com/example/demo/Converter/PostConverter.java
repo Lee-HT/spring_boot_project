@@ -13,28 +13,28 @@ public class PostConverter {
 
     public PostEntity toEntity(PostDto postDto) {
         return PostEntity.builder().pid(postDto.getPid()).title(postDto.getTitle())
-                .contents(postDto.getContents()).build();
+                .contents(postDto.getContents()).category(postDto.getCategory()).build();
     }
 
     public List<PostEntity> toEntity(List<PostDto> postDto) {
-        List<PostEntity> postEntities = new ArrayList<>();
+        List<PostEntity> postEntity = new ArrayList<>();
         for (PostDto dto : postDto) {
-            postEntities.add(toEntity(dto));
+            postEntity.add(toEntity(dto));
         }
-        return postEntities;
+        return postEntity;
     }
 
     public PostDto toDto(PostEntity post) {
         return PostDto.builder().pid(post.getPid()).title(post.getTitle())
-                .contents(post.getContents()).build();
+                .contents(post.getContents()).category(post.getCategory()).build();
     }
 
     public List<PostDto> toDto(List<PostEntity> postEntity) {
-        List<PostDto> postDtos = new ArrayList<>();
+        List<PostDto> postDto = new ArrayList<>();
         for (PostEntity ett : postEntity) {
-            postDtos.add(toDto(ett));
+            postDto.add(toDto(ett));
         }
-        return postDtos;
+        return postDto;
     }
 
     // 페이징

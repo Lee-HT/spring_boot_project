@@ -6,15 +6,20 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
+
     PostPageDto findPost(Pageable pageable);
 
-    PostPageDto findPostByTitle(String title,Pageable pageable);
+    PostPageDto findPostByTitle(String title, Pageable pageable);
 
-    PostPageDto findPostByUsername(String username,Pageable pageable);
+    PostPageDto findPostByUsername(String username, Pageable pageable);
 
     PostDto savePost(PostDto postDto);
 
     PostDto updatePost(PostDto postDto);
 
     int deletePosts(List<Long> pid);
+
+    boolean likePost(Long pid, Long uid);
+
+    boolean hatePost(Long pid, Long uid);
 }

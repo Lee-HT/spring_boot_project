@@ -34,10 +34,13 @@ public class PostEntity extends BaseTimeEntity {
     private String title;
     @Column(nullable = false, length = 1024)
     private String contents;
+    @Column(nullable = false, length = 128)
+    private String category;
 
-    public void updatePost(String title, String contents){
+    public void updatePost(String title, String contents, String category) {
         this.title = title;
         this.contents = contents;
+        this.category = category;
     }
 
 }

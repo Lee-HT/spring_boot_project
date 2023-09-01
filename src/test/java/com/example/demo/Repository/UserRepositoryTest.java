@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -45,6 +46,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("전체 SELECT")
     public void findAll() {
         List<UserEntity> users = userRepository.findAll();
 
@@ -55,6 +57,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("UID 기준 SELECT")
     public void FindByUid() {
         UserEntity uid = userRepository.findByUid(1L);
 
@@ -65,6 +68,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("USERNAME 기준 SELECT")
     public void findByUsername() {
         String username = "user1";
         UserEntity user = userRepository.findByUsername(username);
@@ -76,6 +80,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("LIKE USERNAME SELECT")
     public void findByUsernameContaining() {
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users,this.pageable,this.users.size());
@@ -88,6 +93,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("INSERT")
     public void saveAll() {
         List<UserEntity> newUsers = new ArrayList<>();
         newUsers.add(UserEntity.builder().username("user3").email("email3@gmail.com")
