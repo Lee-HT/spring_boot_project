@@ -51,7 +51,7 @@ jobs:
       shell: bash
 
     - name: Build Gradle
-      run: ./gradlew build -Dspring.profiles.include=server
+      run: ./gradlew build -Dspring.profiles.active=server
       shell: bash
 
     # qq == 출력 x , r == 하위 폴더 같이 압축
