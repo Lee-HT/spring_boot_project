@@ -36,11 +36,13 @@ class CommentRepositoryTest {
 
     @BeforeAll
     void setComments() {
-        for (int i=1;i<4;i++) {
-            users.add(UserEntity.builder().uid((long) i ).username("user"+i).email("email"+i+"@gmail.com").build());
+        for (int i = 1; i < 4; i++) {
+            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com").build());
         }
-        for (int i=0;i<4;i++){
-            comments.add(CommentEntity.builder().cid((long) (i+1)).username(users.get(i/2)).contents("contents"+(i+1)).build());
+        for (int i = 0; i < 4; i++) {
+            comments.add(CommentEntity.builder().cid((long) (i + 1)).username(users.get(i / 2))
+                    .contents("contents" + (i + 1)).build());
         }
 
         userRepository.saveAll(users);
@@ -65,7 +67,8 @@ class CommentRepositoryTest {
                 .build();
         List<CommentEntity> comments = commentRepository.findByUsername(user);
 
-        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments.subList(0,2));
+        Assertions.assertThat(comments).usingRecursiveComparison()
+                .isEqualTo(this.comments.subList(0, 2));
 
         System.out.println("======== findByUid ========");
         System.out.println(comments);
@@ -75,8 +78,9 @@ class CommentRepositoryTest {
     @DisplayName("INSERT")
     public void saveAll() {
         List<CommentEntity> comments = new ArrayList<>();
-        for (int i=1;i<3;i++){
-            comments.add(CommentEntity.builder().cid((long) i+4).username(users.get(2)).contents("contents"+i)
+        for (int i = 1; i < 3; i++) {
+            comments.add(CommentEntity.builder().cid((long) i + 3).username(users.get(2))
+                    .contents("contents" + i)
                     .build());
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);

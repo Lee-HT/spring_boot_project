@@ -29,7 +29,7 @@ class UserRepositoryTest {
 
     private final UserRepository userRepository;
     private List<UserEntity> users = new ArrayList<>();
-    private Pageable pageable = PageRequest.of(0,3, Direction.ASC,"uid");
+    private Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
 
     @Autowired
     public UserRepositoryTest(UserRepository userRepository) {
@@ -38,10 +38,10 @@ class UserRepositoryTest {
 
     @BeforeAll
     void setUsers() {
-        users.add(UserEntity.builder().username("user1").email("email1@gmail.com")
-                .roles("ROLE_USER").build());
-        users.add(UserEntity.builder().username("user2").email("email2@gmail.com")
-                .roles("ROLE_USER").build());
+        for (int i = 1; i < 3; i++) {
+            users.add(UserEntity.builder().uid((long) i).username("user"+i).email("email"+i+"@gmail.com")
+                    .roles("ROLE_USER").build());
+        }
         this.users = userRepository.saveAll(users);
     }
 
@@ -83,8 +83,8 @@ class UserRepositoryTest {
     @DisplayName("LIKE USERNAME SELECT")
     public void findByUsernameContaining() {
         String username = "user";
-        Page<UserEntity> pages = new PageImpl<>(this.users,this.pageable,this.users.size());
-        Page<UserEntity> result = userRepository.findByUsernameContaining(username,this.pageable);
+        Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
+        Page<UserEntity> result = userRepository.findByUsernameContaining(username, this.pageable);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
@@ -96,17 +96,17 @@ class UserRepositoryTest {
     @DisplayName("INSERT")
     public void saveAll() {
         List<UserEntity> newUsers = new ArrayList<>();
-        newUsers.add(UserEntity.builder().username("user3").email("email3@gmail.com")
-                .roles("ROLE_USER").build());
-        newUsers.add(UserEntity.builder().username("user4").email("email4@gmail.com")
-                .roles("ROLE_USER").build());
+        for (int i = 3; i < 5; i++) {
+            newUsers.add(UserEntity.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com")
+                    .roles("ROLE_USER").build());
+        }
         List<UserEntity> result = userRepository.saveAll(newUsers);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(newUsers);
 
         System.out.println("======== saveAll ========");
         System.out.println(result);
-
     }
 
 }
