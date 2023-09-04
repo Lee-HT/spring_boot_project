@@ -60,7 +60,7 @@ jobs:
 
     # gradle build
     - name: Build Gradle
-      run: SPRING_PROFILES_ACTIVE=[prod] ./gradlew build
+      run: SPRING_PROFILES_ACTIVE=prod ./gradlew build
       shell: bash
 
     # qq == 출력 x , r == 하위 폴더 같이 압축
