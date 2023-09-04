@@ -51,7 +51,7 @@ jobs:
       shell: bash
 
     - name: Build Gradle
-      run: ./gradlew build -Pprofiles=server
+      run: ./gradlew build -Pprofile=server
       shell: bash
 
     # qq == 출력 x , r == 하위 폴더 같이 압축
