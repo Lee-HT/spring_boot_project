@@ -26,15 +26,15 @@ jobs:
         distribution: "adopt"
 
     # touch 명령어로 빈 파일 생성
-    # echo 명령어로 git secret의 내용 덮어쓰기
+    # echo 명령어로 파일 덮어쓰기
     - name: application yml
       run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
     - run: touch ./src/main/resources/application-prod.yml
     - run: echo "${{secrets.APPLICATION_PROD}}" > ./src/main/resources/application-prod.yml
-    - run: touch ./src/main/resources/application-local.yml
-    - run: echo "${{secrets.APPLICATION_LOCAL}}" > ./src/main/resources/application-local.yml
-    - run: touch ./src/main/resources/application-test
+    - run: touch ./src/main/resources/application-test.yml
+    - run: echo "${{secrets.APPLICATION_TEST}}" > ./src/main/resources/application-test.yml
+
     # 결과 다운로드 생성
     - uses: actions/upload-artifact@v3
       with:
@@ -44,10 +44,6 @@ jobs:
       with:
         name: application-prod.yml
         path: ./src/main/resources/application-prod.yml
-    - uses: actions/upload-artifact@v3
-      with:
-        name: application-local.yml
-        path: ./src/main/resources/application-local.yml
     - uses: actions/upload-artifact@v3
       with:
         name: application-test.yml
