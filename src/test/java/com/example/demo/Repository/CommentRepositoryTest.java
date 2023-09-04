@@ -79,11 +79,12 @@ class CommentRepositoryTest {
     public void saveAll() {
         List<CommentEntity> comments = new ArrayList<>();
         for (int i = 1; i < 3; i++) {
-            comments.add(CommentEntity.builder().cid((long) i + 3).username(users.get(2))
-                    .contents("contents" + i)
-                    .build());
+            comments.add(CommentEntity.builder().username(users.get(2)).contents("contents" + i).build());
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);
+        System.out.println(result);
+        System.out.println(comments);
+        System.out.println(commentRepository.findAll());
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);
 

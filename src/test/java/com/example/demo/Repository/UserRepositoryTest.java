@@ -97,7 +97,7 @@ class UserRepositoryTest {
     public void saveAll() {
         List<UserEntity> newUsers = new ArrayList<>();
         for (int i = 3; i < 5; i++) {
-            newUsers.add(UserEntity.builder().uid((long) i).username("user" + i)
+            newUsers.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com")
                     .roles("ROLE_USER").build());
         }
