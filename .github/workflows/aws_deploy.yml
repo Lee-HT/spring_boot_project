@@ -49,6 +49,9 @@ jobs:
         name: application-local.yml
         path: ./src/main/resources/application-local.yml
     - uses: actions/upload-artifact@v3
+      with:
+        name: application-test.yml
+        path: ./src/main/resources/application-test.yml
         
     # gradlew 실행 권한 추가
     - name: Grant excute permission for gradlew
@@ -57,7 +60,7 @@ jobs:
 
     # gradle build
     - name: Build Gradle
-      run: SPRING_PROFILES_ACTIVE ./gradlew build
+      run: SPRING_PROFILES_ACTIVE=[prod] ./gradlew build
       shell: bash
 
     # qq == 출력 x , r == 하위 폴더 같이 압축
