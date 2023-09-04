@@ -44,7 +44,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: application-local.yml
-        pathh: ./src/main/resources/application-local.yml
+        path: ./src/main/resources/application-local.yml
 
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
