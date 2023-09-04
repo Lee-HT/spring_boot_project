@@ -15,7 +15,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-
     steps:
     - name: checkout release
       uses: actions/checkout@v3
@@ -26,32 +25,39 @@ jobs:
         java-version: 17
         distribution: "adopt"
 
+    # touch 명령어로 빈 파일 생성
+    # echo 명령어로 git secret의 내용 덮어쓰기
     - name: application yml
       run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
-    - run: touch ./src/main/resources/application-server.yml
-    - run: echo "${{secrets.APPLICATION_SERVER}}" > ./src/main/resources/application-server.yml
+    - run: touch ./src/main/resources/application-prod.yml
+    - run: echo "${{secrets.APPLICATION_PROD}}" > ./src/main/resources/application-prod.yml
     - run: touch ./src/main/resources/application-local.yml
     - run: echo "${{secrets.APPLICATION_LOCAL}}" > ./src/main/resources/application-local.yml
+    - run: touch ./src/main/resources/application-test
+    # 결과 다운로드 생성
     - uses: actions/upload-artifact@v3
       with:
         name: application.yml
         path: ./src/main/resources/application.yml
     - uses: actions/upload-artifact@v3
       with:
-        name: application-server.yml
-        path: ./src/main/resources/application-server.yml
+        name: application-prod.yml
+        path: ./src/main/resources/application-prod.yml
     - uses: actions/upload-artifact@v3
       with:
         name: application-local.yml
         path: ./src/main/resources/application-local.yml
-
+    - uses: actions/upload-artifact@v3
+        
+    # gradlew 실행 권한 추가
     - name: Grant excute permission for gradlew
       run: chmod +x ./gradlew
       shell: bash
 
+    # gradle build
     - name: Build Gradle
-      run: ./gradlew build -Pprofile=server
+      run: SPRING_PROFILES_ACTIVE ./gradlew build
       shell: bash
 
     # qq == 출력 x , r == 하위 폴더 같이 압축
@@ -65,9 +71,11 @@ jobs:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
         aws-region: ${{ secrets.REGION }}
-
+        
+    # S3 s3::bucketname/path
     - name: Upload to S3
       run: aws s3 cp --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
 
+    
     - name: Code Deploy
       run: aws deploy create-deployment --application-name code_deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name github_active_group --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
