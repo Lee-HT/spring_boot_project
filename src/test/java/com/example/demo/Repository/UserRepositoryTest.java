@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(profiles = "local")
+@ActiveProfiles(profiles = "test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 // 테스트 단위 인스턴스 생성 (before All static 없이 사용 가능)
