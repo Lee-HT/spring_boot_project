@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
+import com.example.demo.Entity.UserEntity;
 import com.example.demo.Service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +44,23 @@ public class PostController {
     }
 
     @PostMapping("")
-    public String savePost(@RequestBody PostDto postDto) {
-        PostDto post = postService.savePost(postDto);
+    public String savePost(@RequestBody PostDto postDto, UserEntity user) {
+        PostDto post = postService.savePost(postDto,user);
         return "redirect:post";
     }
 
-    @GetMapping("/search/{title}")
+    @GetMapping("/title/{title}")
     public String searchTitle(@PathVariable("title") String title, Model model,
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
         PostPageDto posts = postService.findPostByTitle(title, pageable);
+        model.addAllAttributes(posts.getAttr());
+        return "main/post";
+    }
+
+    @GetMapping("/username/{username}")
+    public String searchUsername(@PathVariable("username") String username, Model model,
+            @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        PostPageDto posts = postService.findPostByUsername(username,pageable);
         model.addAllAttributes(posts.getAttr());
         return "main/post";
     }

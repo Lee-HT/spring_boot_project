@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostPageDto;
+import com.example.demo.DTO.UserDto;
+import com.example.demo.Entity.UserEntity;
 import com.example.demo.Service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -61,12 +63,13 @@ public class PostControllerTest {
 
     @Test
     public void savePost() throws Exception {
-        PostDto dto = PostDto.builder().pid(1L).title("title1").contents("contents1")
+        PostDto post = PostDto.builder().pid(1L).title("title1").contents("contents1")
                 .username("user1").category("category1").build();
-        when(postService.savePost(any(PostDto.class))).thenReturn(dto);
+        UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com").build();
+        when(postService.savePost(any(PostDto.class),any(UserEntity.class))).thenReturn(post);
 
         mvc.perform(post("/post").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)).with(csrf()))
+                        .content(objectMapper.writeValueAsString(post)).content(objectMapper.writeValueAsString(user)).with(csrf()))
                 .andDo(print()).andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("post"));
     }
@@ -77,20 +80,30 @@ public class PostControllerTest {
                 PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
                         .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
 
-        mvc.perform(get("/post/search/title").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/post/title/title").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
+    }
+
+    @Test
+    public void searchUsername() throws Exception {
+        when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
+                PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
+                        .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
+
+        mvc.perform(get("/post/username/user").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
     }
 
     @Test
     public void likePost() throws Exception {
-        when(postService.likePost(any(Long.class),any(Long.class))).thenReturn(true);
+        when(postService.likePost(any(Long.class), any(Long.class))).thenReturn(true);
 
         mvc.perform(get("/post/like")).andDo(print()).andExpect(status().isOk());
     }
 
     @Test
     public void hatePost() throws Exception {
-        when(postService.hatePost(any(Long.class),any(Long.class))).thenReturn(true);
+        when(postService.hatePost(any(Long.class), any(Long.class))).thenReturn(true);
 
         mvc.perform(get("/post/like")).andDo(print()).andExpect(status().isOk());
     }

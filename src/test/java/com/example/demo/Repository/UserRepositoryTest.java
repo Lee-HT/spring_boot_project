@@ -38,12 +38,12 @@ class UserRepositoryTest {
 
     @BeforeAll
     void setUsers() {
-        for (int i = 1; i < 3; i++) {
-            users.add(UserEntity.builder().uid((long) i).username("user"+i).email("email"+i+"@gmail.com")
+        for (int i = 1; i < 2; i++) {
+            System.out.println(i);
+            users.add(UserEntity.builder().username("user" + i).email("email" + i + "@gmail.com")
                     .roles("ROLE_USER").build());
         }
         userRepository.saveAll(users);
-        System.out.println(userRepository.findAll());
     }
 
     @Test
@@ -83,7 +83,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("LIKE USERNAME SELECT")
     public void findByUsernameContaining() {
-        System.out.println("======== findByUsername");
+        System.out.println("======== findByUsername ========");
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
         Page<UserEntity> result = userRepository.findByUsernameContaining(username, this.pageable);

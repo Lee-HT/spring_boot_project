@@ -62,8 +62,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostDto savePost(PostDto postDto) {
-        PostEntity post = postConverter.toEntity(postDto);
+    public PostDto savePost(PostDto postDto,UserEntity user) {
+        PostEntity post = postConverter.toEntity(postDto,user);
         return postConverter.toDto(postRepository.save(post));
     }
 

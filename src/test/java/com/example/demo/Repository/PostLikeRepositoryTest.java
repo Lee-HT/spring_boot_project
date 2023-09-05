@@ -41,11 +41,11 @@ public class PostLikeRepositoryTest {
     @BeforeAll
     void setPostLikes() {
         for (int i = 1; i < 4; i++) {
-            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+            users.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com").build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().pid((long) i).title("title" + i).contents("contents" + i)
+            posts.add(PostEntity.builder().title("title" + i).contents("contents" + i)
                     .category("category" + i).build());
         }
         for (int i = 0; i < 5; i++) {
@@ -62,36 +62,42 @@ public class PostLikeRepositoryTest {
     @Test
     @DisplayName("전체 SELECT")
     public void findAll() {
+        System.out.println("======== findAll ========");
         List<PostLikeEntity> postLikes = postLikeRepository.findAll();
 
         Assertions.assertThat(postLikes).usingRecursiveComparison().isEqualTo(this.postLikes);
 
-        System.out.println("======== findAll ========");
         System.out.println(postLikes);
     }
 
     @Test
     @DisplayName("UID 기준 SELECT")
     public void findByUid() {
+        System.out.println("======== findByUid ========");
         UserEntity uid = UserEntity.builder().uid(1L).build();
         List<PostLikeEntity> postLikes = postLikeRepository.findByUid(uid);
 
         Assertions.assertThat(postLikes).usingRecursiveComparison()
                 .isEqualTo(this.postLikes.subList(0, 3));
 
-        System.out.println("======== findByUid ========");
         System.out.println(postLikes);
     }
 
     @Test
     @DisplayName("PID,UID 기준 SELECT")
     public void findByPidAndUid() {
-        PostLikeEntity postLike = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
+        System.out.println("======== findByPidAndUid ========");
+        PostLikeEntity result = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes.get(0));
+
+        System.out.println(result);
     }
 
     @Test
     @DisplayName("INSERT")
     public void saveAll() {
+        System.out.println("======== saveAll ========");
         List<PostLikeEntity> postLikes = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             postLikes.add(
@@ -102,18 +108,17 @@ public class PostLikeRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes);
 
-        System.out.println("======== saveAll ========");
         System.out.println(result);
     }
 
     @Test
     @DisplayName("PID COUNT SELECT")
     public void countByPid() {
+        System.out.println("======== countByPid ========");
         int countLikes = postLikeRepository.countByPid(posts.get(0));
 
         Assertions.assertThat(countLikes).isEqualTo(1);
 
-        System.out.println("======== countByPid ========");
         System.out.println(countLikes);
     }
 }

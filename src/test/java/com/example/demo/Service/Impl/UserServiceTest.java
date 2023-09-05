@@ -52,6 +52,7 @@ public class UserServiceTest {
 
     @Test
     public void findByUsername() {
+        System.out.println("======== findByUsername ========");
         String username = "user";
         when(userRepository.findByUsername(any(String.class))).thenReturn(this.users.get(0));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
@@ -59,12 +60,12 @@ public class UserServiceTest {
 
         Assertions.assertThat(user).isEqualTo(this.userDtos.get(0));
 
-        System.out.println("======== findByUsername ========");
         System.out.println(user);
     }
 
     @Test
     public void findByUsernameContaining() {
+        System.out.println("======== findByUsernameContaining ========");
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
         UserPageDto pageDto = UserPageDto.builder()
@@ -78,12 +79,12 @@ public class UserServiceTest {
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 
-        System.out.println("======== findByUsernameContaining ========");
         System.out.println(result);
     }
 
     @Test
     public void saveUser() {
+        System.out.println("======== saveUser ========");
         when(userConverter.toEntity(any(UserDto.class))).thenReturn(this.users.get(0));
         when(userRepository.save(any(UserEntity.class))).thenReturn(this.users.get(0));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
@@ -91,12 +92,12 @@ public class UserServiceTest {
 
         Assertions.assertThat(result).isEqualTo(this.userDtos.get(0));
 
-        System.out.println("======== saveUser ========");
         System.out.println(result);
     }
 
     @Test
     public void updateUser() {
+        System.out.println("======== updateUser ========");
         UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
@@ -105,12 +106,12 @@ public class UserServiceTest {
 
         Assertions.assertThat(user).isEqualTo(userDto);
 
-        System.out.println("======== updateUser ========");
         System.out.println(user);
     }
 
     @Test
     public void deleteUser() {
+        System.out.println("======== deleteUser ========");
         List<Long> uid = Arrays.asList(1L, 2L);
         for (Long i : uid) {
             when(userRepository.findByUid(i)).thenReturn(users.get(i.intValue() - 1));

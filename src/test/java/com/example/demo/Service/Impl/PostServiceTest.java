@@ -65,8 +65,6 @@ class PostServiceTest {
                     .title("title" + i)
                     .contents("contents" + i)
                     .build());
-        }
-        for (int i = 1; i < 6; i++) {
             postDtos.add(PostDto.builder().pid((long) i).title("title" + i)
                     .contents("contents" + i).build());
         }
@@ -82,6 +80,7 @@ class PostServiceTest {
     @Test
     @DisplayName("TITLE 기준 SELECT")
     public void findPostByTitle() {
+        System.out.println("======== findByTitleContaining ========");
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
         PostPageDto pageDto = PostPageDto.builder()
@@ -95,13 +94,13 @@ class PostServiceTest {
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 
-        System.out.println("======== findByTitleContaining ========");
         System.out.println(result);
     }
 
     @Test
     @DisplayName("USERNAME 기준 SELECT")
     public void findPostByUsername() {
+        System.out.println("======== findPostByUsername ========");
         String username = "user1";
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
@@ -117,28 +116,28 @@ class PostServiceTest {
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 
-        System.out.println("======== findPostByUsername ========");
         System.out.println(posts);
     }
 
     @Test
     @DisplayName("INSERT")
     public void savePost() {
+        System.out.println("======== savePost ========");
         PostDto postDto = PostDto.builder().title("title2").contents("contents2").build();
-        when(postConverter.toEntity(any(PostDto.class))).thenReturn(this.posts.get(1));
+        when(postConverter.toEntity(any(PostDto.class),any(UserEntity.class))).thenReturn(this.posts.get(1));
         when(postRepository.save(any(PostEntity.class))).thenReturn(this.posts.get(1));
         when(postConverter.toDto(any(PostEntity.class))).thenReturn(postDto);
-        PostDto post = postService.savePost(postDto);
+        PostDto post = postService.savePost(postDto,users.get(0));
 
         Assertions.assertThat(post).isEqualTo(postDto);
 
-        System.out.println("======== savePost ========");
         System.out.println(post);
     }
 
     @Test
     @DisplayName("UPDATE")
     public void updatePost() {
+        System.out.println("======== updatePost ========");
         PostDto postDto = PostDto.builder().pid(1L).title("title3").contents("contents3").build();
         PostEntity postEntity = PostEntity.builder().pid(1L).title("title1").contents("contents1")
                 .build();
@@ -148,13 +147,14 @@ class PostServiceTest {
 
         Assertions.assertThat(result).isEqualTo(postDto);
 
-        System.out.println("======== updatePost ========");
         System.out.println(result);
     }
 
     @Test
     @DisplayName("DELETE")
     public void deletePost() {
+        System.out.println("======== deletePost ========");
+
         List<Long> pid = Arrays.asList(1L, 2L);
         when(postRepository.findByPid(1L)).thenReturn(posts.get(0));
         when(postRepository.findByPid(2L)).thenReturn(posts.get(1));
@@ -162,13 +162,13 @@ class PostServiceTest {
 
         Assertions.assertThat(count).isEqualTo(2);
 
-        System.out.println("======== deletePost ========");
         System.out.println(count);
     }
 
     @Test
     @DisplayName("POST 좋아요")
     public void likesPost() {
+        System.out.println("======== likesPost ========");
         Boolean check = this.postLikes.get(0).isLikes();
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
@@ -178,13 +178,13 @@ class PostServiceTest {
 
         Assertions.assertThat(result).isEqualTo(!check);
 
-        System.out.println("======== likesPost ========");
         System.out.println(result);
     }
 
     @Test
     @DisplayName("POST 싫어요")
     public void hatePost() {
+        System.out.println("======== hatePost ========");
         Boolean check = this.postLikes.get(0).isHate();
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(1));
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(1));
@@ -194,7 +194,6 @@ class PostServiceTest {
 
         Assertions.assertThat(result).isEqualTo(check);
 
-        System.out.println("======== hatePost ========");
         System.out.println(result);
     }
 }

@@ -13,7 +13,7 @@ public class UserConverter {
 
     public UserEntity toEntity(UserDto userDto) {
         return UserEntity.builder().uid(userDto.getUid()).username(userDto.getUsername())
-                .email(userDto.getEmail()).build();
+                .email(userDto.getEmail()).profilePic(userDto.getProfilePic()).build();
     }
 
     public List<UserEntity> toEntity(List<UserDto> userDtos) {
@@ -26,8 +26,7 @@ public class UserConverter {
 
     public UserDto toDto(UserEntity userEntity) {
         return UserDto.builder().uid(userEntity.getUid()).username(userEntity.getUsername())
-                .email(userEntity.getEmail())
-                .build();
+                .email(userEntity.getEmail()).profilePic(userEntity.getProfilePic()).build();
     }
 
     public List<UserDto> toDto(List<UserEntity> userEntity) {
@@ -39,9 +38,9 @@ public class UserConverter {
     }
 
     public UserPageDto toDto(Page<UserEntity> pages) {
-        return UserPageDto.builder().contents(toDto(pages.getContent())).totalPages(pages.getTotalPages())
-                .size(pages.getSize()).sorted(pages.getSort())
-                .numberOfElements(pages.getNumberOfElements()).build();
+        return UserPageDto.builder().contents(toDto(pages.getContent()))
+                .totalPages(pages.getTotalPages()).size(pages.getSize())
+                .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort()).build();
     }
 
 }

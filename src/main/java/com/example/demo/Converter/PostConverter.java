@@ -3,6 +3,7 @@ package com.example.demo.Converter;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
+import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -11,22 +12,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostConverter {
 
-    public PostEntity toEntity(PostDto postDto) {
-        return PostEntity.builder().pid(postDto.getPid()).title(postDto.getTitle())
-                .contents(postDto.getContents()).category(postDto.getCategory()).build();
+    public PostEntity toEntity(PostDto postDto, UserEntity user) {
+        return PostEntity.builder().pid(postDto.getPid()).username(user)
+                .title(postDto.getTitle()).contents(postDto.getContents())
+                .category(postDto.getCategory()).build();
     }
 
-    public List<PostEntity> toEntity(List<PostDto> postDto) {
+    public List<PostEntity> toEntity(List<PostDto> postDto, List<UserEntity> user) {
         List<PostEntity> postEntity = new ArrayList<>();
-        for (PostDto dto : postDto) {
-            postEntity.add(toEntity(dto));
+        for (int i = 0; i < postDto.size(); i++) {
+            postEntity.add(toEntity(postDto.get(i), user.get(i)));
         }
         return postEntity;
     }
 
     public PostDto toDto(PostEntity post) {
-        return PostDto.builder().pid(post.getPid()).title(post.getTitle())
-                .contents(post.getContents()).category(post.getCategory()).build();
+        return PostDto.builder().pid(post.getPid()).username(post.getUsername().getUsername())
+                .title(post.getTitle()).contents(post.getContents()).category(post.getCategory())
+                .build();
     }
 
     public List<PostDto> toDto(List<PostEntity> postEntity) {
@@ -40,9 +43,8 @@ public class PostConverter {
     // 페이징
     public PostPageDto toDto(Page<PostEntity> pages) {
         return PostPageDto.builder().contents(toDto(pages.getContent()))
-                .totalPages(pages.getTotalPages())
-                .sorted(pages.getSort()).numberOfElements(pages.getNumberOfElements())
-                .size(pages.getSize()).build();
+                .totalPages(pages.getTotalPages()).numberOfElements(pages.getNumberOfElements())
+                .size(pages.getSize()).sorted(pages.getSort()).build();
     }
 
 }

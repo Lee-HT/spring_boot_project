@@ -44,11 +44,11 @@ class PostRepositoryTest {
     @BeforeAll
     void setPosts() {
         for (int i = 1; i < 3; i++) {
-            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+            users.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com").build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().pid((long) i).title("title" + i).contents("content" + i)
+            posts.add(PostEntity.builder().title("title" + i).contents("content" + i)
                     .username(users.get(0)).category("category" + i).build());
         }
         this.maxIdx = this.posts.size();

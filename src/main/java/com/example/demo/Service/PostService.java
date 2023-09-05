@@ -2,6 +2,7 @@ package com.example.demo.Service;
 
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
+import com.example.demo.Entity.UserEntity;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +14,7 @@ public interface PostService {
 
     PostPageDto findPostByUsername(String username, Pageable pageable);
 
-    PostDto savePost(PostDto postDto);
+    PostDto savePost(PostDto postDto, UserEntity user);
 
     PostDto updatePost(PostDto postDto);
 
