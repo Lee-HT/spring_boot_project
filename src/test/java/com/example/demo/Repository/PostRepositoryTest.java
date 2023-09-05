@@ -60,17 +60,18 @@ class PostRepositoryTest {
     @Test
     @DisplayName("전체 SELECT")
     public void findAll() {
+        System.out.println("======== findAll ========");
         List<PostEntity> posts = postRepository.findAll();
 
         Assertions.assertThat(posts).usingRecursiveComparison().isEqualTo(this.posts);
 
-        System.out.println("======== findAll ========");
         System.out.println(posts);
     }
 
     @Test
     @DisplayName("USERNAME 기준 SELECT")
     public void findByUsernamePaging() {
+        System.out.println("======== findByUsernamePaging ========");
         Page<PostEntity> result = postRepository.findByUsername(users.get(0), this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
@@ -79,13 +80,13 @@ class PostRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
-        System.out.println("======== findByUsernamePaging ========");
         System.out.println(result.getContent());
     }
 
     @Test
     @DisplayName("TITLE 기준 SELECT")
     public void findByTitlePaging() {
+        System.out.println("======== findByTitlePaging ========");
         Page<PostEntity> result = postRepository.findByTitleContaining("title", this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
@@ -93,13 +94,13 @@ class PostRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
-        System.out.println("======== findByTitlePaging ========");
         System.out.println(result.getContent());
     }
 
     @Test
     @DisplayName("전체 SELECT PAGING")
     public void findAllPaging() {
+        System.out.println("======== findAllPaging ========");
         Page<PostEntity> result = postRepository.findAll(this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
@@ -107,13 +108,13 @@ class PostRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
-        System.out.println("======== findAllPaging ========");
         System.out.println(result.getContent());
     }
 
     @Test
     @DisplayName("INSERT")
     public void saveAll() {
+        System.out.println("======== saveAll ========");
         List<PostEntity> Posts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Posts.add(PostEntity.builder().title("title3").contents("contents3")
@@ -123,7 +124,6 @@ class PostRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Posts);
 
-        System.out.println("======== saveAll ========");
         System.out.println(result);
     }
 

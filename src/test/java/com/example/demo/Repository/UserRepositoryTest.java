@@ -42,59 +42,61 @@ class UserRepositoryTest {
             users.add(UserEntity.builder().uid((long) i).username("user"+i).email("email"+i+"@gmail.com")
                     .roles("ROLE_USER").build());
         }
-        this.users = userRepository.saveAll(users);
+        userRepository.saveAll(users);
+        System.out.println(userRepository.findAll());
     }
 
     @Test
     @DisplayName("전체 SELECT")
     public void findAll() {
+        System.out.println("======== findAll ========");
         List<UserEntity> users = userRepository.findAll();
 
         Assertions.assertThat(users).usingRecursiveComparison().isEqualTo(this.users);
 
-        System.out.println("======== findAll ========");
         System.out.println(users);
     }
 
     @Test
     @DisplayName("UID 기준 SELECT")
     public void FindByUid() {
+        System.out.println("======== findByUsername ========");
         UserEntity uid = userRepository.findByUid(1L);
 
         Assertions.assertThat(uid).usingRecursiveComparison().isEqualTo(this.users.get(0));
 
-        System.out.println("======== findByUsername ========");
         System.out.println(uid);
     }
 
     @Test
     @DisplayName("USERNAME 기준 SELECT")
     public void findByUsername() {
+        System.out.println("======== findByUsername ========");
         String username = "user1";
         UserEntity user = userRepository.findByUsername(username);
 
         Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
 
-        System.out.println("======== findByUsername ========");
         System.out.println(user);
     }
 
     @Test
     @DisplayName("LIKE USERNAME SELECT")
     public void findByUsernameContaining() {
+        System.out.println("======== findByUsername");
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
         Page<UserEntity> result = userRepository.findByUsernameContaining(username, this.pageable);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
-        System.out.println("======== findByUsername ========");
         System.out.println(result);
     }
 
     @Test
     @DisplayName("INSERT")
     public void saveAll() {
+        System.out.println("======== saveAll ========");
         List<UserEntity> newUsers = new ArrayList<>();
         for (int i = 3; i < 5; i++) {
             newUsers.add(UserEntity.builder().username("user" + i)
@@ -105,7 +107,6 @@ class UserRepositoryTest {
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(newUsers);
 
-        System.out.println("======== saveAll ========");
         System.out.println(result);
     }
 
