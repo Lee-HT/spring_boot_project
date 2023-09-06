@@ -67,18 +67,17 @@ public class PostLikeRepositoryTest {
         System.out.println(postLikes);
     }
 
-//    @Test
-//    @DisplayName("UID 기준 SELECT")
-//    public void findByUid() {
-//        System.out.println("======== findByUid ========");
-//        UserEntity uid = UserEntity.builder().uid(1L).build();
-//        List<PostLikeEntity> postLikes = postLikeRepository.findByUid(uid);
-//
-//        Assertions.assertThat(postLikes).usingRecursiveComparison()
-//                .isEqualTo(this.postLikes.subList(0, 3));
-//
-//        System.out.println(postLikes);
-//    }
+    @Test
+    @DisplayName("UID 기준 SELECT")
+    public void findByUid() {
+        System.out.println("======== findByUid ========");
+        List<PostLikeEntity> postLikes = postLikeRepository.findByUid(users.get(0));
+
+        Assertions.assertThat(postLikes).usingRecursiveComparison()
+                .isEqualTo(this.postLikes.subList(0, 3));
+
+        System.out.println(postLikes);
+    }
 
     @Test
     @DisplayName("PID,UID 기준 SELECT")

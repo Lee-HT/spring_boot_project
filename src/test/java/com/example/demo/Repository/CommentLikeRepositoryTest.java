@@ -69,18 +69,17 @@ class CommentLikeRepositoryTest {
         System.out.println(commentLikes);
     }
 
-//    @Test
-//    @DisplayName("UID 기준 SELECT")
-//    public void findByUid() {
-//        System.out.println("======== findByUid ========");
-//        UserEntity userEntity = UserEntity.builder().uid(1L).build();
-//        List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(userEntity);
-//
-//        Assertions.assertThat(commentLikes).usingRecursiveComparison()
-//                .isEqualTo(this.commentLikes.subList(0, 3));
-//
-//        System.out.println(commentLikes);
-//    }
+    @Test
+    @DisplayName("UID 기준 SELECT")
+    public void findByUid() {
+        System.out.println("======== findByUid ========");
+        List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(users.get(0));
+
+        Assertions.assertThat(commentLikes).usingRecursiveComparison()
+                .isEqualTo(this.commentLikes.subList(0, 3));
+
+        System.out.println(commentLikes);
+    }
 
     @Test
     @DisplayName("INSERT")

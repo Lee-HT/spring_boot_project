@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles(profiles = "test")
@@ -22,11 +27,14 @@ class CommentRepositoryTest {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private List<CommentEntity> comments = new ArrayList<>();
     private List<UserEntity> users = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
-    @Autowired
-    private PostRepository postRepository;
+    private List<PostEntity> pk = new ArrayList<>();
+    private Pageable pageable = PageRequest.of(3,0, Direction.DESC,"pid");
+    private int maxIdx = comments.size();
+
 
     @Autowired
     public CommentRepositoryTest(CommentRepository commentRepository,
@@ -41,7 +49,7 @@ class CommentRepositoryTest {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com").build());
-            posts.add(PostEntity.builder().username(users.get(i-1)).title("title" + i)
+            posts.add(PostEntity.builder().username(users.get(i - 1)).title("title" + i)
                     .contents("contents" + i).category("category1").build());
         }
         for (int i = 0; i < 4; i++) {
@@ -52,6 +60,10 @@ class CommentRepositoryTest {
         userRepository.saveAll(users);
         postRepository.saveAll(posts);
         commentRepository.saveAll(comments);
+
+        for (PostEntity ett : postRepository.findAll()){
+            pk.add(ett);
+        }
     }
 
     @Test
@@ -63,6 +75,18 @@ class CommentRepositoryTest {
         Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments);
 
         System.out.println(comments);
+    }
+
+    @Test
+    @DisplayName("PID 기준 SELECT")
+    public void findByPid() {
+        System.out.println("======== findByPid ========");
+        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(0,1)),pageable,maxIdx);
+        Page<CommentEntity> result = commentRepository.findByPid(pk.get(0),pageable);
+
+        Assertions.assertThat(result).isEqualTo(comments.get(0));
+
+        System.out.println(result);
     }
 
     @Test

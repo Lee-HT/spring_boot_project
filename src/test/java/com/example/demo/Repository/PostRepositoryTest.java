@@ -31,6 +31,7 @@ class PostRepositoryTest {
     // 0 페이지, 페이지당 3개, 내림차순, 정렬기준 pid
     private Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
     private int maxIdx;
+    private List<Long> pk = new ArrayList<>();
 
     @Autowired
     public PostRepositoryTest(PostRepository postRepository, UserRepository userRepository) {
@@ -52,6 +53,10 @@ class PostRepositoryTest {
 
         userRepository.saveAll(users);
         postRepository.saveAll(posts);
+
+        for (PostEntity ett : postRepository.findAll()){
+            pk.add(ett.getPid());
+        }
     }
 
     @Test
@@ -63,6 +68,17 @@ class PostRepositoryTest {
         Assertions.assertThat(posts).usingRecursiveComparison().isEqualTo(this.posts);
 
         System.out.println(posts);
+    }
+
+    @Test
+    @DisplayName("PID 기준 SELECT")
+    public void findByPid() {
+        System.out.println("======== findByPid ========");
+        PostEntity result = postRepository.findByPid(pk.get(0));
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(posts.get(0));
+
+        System.out.println(result);
     }
 
     @Test

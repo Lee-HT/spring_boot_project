@@ -29,6 +29,7 @@ class UserRepositoryTest {
     private final UserRepository userRepository;
     private List<UserEntity> users = new ArrayList<>();
     private Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
+    private List<Long> pk = new ArrayList<>();
 
     @Autowired
     public UserRepositoryTest(UserRepository userRepository) {
@@ -43,6 +44,10 @@ class UserRepositoryTest {
                     .roles("ROLE_USER").build());
         }
         userRepository.saveAll(users);
+
+        for (UserEntity ett : userRepository.findAll()) {
+            this.pk.add(ett.getUid());
+        }
     }
 
     @Test
@@ -56,16 +61,16 @@ class UserRepositoryTest {
         System.out.println(users);
     }
 
-//    @Test
-//    @DisplayName("UID 기준 SELECT")
-//    public void FindByUid() {
-//        System.out.println("======== findByUsername ========");
-//        UserEntity uid = userRepository.findByUid(1L);
-//
-//        Assertions.assertThat(uid).usingRecursiveComparison().isEqualTo(this.users.get(0));
-//
-//        System.out.println(uid);
-//    }
+    @Test
+    @DisplayName("UID 기준 SELECT")
+    public void FindByUid() {
+        System.out.println("======== findByUsername ========");
+        UserEntity user = userRepository.findByUid(pk.get(0));
+
+        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
+
+        System.out.println(user);
+    }
 
     @Test
     @DisplayName("USERNAME 기준 SELECT")
