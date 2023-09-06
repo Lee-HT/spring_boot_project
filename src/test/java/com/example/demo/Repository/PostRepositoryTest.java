@@ -5,11 +5,9 @@ import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -24,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(profiles = "test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@TestInstance(Lifecycle.PER_CLASS)
 class PostRepositoryTest {
 
     private final PostRepository postRepository;
@@ -41,7 +38,7 @@ class PostRepositoryTest {
         this.userRepository = userRepository;
     }
 
-    @BeforeAll
+    @BeforeEach
     void setPosts() {
         for (int i = 1; i < 3; i++) {
             users.add(UserEntity.builder().username("user" + i)

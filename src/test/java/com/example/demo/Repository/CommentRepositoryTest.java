@@ -6,11 +6,9 @@ import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -20,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(profiles = "test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@TestInstance(Lifecycle.PER_CLASS)
 class CommentRepositoryTest {
 
     private final CommentRepository commentRepository;
@@ -39,14 +36,12 @@ class CommentRepositoryTest {
         this.userRepository = userRepository;
     }
 
-    @BeforeAll
+    @BeforeEach
     void setComments() {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com").build());
-        }
-        for (int i = 1; i < 4; i++) {
-            posts.add(PostEntity.builder().username(users.get(i)).title("title" + i)
+            posts.add(PostEntity.builder().username(users.get(i-1)).title("title" + i)
                     .contents("contents" + i).category("category1").build());
         }
         for (int i = 0; i < 4; i++) {
@@ -54,8 +49,8 @@ class CommentRepositoryTest {
                     .contents("contents" + (i + 1)).build());
         }
 
-        postRepository.saveAll(posts);
         userRepository.saveAll(users);
+        postRepository.saveAll(posts);
         commentRepository.saveAll(comments);
     }
 

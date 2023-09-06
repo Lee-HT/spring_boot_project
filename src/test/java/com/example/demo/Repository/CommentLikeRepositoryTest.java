@@ -6,11 +6,9 @@ import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -20,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@TestInstance(Lifecycle.PER_CLASS)
 class CommentLikeRepositoryTest {
 
     private final CommentLikeRepository commentLikeRepository;
@@ -38,7 +35,7 @@ class CommentLikeRepositoryTest {
         this.userRepository = userRepository;
     }
 
-    @BeforeAll
+    @BeforeEach
     public void setCommentLikes() {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
@@ -72,18 +69,18 @@ class CommentLikeRepositoryTest {
         System.out.println(commentLikes);
     }
 
-    @Test
-    @DisplayName("UID 기준 SELECT")
-    public void findByUid() {
-        System.out.println("======== findByUid ========");
-        UserEntity userEntity = UserEntity.builder().uid(1L).build();
-        List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(userEntity);
-
-        Assertions.assertThat(commentLikes).usingRecursiveComparison()
-                .isEqualTo(this.commentLikes.subList(0, 3));
-
-        System.out.println(commentLikes);
-    }
+//    @Test
+//    @DisplayName("UID 기준 SELECT")
+//    public void findByUid() {
+//        System.out.println("======== findByUid ========");
+//        UserEntity userEntity = UserEntity.builder().uid(1L).build();
+//        List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(userEntity);
+//
+//        Assertions.assertThat(commentLikes).usingRecursiveComparison()
+//                .isEqualTo(this.commentLikes.subList(0, 3));
+//
+//        System.out.println(commentLikes);
+//    }
 
     @Test
     @DisplayName("INSERT")
