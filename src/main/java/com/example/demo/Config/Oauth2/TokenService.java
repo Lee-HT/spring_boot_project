@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,8 +18,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class TokenService {
 
     private final Environment env;
-    private final RestTemplate restTemplate = new RestTemplate();
 
+    //    private final RestTemplate restTemplate = new RestTemplate();
     @Autowired
     public TokenService(Environment env) {
         this.env = env;
@@ -31,7 +29,7 @@ public class TokenService {
         String accessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(accessToken, registrationId);
         log.info("accessToken = " + accessToken);
-        log.info("userResourceNode = " + userResourceNode.toString());
+        log.info("userResourceNode = " + userResourceNode);
 
         String id = userResourceNode.get("id").asText();
         String email = userResourceNode.get("email").asText();
@@ -41,6 +39,7 @@ public class TokenService {
         log.info("nickname = " + nickname);
     }
 
+    // 하나의 authorization code 로 토큰 발급 후 그 코드 사용 불가
     private String getAccessToken(String authorizationCode, String registrationId) {
         String clientId = env.getProperty(
                 "spring.security.oauth2.client.registration." + registrationId + ".client-id");
@@ -58,28 +57,20 @@ public class TokenService {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", "authorization_code");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        // restTemplate deprecated 대비
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//        ResponseEntity<JsonNode> responseNode = restTemplate.exchange(tokenUri, HttpMethod.POST,
+//                new HttpEntity<>(params,headers), JsonNode.class);
+//        JsonNode accessTokenNode = responseNode.getBody();
 
-        HttpEntity entity = new HttpEntity(params, headers);
+        // Flux = 0~N개 Mono = 0~1개 subscribe 비동기 toStream 동기
+        WebClient webClient = WebClient.builder().baseUrl(tokenUri).build();
+        JsonNode accessTokenNode = webClient.post()
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED).bodyValue(params).retrieve()
+                .bodyToMono(JsonNode.class).flux().toStream().findFirst().orElse(null);
 
-        log.info("entity : " + entity.toString());
-
-        ResponseEntity<JsonNode> responseNode = restTemplate.exchange(tokenUri, HttpMethod.POST,
-                entity, JsonNode.class);
-        JsonNode accessTokenNode = responseNode.getBody();
-        log.info(accessTokenNode.toString());
-
-        MultiValueMap<String, String> testParam = new LinkedMultiValueMap<>();
-        testParam.add("uid", "1");
-        testParam.add("email", "email@gmail.com");
-        testParam.add("username", "user");
-
-        // Flux = 0~N개 Mono = 0~1개
-        WebClient webClients = WebClient.builder().baseUrl("http://localhost:6550").build();
-        log.info("test response : " + webClients.post().uri("test")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED).bodyValue(testParam).retrieve()
-                .bodyToMono(String.class).block());
+        log.info("webClient : " + accessTokenNode);
 
         return accessTokenNode.get("access_token").asText();
     }
@@ -92,9 +83,12 @@ public class TokenService {
         headers.set("Authorization", "Bearer" + accessToken);
         HttpEntity entity = new HttpEntity(headers);
 
-        JsonNode userResource = restTemplate.exchange(resourceUri, HttpMethod.GET, entity,
-                JsonNode.class).getBody();
-        log.info(userResource.toString());
+        WebClient webclient = WebClient.builder().baseUrl(resourceUri).build();
+        JsonNode userResource = webclient.get().header("Authorization", "Bearer" + accessToken)
+                .retrieve().bodyToMono(JsonNode.class).flux().toStream().findFirst().orElse(null);
+
+//        JsonNode userResource = restTemplate.exchange(resourceUri, HttpMethod.GET, entity,
+//                JsonNode.class).getBody();
         return userResource;
     }
 

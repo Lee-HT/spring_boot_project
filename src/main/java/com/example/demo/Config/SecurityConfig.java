@@ -33,7 +33,7 @@ public class SecurityConfig {
         // https://docs.spring.io/spring-security/reference/migration-7/configuration.html
         http.csrf(AbstractHttpConfigurer::disable);
         http.formLogin(formLogin -> formLogin
-                .loginPage("/user/login").permitAll()
+                .loginPage("/login/login").permitAll()
                 .defaultSuccessUrl("/"));
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorize -> authorize
