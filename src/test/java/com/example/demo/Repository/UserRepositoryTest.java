@@ -85,6 +85,18 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("EMAIL 기준 SELECT")
+    public void findByEmail() {
+        System.out.println("======== findByEmail ========");
+        String email = "email1";
+        UserEntity user = userRepository.findByEmail(email);
+
+        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
+
+        System.out.println(user);
+    }
+
+    @Test
     @DisplayName("LIKE USERNAME SELECT")
     public void findByUsernameContaining() {
         System.out.println("======== findByUsername ========");

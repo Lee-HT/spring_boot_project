@@ -1,8 +1,10 @@
 package com.example.demo.Config;
 
+import com.example.demo.Config.Oauth2.OAuth2Service;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -12,6 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private OAuth2Service oAuth2Service;
+    public SecurityConfig(OAuth2Service oAuth2Service){
+        this.oAuth2Service = oAuth2Service;
+    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -30,9 +37,20 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/"));
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorize -> authorize
+//                .requestMatchers("/post").hasRole("USER")
                 .anyRequest().permitAll()
         );
+        // jwt 구현을 위해 oauth2client 사용
+        http.oauth2Client(Customizer.withDefaults());
 
         return http.build();
+    }
+
+    public class CustomDsl extends AbstractHttpConfigurer<CustomDsl, HttpSecurity> {
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+//            builder.addFilterBefore();
+            super.configure(builder);
+        }
     }
 }

@@ -26,10 +26,12 @@ public class UserEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
-    @Column(nullable = false, length = 31, unique = true)
+    @Column(length = 31, unique = true)
     private String username;
     @Column(nullable = false, length = 127, unique = true)
     private String email;
+    @Column(length = 63)
+    private String provider;
     private String roles;
     private String profilePic;
 
@@ -37,5 +39,9 @@ public class UserEntity extends BaseTimeEntity {
         this.username = username;
         this.email = email;
         this.profilePic = profilePic;
+    }
+
+    public void updateUsername(String username){
+        this.username = username;
     }
 }

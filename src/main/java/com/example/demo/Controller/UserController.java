@@ -2,6 +2,8 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.UserService;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,13 @@ public class UserController {
     @GetMapping("myPage")
     public String getUser(String username, Model model) {
         UserDto user = userService.findByUsername(username);
+
+        Map<String,Object> attributes = new HashMap<>();
+        attributes.put("username",user.getUsername());
+        attributes.put("email",user.getEmail());
+        attributes.put("profilePic",user.getProfilePic());
+        model.addAllAttributes(attributes);
+
         return "user/myPage";
     }
 
