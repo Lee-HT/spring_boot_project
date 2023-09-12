@@ -32,7 +32,7 @@ class CommentRepositoryTest {
     private List<UserEntity> users = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
     private List<PostEntity> pk = new ArrayList<>();
-    private Pageable pageable = PageRequest.of(3,0, Direction.DESC,"pid");
+    private Pageable pageable = PageRequest.of(3,0, Direction.DESC,"cid");
     private int maxIdx = comments.size();
 
 
