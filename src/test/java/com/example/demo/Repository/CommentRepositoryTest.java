@@ -31,9 +31,9 @@ class CommentRepositoryTest {
     private List<CommentEntity> comments = new ArrayList<>();
     private List<UserEntity> users = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
+    private Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
+    private int maxIdx;
     private List<PostEntity> pk = new ArrayList<>();
-    private Pageable pageable = PageRequest.of(0,3, Direction.DESC,"cid");
-    private int maxIdx = comments.size();
 
 
     @Autowired
@@ -53,15 +53,14 @@ class CommentRepositoryTest {
                     .contents("contents" + i).category("category1").build());
         }
         for (int i = 0; i < 4; i++) {
-            comments.add(CommentEntity.builder().username(users.get(i / 2))
+            comments.add(CommentEntity.builder().username(users.get(i / 2)).pid(posts.get(0))
                     .contents("contents" + (i + 1)).build());
         }
-
         userRepository.saveAll(users);
         postRepository.saveAll(posts);
         commentRepository.saveAll(comments);
-
-        for (PostEntity ett : postRepository.findAll()){
+        maxIdx = comments.size();
+        for (PostEntity ett : postRepository.findAll()) {
             pk.add(ett);
         }
     }
@@ -81,10 +80,11 @@ class CommentRepositoryTest {
     @DisplayName("PID 기준 SELECT")
     public void findByPid() {
         System.out.println("======== findByPid ========");
-        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(0,1)),pageable,maxIdx);
-        Page<CommentEntity> result = commentRepository.findByPid(pk.get(0),pageable);
+        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(maxIdx-3,maxIdx)),
+                pageable, maxIdx);
+        Page<CommentEntity> result = commentRepository.findByPid(pk.get(0), pageable);
 
-        Assertions.assertThat(result).isEqualTo(comments.get(0));
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
         System.out.println(result);
     }

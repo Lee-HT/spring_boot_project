@@ -88,7 +88,7 @@ class UserRepositoryTest {
     @DisplayName("EMAIL 기준 SELECT")
     public void findByEmail() {
         System.out.println("======== findByEmail ========");
-        String email = "email1";
+        String email = "email1@gmail.com";
         UserEntity user = userRepository.findByEmail(email);
 
         Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));

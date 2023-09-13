@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.Impl.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,15 +35,17 @@ public class UserControllerTest {
         this.objectMapper = objectMapper;
     }
 
+    @Test
     public void getUser() throws Exception {
         UserDto user = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();
         when(userService.findByUsername(any(String.class))).thenReturn(user);
 
-        mvc.perform(get("/post/myPage")).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("user/myPage"));
+        mvc.perform(get("/user/myPage").queryParam("username", "user1")).andDo(print())
+                .andExpect(status().isOk()).andExpect(view().name("user/myPage"));
     }
 
+    @Test
     public void saveUser() throws Exception {
         UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();

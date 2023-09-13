@@ -54,7 +54,7 @@ class PostRepositoryTest {
         userRepository.saveAll(users);
         postRepository.saveAll(posts);
 
-        for (PostEntity ett : postRepository.findAll()){
+        for (PostEntity ett : postRepository.findAll()) {
             pk.add(ett.getPid());
         }
     }
@@ -85,11 +85,10 @@ class PostRepositoryTest {
     @DisplayName("USERNAME 기준 SELECT")
     public void findByUsernamePaging() {
         System.out.println("======== findByUsernamePaging ========");
-        Page<PostEntity> result = postRepository.findByUsername(users.get(0), this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
-                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
-                this.pageable,
+                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),this.pageable,
                 this.posts.size());
+        Page<PostEntity> result = postRepository.findByUsername(users.get(0),this.pageable);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
