@@ -3,8 +3,6 @@ package com.example.demo.Config.Oauth2;
 import com.example.demo.Config.Jwt.TokenProvider;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
