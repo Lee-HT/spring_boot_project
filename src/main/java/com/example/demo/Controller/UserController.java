@@ -23,7 +23,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("myPage")
+    @GetMapping("my-page")
     public String getUser(@RequestParam String username, Model model) {
         UserDto user = userService.findByUsername(username);
 

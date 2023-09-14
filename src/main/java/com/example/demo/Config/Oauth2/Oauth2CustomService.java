@@ -63,8 +63,6 @@ public class Oauth2CustomService {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", grant_type);
 
-
-
         // restTemplate deprecated 대비
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -85,7 +83,7 @@ public class Oauth2CustomService {
 
     private JsonNode getUserResource(String accessToken, String registrationId) {
         String resourceUri = env.getProperty(
-                "spring.security.oauth2.client.provider." + registrationId + ".resource-uri");
+                "spring.security.oauth2.client.provider." + registrationId + ".user-info-uri");
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer" + accessToken);
