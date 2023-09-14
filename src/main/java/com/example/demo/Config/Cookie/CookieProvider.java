@@ -1,5 +1,6 @@
 package com.example.demo.Config.Cookie;
 
+import com.example.demo.Config.Jwt.JwtProperties;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CookieProvider {
-    private String domain = "localhost";
+    private String domain = JwtProperties.domain;
     private Cookie cookie;
 
     public void setCookie(String name){

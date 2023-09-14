@@ -38,8 +38,10 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
+
         // get attributes
         Map<String, Object> attributes = oAuth2User.getAttributes();
+        log.info(attributes.toString());
 
         Oauth2Attributes oauth2Attributes = Oauth2Attributes.of(registrationId,
                 userNameAttributeName, attributes);

@@ -10,21 +10,23 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Slf4j
-public class TokenService {
+public class Oauth2CustomService {
 
     private final Environment env;
 
     //    private final RestTemplate restTemplate = new RestTemplate();
     @Autowired
-    public TokenService(Environment env) {
+    public Oauth2CustomService(Environment env) {
         this.env = env;
     }
 
+    // authorization uri
+    // https://accounts.google.com/o/oauth2/v2/auth?client_id={client_id}&redirect_uri={redirect_uri}&response_type=token&scope={scope}
+    // https://accounts.google.com/o/oauth2/v2/auth?client_id=241034246573-r8a6mk2a53s9biah83n1hklutsrqni51.apps.googleusercontent.com&redirect_uri=http://localhost:6550/login/oauth2/code/google&response_type=token&scope=email%20profile
     public void socialLogin(String code, String registrationId) {
         String accessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(accessToken, registrationId);
@@ -48,14 +50,20 @@ public class TokenService {
         String redirectUri = env.getProperty(
                 "spring.security.oauth2.client.registration." + registrationId + ".redirect-uri");
         String tokenUri = env.getProperty(
-                "spring.security.oauth2.client.registration." + registrationId + ".token-uri");
+                "spring.security.oauth2.client.provider." + registrationId + ".token-uri");
+        String grant_type = env.getProperty(
+                "spring.security.oauth2.client.registration." + registrationId + ".authorization-grant-type");
 
+        // redirect-Uri 는 authorization code 발급의 redirect-Uri 와 유효성 검사에 사용
+        // 완전히 이해 되지 않음
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", authorizationCode);
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
         params.add("redirect_uri", redirectUri);
-        params.add("grant_type", "authorization_code");
+        params.add("grant_type", grant_type);
+
+
 
         // restTemplate deprecated 대비
 //        HttpHeaders headers = new HttpHeaders();
@@ -77,7 +85,7 @@ public class TokenService {
 
     private JsonNode getUserResource(String accessToken, String registrationId) {
         String resourceUri = env.getProperty(
-                "spring.security.oauth2.client.registration." + registrationId + ".resource-uri");
+                "spring.security.oauth2.client.provider." + registrationId + ".resource-uri");
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer" + accessToken);

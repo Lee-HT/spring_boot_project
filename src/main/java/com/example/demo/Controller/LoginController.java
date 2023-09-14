@@ -1,7 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Config.Oauth2.OAuth2Service;
-import com.example.demo.Config.Oauth2.TokenService;
+import com.example.demo.Config.Oauth2.Oauth2CustomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("login")
 public class LoginController {
     private final OAuth2Service oAuth2Service;
-    private final TokenService tokenService;
+    private final Oauth2CustomService oauth2CustomService;
     @Autowired
-    public LoginController(OAuth2Service oAuth2Service,TokenService tokenService){
+    public LoginController(OAuth2Service oAuth2Service, Oauth2CustomService oauth2CustomService){
         this.oAuth2Service = oAuth2Service;
-        this.tokenService = tokenService;
+        this.oauth2CustomService = oauth2CustomService;
     }
 
     @GetMapping("/login")
@@ -28,10 +28,11 @@ public class LoginController {
         return "user/login";
     }
 
+    // oauth2 redirect
     @GetMapping("/oauth2/code/{registrationId}")
     public void oauth2login(@RequestParam String code, @PathVariable String registrationId) {
         log.info("code : "+ code);
         log.info("registrationId : "+ registrationId);
-        tokenService.socialLogin(code,registrationId);
+        oauth2CustomService.socialLogin(code,registrationId);
     }
 }

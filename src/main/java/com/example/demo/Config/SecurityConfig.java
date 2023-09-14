@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private OAuth2Service oAuth2Service;
+    private final OAuth2Service oAuth2Service;
     public SecurityConfig(OAuth2Service oAuth2Service){
         this.oAuth2Service = oAuth2Service;
     }
@@ -37,11 +37,13 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/"));
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers("/post").hasRole("USER")
                 .anyRequest().permitAll()
         );
+
+        // spring security 의 authorization uri 생성 url
+        // http://localhost:6550/oauth2/authorization/{registration_id}
+        http.oauth2Login(Customizer.withDefaults());
         // jwt 구현을 위해 oauth2client 사용
-        http.oauth2Client(Customizer.withDefaults());
 
         return http.build();
     }

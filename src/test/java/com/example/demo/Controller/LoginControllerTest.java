@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.example.demo.Config.Oauth2.OAuth2Service;
-import com.example.demo.Config.Oauth2.TokenService;
+import com.example.demo.Config.Oauth2.Oauth2CustomService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,14 @@ class LoginControllerTest {
     @MockBean
     private final OAuth2Service oAuth2Service;
     @MockBean
-    private final TokenService tokenService;
+    private final Oauth2CustomService oauth2CustomService;
 
     @Autowired
-    public LoginControllerTest(MockMvc mockMvc, OAuth2Service oAuth2Service,TokenService tokenService) {
+    public LoginControllerTest(MockMvc mockMvc, OAuth2Service oAuth2Service,
+            Oauth2CustomService oauth2CustomService) {
         this.mvc = mockMvc;
         this.oAuth2Service = oAuth2Service;
-        this.tokenService = tokenService;
+        this.oauth2CustomService = oauth2CustomService;
     }
 
     @Test
