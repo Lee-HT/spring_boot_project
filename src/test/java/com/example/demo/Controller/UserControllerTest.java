@@ -41,7 +41,7 @@ public class UserControllerTest {
                 .build();
         when(userService.findByUsername(any(String.class))).thenReturn(user);
 
-        mvc.perform(get("/user/myPage").queryParam("username", "user1")).andDo(print())
+        mvc.perform(get("/user/my-page").queryParam("username", "user1")).andDo(print())
                 .andExpect(status().isOk()).andExpect(view().name("user/myPage"));
     }
 

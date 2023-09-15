@@ -43,7 +43,7 @@ class PostRepositoryTest {
     void setPosts() {
         for (int i = 1; i < 3; i++) {
             users.add(UserEntity.builder().username("user" + i)
-                    .email("email" + i + "@gmail.com").build());
+                    .email("email" + i + "@gmail.com").provider("google_"+i).build());
         }
         for (int i = 1; i < 6; i++) {
             posts.add(PostEntity.builder().title("title" + i).contents("content" + i)

@@ -38,9 +38,9 @@ public class PostController {
         return "main/post";
     }
 
-    @GetMapping("/save")
+    @GetMapping("/write")
     public String uploadPost() {
-        return "post/save";
+        return "post/write";
     }
 
     @PostMapping("")

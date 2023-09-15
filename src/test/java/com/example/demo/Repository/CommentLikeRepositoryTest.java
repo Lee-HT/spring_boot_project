@@ -38,18 +38,16 @@ class CommentLikeRepositoryTest {
     @BeforeEach
     public void setCommentLikes() {
         for (int i = 1; i < 4; i++) {
-            users.add(UserEntity.builder().username("user" + i)
-                    .email("email" + i + "@gmail.com")
-                    .build());
+            users.add(UserEntity.builder().username("user" + i).email("email" + i + "@gmail.com")
+                    .provider("google_" + i).build());
         }
         for (int i = 1; i < 6; i++) {
             comments.add(CommentEntity.builder().username(users.get(i / 2)).contents("contents" + i)
                     .build());
         }
         for (int i = 0; i < 5; i++) {
-            commentLikes.add(
-                    CommentLikeEntity.builder().uid(users.get(i / 3)).cid(comments.get(i))
-                            .likes(i % 2 == 0).hate(i % 2 != 0).build());
+            commentLikes.add(CommentLikeEntity.builder().uid(users.get(i / 3)).cid(comments.get(i))
+                    .likes(i % 2 == 0).hate(i % 2 != 0).build());
         }
         System.out.println(users);
 

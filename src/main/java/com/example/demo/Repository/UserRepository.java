@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUid(Long uid);
     UserEntity findByUsername(String name);
-    UserEntity findByEmail(String email);
+    UserEntity findByProvider(String provider);
     Page<UserEntity> findByUsernameContaining(String name, Pageable pageable);
 
 }

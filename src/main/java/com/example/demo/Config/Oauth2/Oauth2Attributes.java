@@ -12,6 +12,7 @@ public class Oauth2Attributes {
 
     private String registrationId;
     private String attributeKey;
+    private String provider;
     private String username;
     private String email;
 
@@ -32,7 +33,8 @@ public class Oauth2Attributes {
         return Oauth2Attributes.builder().registrationId(registrationId)
                 .username((String) attributes.get("username"))
                 .email((String) attributes.get("email"))
-                .attributeKey((String) attributes.get(usernameAttributeName)).build();
+                .attributeKey((String) attributes.get(usernameAttributeName))
+                .provider(registrationId + attributes.get(usernameAttributeName)).build();
     }
 
     public static Oauth2Attributes ofNaver(String registrationId, String usernameAttributeName,
@@ -41,11 +43,12 @@ public class Oauth2Attributes {
         return Oauth2Attributes.builder().registrationId(registrationId)
                 .username((String) attribute.get("nickname"))
                 .email((String) attribute.get("email"))
-                .attributeKey((String) attribute.get("id")).build();
+                .attributeKey((String) attribute.get("id"))
+                .provider(registrationId + attributes.get("id")).build();
     }
 
     public UserEntity toEntity() {
-        return UserEntity.builder().username(username).email(email).roles("ROLE_USER").build();
+        return UserEntity.builder().username(username).email(email).provider(provider).roles("ROLE_USER").build();
     }
 
 }

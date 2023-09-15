@@ -57,8 +57,8 @@ public class PostControllerTest {
 
     @Test
     public void uploadPost() throws Exception {
-        mvc.perform(get("/post/save")).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("post/save"));
+        mvc.perform(get("/post/write")).andDo(print()).andExpect(status().isOk())
+                .andExpect(view().name("post/write"));
     }
 
     @Test

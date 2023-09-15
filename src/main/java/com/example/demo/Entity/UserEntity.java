@@ -30,7 +30,7 @@ public class UserEntity extends BaseTimeEntity {
     private String username;
     @Column(nullable = false, length = 127, unique = true)
     private String email;
-    @Column(length = 63)
+    @Column(nullable = false, length = 63, unique = true)
     private String provider;
     private String roles;
     private String profilePic;

@@ -45,13 +45,10 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         // 각 서비스의 유니크 필드 명 (unique id 값 전달을 위한 키)
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
-        log.info("userNameAttributeName : " + userNameAttributeName);
 
         // get attributes
         Map<String, Object> attributes = getAttributes(userRequest);
         log.info("attributes : " + attributes.toString());
-        log.info(userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
-                .getUri());
 
         Oauth2Attributes oauth2Attributes = Oauth2Attributes.of(registrationId,
                 userNameAttributeName, attributes);
@@ -125,13 +122,12 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
                     }).flux().toStream().findFirst()
                     .orElse(null);
         }
-        log.info("request : " + request);
         return request;
     }
 
     private UserEntity saveUser(Oauth2Attributes oauth2Attributes) {
         // naver email 은 고유하지 않음
-        UserEntity user = userRepository.findByEmail(oauth2Attributes.getEmail());
+        UserEntity user = userRepository.findByProvider(oauth2Attributes.getEmail());
         if (user != null) {
             user.updateUsername(oauth2Attributes.getUsername());
         } else {

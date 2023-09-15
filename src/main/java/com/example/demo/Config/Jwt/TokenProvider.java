@@ -34,7 +34,7 @@ public class TokenProvider {
         return new Date(now.getTime() + expire);
     }
 
-    //
+    // getClaims
     private Claims getClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
@@ -95,7 +95,6 @@ public class TokenProvider {
         try{
             if (token != null){
                 Claims claims = getClaims(token);
-
                 return claims.getExpiration().after(new Date());
             }
             return false;

@@ -39,9 +39,8 @@ class UserRepositoryTest {
     @BeforeEach
     void setUsers() {
         for (int i = 1; i < 2; i++) {
-            System.out.println(i);
             users.add(UserEntity.builder().username("user" + i).email("email" + i + "@gmail.com")
-                    .roles("ROLE_USER").build());
+                    .provider("google_"+i).roles("ROLE_USER").build());
         }
         userRepository.saveAll(users);
 
@@ -85,11 +84,11 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("EMAIL 기준 SELECT")
-    public void findByEmail() {
-        System.out.println("======== findByEmail ========");
-        String email = "email1@gmail.com";
-        UserEntity user = userRepository.findByEmail(email);
+    @DisplayName("PROVIDER 기준 SELECT")
+    public void findByProvider() {
+        System.out.println("======== findByProvider ========");
+        String provider = "google_1";
+        UserEntity user = userRepository.findByProvider(provider);
 
         Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
 
@@ -117,7 +116,7 @@ class UserRepositoryTest {
         for (int i = 3; i < 5; i++) {
             newUsers.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com")
-                    .roles("ROLE_USER").build());
+                    .roles("ROLE_USER").provider("google_"+i).build());
         }
         List<UserEntity> result = userRepository.saveAll(newUsers);
 
