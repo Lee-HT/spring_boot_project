@@ -1,6 +1,5 @@
 package com.example.demo.Config.Oauth2;
 
-import com.example.demo.Config.Jwt.TokenProvider;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.UserRepository;
 import java.util.Collections;
@@ -26,13 +25,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @Slf4j
 public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
-    private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
 
     @Autowired
-    public OAuth2Service(TokenProvider tokenProvider, UserRepository userRepository) {
-        this.tokenProvider = tokenProvider;
+    public OAuth2Service(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -104,7 +100,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         HttpMethod httpMethod = getHttpMethod(userRequest.getClientRegistration());
         WebClient webClient = WebClient.builder().baseUrl(uri).build();
 
-        Map<String, Object> request = new HashMap<>();
+        Map<String, Object> request;
         if (HttpMethod.POST.equals(httpMethod)) {
             request = webClient.post().headers(httpHeaders -> {
                         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

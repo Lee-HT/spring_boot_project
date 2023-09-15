@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,11 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(value = LoginController.class)
-@WithMockUser
 class LoginControllerTest {
 
     private final MockMvc mvc;
@@ -36,7 +35,7 @@ class LoginControllerTest {
     @Test
     @DisplayName("Login Test")
     public void login() throws Exception {
-        mvc.perform(get("/login/login"))
+        mvc.perform(get("/login/login").with(oauth2Login()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/login"));

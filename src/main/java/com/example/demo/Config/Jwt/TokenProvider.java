@@ -5,7 +5,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -107,11 +106,10 @@ public class TokenProvider {
     }
 
     // Cookie 에서 token get
-    public HashMap<String,String> resolveToken(HttpServletRequest request){
-        Cookie[] tokens = request.getCookies();
+    public Map<String,String> resolveToken(Cookie[] cookies){
         HashMap<String,String> Tokens = new HashMap<>();
         try {
-            for (Cookie cookie : tokens) {
+            for (Cookie cookie : cookies) {
                 String name = cookie.getName();
                 if (name.equals("accessToken")){
                     Tokens.put("accessToken",cookie.getValue());

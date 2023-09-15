@@ -3,6 +3,7 @@ package com.example.demo.Controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -17,11 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
-@WithMockUser
 public class UserControllerTest {
 
     private final MockMvc mvc;
@@ -41,7 +40,7 @@ public class UserControllerTest {
                 .build();
         when(userService.findByUsername(any(String.class))).thenReturn(user);
 
-        mvc.perform(get("/user/my-page").queryParam("username", "user1")).andDo(print())
+        mvc.perform(get("/user/my-page").with(oauth2Login()).queryParam("username", "user1")).andDo(print())
                 .andExpect(status().isOk()).andExpect(view().name("user/myPage"));
     }
 
@@ -51,7 +50,7 @@ public class UserControllerTest {
                 .build();
         when(userService.saveUser(any(UserDto.class))).thenReturn(dto);
 
-        mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/user").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)).with(csrf())).andDo(print())
                 .andExpect(status().isOk()).andExpect(view().name("user/info"));
     }

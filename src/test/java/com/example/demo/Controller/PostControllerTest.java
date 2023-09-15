@@ -3,6 +3,7 @@ package com.example.demo.Controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,17 +26,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PostController.class)
-@WithMockUser
 public class PostControllerTest {
 
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     @MockBean
-    private PostService postService;
+    private final PostService postService;
 
     @Autowired
     public PostControllerTest(MockMvc mockMvc, PostService postService, ObjectMapper objectMapper) {
@@ -51,13 +50,13 @@ public class PostControllerTest {
                         .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid"))
                         .build());
 
-        mvc.perform(get("/post")).andDo(print()).andExpect(status().isOk())
+        mvc.perform(get("/post").with(oauth2Login())).andDo(print()).andExpect(status().isOk())
                 .andExpect(view().name("main/post"));
     }
 
     @Test
     public void uploadPost() throws Exception {
-        mvc.perform(get("/post/write")).andDo(print()).andExpect(status().isOk())
+        mvc.perform(get("/post/write").with(oauth2Login())).andDo(print()).andExpect(status().isOk())
                 .andExpect(view().name("post/write"));
     }
 
@@ -68,7 +67,7 @@ public class PostControllerTest {
         UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com").build();
         when(postService.savePost(any(PostDto.class),any(UserEntity.class))).thenReturn(post);
 
-        mvc.perform(post("/post").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/post").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(post)).content(objectMapper.writeValueAsString(user)).with(csrf()))
                 .andDo(print()).andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("post"));
@@ -80,7 +79,7 @@ public class PostControllerTest {
                 PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
                         .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
 
-        mvc.perform(get("/post/title/title").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/post/title/title").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
     }
 
@@ -90,7 +89,7 @@ public class PostControllerTest {
                 PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
                         .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
 
-        mvc.perform(get("/post/username/user").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/post/username/user").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
     }
 
@@ -98,14 +97,14 @@ public class PostControllerTest {
     public void likePost() throws Exception {
         when(postService.likePost(any(Long.class), any(Long.class))).thenReturn(true);
 
-        mvc.perform(get("/post/like")).andDo(print()).andExpect(status().isOk());
+        mvc.perform(get("/post/like").with(oauth2Login())).andDo(print()).andExpect(status().isOk());
     }
 
     @Test
     public void hatePost() throws Exception {
         when(postService.hatePost(any(Long.class), any(Long.class))).thenReturn(true);
 
-        mvc.perform(get("/post/like")).andDo(print()).andExpect(status().isOk());
+        mvc.perform(get("/post/like").with(oauth2Login())).andDo(print()).andExpect(status().isOk());
     }
 
 }

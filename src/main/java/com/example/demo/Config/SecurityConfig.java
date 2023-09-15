@@ -1,10 +1,10 @@
 package com.example.demo.Config;
 
 import com.example.demo.Config.Oauth2.OAuth2Service;
+import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -16,8 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final OAuth2Service oAuth2Service;
-    public SecurityConfig(OAuth2Service oAuth2Service){
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    public SecurityConfig(OAuth2Service oAuth2Service, OAuth2SuccessHandler oAuth2SuccessHandler){
         this.oAuth2Service = oAuth2Service;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     @Bean
@@ -42,8 +44,8 @@ public class SecurityConfig {
 
         // spring security 의 authorization uri 생성 url
         // http://localhost:6550/oauth2/authorization/{registration_id}
-        http.oauth2Login(Customizer.withDefaults());
-        // jwt 구현을 위해 oauth2client 사용
+        http.oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2SuccessHandler));
 
         return http.build();
     }
