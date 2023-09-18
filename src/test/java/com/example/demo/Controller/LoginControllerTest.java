@@ -34,10 +34,18 @@ class LoginControllerTest {
 
     @Test
     @DisplayName("Login Test")
-    public void login() throws Exception {
+    public void loginViewTest() throws Exception {
         mvc.perform(get("/login/login").with(oauth2Login()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/login"));
+    }
+
+    @Test
+    @DisplayName("Oauth2 Test")
+    public void oauth2Test() throws Exception {
+        mvc.perform(get("/login/test"))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection());
     }
 }
