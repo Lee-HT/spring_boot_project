@@ -70,7 +70,6 @@ public class TokenProvider {
 
     public String getRefreshToken(String username) {
         Date expire = expireTime(REFRESH_TOKEN_TIME);
-
         String JwtToken = getjwtToken(expire, username);
 
         log.info(String.format("refreshToken : %s", JwtToken));
@@ -89,45 +88,43 @@ public class TokenProvider {
                 Collections.singleton(new SimpleGrantedAuthority(role)));
     }
 
-    // token 만료 확인
-    public boolean validation(String token) {
-        try{
-            if (token != null){
+    // token 유효성 검증
+    public boolean validationToken(String token) {
+        try {
+            if (token != null) {
                 Claims claims = getClaims(token);
                 return claims.getExpiration().after(new Date());
             }
             return false;
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             log.info("expire token");
-        }catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("not validate token");
         }
         return false;
     }
 
     // Cookie 에서 token get
-    public Map<String,String> resolveToken(Cookie[] cookies){
-        HashMap<String,String> Tokens = new HashMap<>();
+    public Map<String, String> resolveToken(Cookie[] cookies) {
+        HashMap<String, String> Tokens = new HashMap<>();
         try {
             for (Cookie cookie : cookies) {
                 String name = cookie.getName();
-                if (name.equals("accessToken")){
-                    Tokens.put("accessToken",cookie.getValue());
+                if (name.equals("accessToken")) {
+                    Tokens.put("accessToken", cookie.getValue());
                 } else if (name.equals("refreshToken")) {
-                    Tokens.put("refreshToken",cookie.getValue());
+                    Tokens.put("refreshToken", cookie.getValue());
                 }
             }
             return Tokens;
-        } catch (Exception e){
+        } catch (Exception e) {
             log.info("resolve error");
         }
         return null;
     }
 
-    public String getUsername(String token){
+    public String getUsername(String token) {
         Claims claims = getClaims(token);
         return claims.getSubject();
     }
-
-
 }

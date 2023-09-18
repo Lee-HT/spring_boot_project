@@ -3,7 +3,6 @@ package com.example.demo.Config.Oauth2;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.UserRepository;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,8 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         UserEntity user = saveUser(oauth2Attributes);
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRoles())), attributes,
-                userNameAttributeName);
+                Collections.singleton(new SimpleGrantedAuthority(user.getRoles())), oauth2Attributes.toMap(),
+                "provider");
     }
 
     // DefaultOauth2UserService 에서 user-info 가져옴
@@ -92,7 +91,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
 //        return response.getBody();
 //    }
 
-    // Webclient 사용해 user info 가져오기
+    // (WebClient) get user info
     private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
         String uri = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
                 .getUri();
@@ -121,9 +120,10 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         return request;
     }
 
+    // DB에 유저 정보 삽입
     private UserEntity saveUser(Oauth2Attributes oauth2Attributes) {
         // naver email 은 고유하지 않음
-        UserEntity user = userRepository.findByProvider(oauth2Attributes.getEmail());
+        UserEntity user = userRepository.findByProvider(oauth2Attributes.getProvider());
         if (user != null) {
             user.updateUsername(oauth2Attributes.getUsername());
         } else {
@@ -132,6 +132,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         return user;
     }
 
+    // ClientRegistration AuthenticationMethod -> HttpMethod
     private HttpMethod getHttpMethod(ClientRegistration clientRegistration) {
         if (AuthenticationMethod.FORM.equals(
                 clientRegistration.getProviderDetails().getUserInfoEndpoint()

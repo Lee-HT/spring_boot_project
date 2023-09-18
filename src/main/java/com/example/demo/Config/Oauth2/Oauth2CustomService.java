@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,15 +23,13 @@ public class Oauth2CustomService {
     }
 
     // authorization uri
-    // https://accounts.google.com/o/oauth2/v2/auth?client_id={client_id}&redirect_uri={redirect_uri}&response_type=token&scope={scope}
-    // https://accounts.google.com/o/oauth2/v2/auth?client_id=241034246573-r8a6mk2a53s9biah83n1hklutsrqni51.apps.googleusercontent.com&redirect_uri=http://localhost:6550/login/oauth2/code/google&response_type=token&scope=email%20profile
     public void socialLogin(String code, String registrationId) {
         String accessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(accessToken, registrationId);
         log.info("accessToken = " + accessToken);
         log.info("userResourceNode = " + userResourceNode);
 
-        String id = userResourceNode.get("id").asText();
+        String id = userResourceNode.get("sub").asText();
         String email = userResourceNode.get("email").asText();
         String nickname = userResourceNode.get("name").asText();
         log.info("id = " + id);
@@ -47,8 +43,7 @@ public class Oauth2CustomService {
                 "spring.security.oauth2.client.registration." + registrationId + ".client-id");
         String clientSecret = env.getProperty(
                 "spring.security.oauth2.client.registration." + registrationId + ".client-secret");
-        String redirectUri = env.getProperty(
-                "spring.security.oauth2.client.registration." + registrationId + ".redirect-uri");
+        String redirectUri = "http://localhost:6550/login/oauth2/test/google";
         String tokenUri = env.getProperty(
                 "spring.security.oauth2.client.provider." + registrationId + ".token-uri");
         String grant_type = env.getProperty(
@@ -85,14 +80,13 @@ public class Oauth2CustomService {
         String resourceUri = env.getProperty(
                 "spring.security.oauth2.client.provider." + registrationId + ".user-info-uri");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer" + accessToken);
-        HttpEntity entity = new HttpEntity(headers);
-
         WebClient webclient = WebClient.builder().baseUrl(resourceUri).build();
         JsonNode userResource = webclient.get().header("Authorization", "Bearer" + accessToken)
                 .retrieve().bodyToMono(JsonNode.class).flux().toStream().findFirst().orElse(null);
 
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer" + accessToken);
+//        HttpEntity entity = new HttpEntity(headers);
 //        JsonNode userResource = restTemplate.exchange(resourceUri, HttpMethod.GET, entity,
 //                JsonNode.class).getBody();
         return userResource;

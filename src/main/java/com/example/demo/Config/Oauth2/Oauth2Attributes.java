@@ -1,6 +1,7 @@
 package com.example.demo.Config.Oauth2;
 
 import com.example.demo.Entity.UserEntity;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,16 +40,31 @@ public class Oauth2Attributes {
 
     public static Oauth2Attributes ofNaver(String registrationId, String usernameAttributeName,
             Map<String, Object> attributes) {
-        Map<String,Object> attribute = (Map<String, Object>) attributes.get("response");
+        Map<String, Object> attribute = (Map<String, Object>) attributes.get("response");
         return Oauth2Attributes.builder().registrationId(registrationId)
                 .username((String) attribute.get("nickname"))
                 .email((String) attribute.get("email"))
                 .attributeKey((String) attribute.get("id"))
-                .provider(registrationId + attributes.get("id")).build();
+                .provider(registrationId + "_" + attributes.get("id")).build();
     }
 
     public UserEntity toEntity() {
-        return UserEntity.builder().username(username).email(email).provider(provider).roles("ROLE_USER").build();
+        return UserEntity.builder().username(username).email(email).provider(provider)
+                .roles("ROLE_USER").build();
+    }
+
+    public String toString() {
+        return toMap().toString();
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("registrationId", registrationId);
+        hashMap.put("username", username);
+        hashMap.put("email", email);
+        hashMap.put("attributeKey", attributeKey);
+        hashMap.put("provider", provider);
+        return hashMap;
     }
 
 }

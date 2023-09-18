@@ -10,13 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
@@ -37,9 +36,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain, Authentication authentication) throws IOException, ServletException {
         Principal principal = request.getUserPrincipal();
-        Map<String, String> cookieMap = tokenProvider.resolveToken(request.getCookies());
         String username = principal.getName();
-        log.info(username);
+        log.info("successHandler : " + username);
         String accessToken = tokenProvider.getAccessToken(username);
         String refreshToken = tokenProvider.getRefreshToken(username);
 
@@ -50,14 +48,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(access);
         response.addCookie(refresh);
 
-        super.onAuthenticationSuccess(request, response, chain, authentication);
+        String targetUrl = getTargetUrl(request.getRequestURI(), accessToken, refreshToken);
+        log.info(targetUrl);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
+//        super.onAuthenticationSuccess(request, response, chain, authentication);
     }
 
-    private Map<String, Object> cookie2map(Cookie[] cookies) {
-        Map<String, Object> hashMap = new HashMap<>();
-        for (Cookie cookie : cookies) {
-            hashMap.put(cookie.getName(), cookie.getValue());
-        }
-        return hashMap;
+    private String getTargetUrl(String url, String accessToken, String refreshToken) {
+        return UriComponentsBuilder.fromUriString(url)
+                .queryParam(JwtProperties.accessTokenName, accessToken)
+                .queryParam(JwtProperties.accessTokenName, refreshToken)
+                .build().toString();
     }
 }
