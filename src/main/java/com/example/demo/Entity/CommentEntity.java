@@ -28,9 +28,9 @@ public class CommentEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
     @ManyToOne
-    // referencedColumnName 없을 시 기본 키를 컬럼으로 지정
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private UserEntity username;
+    @JoinColumn(name = "uid")
+    private UserEntity uid;
+    private String username;
     @ManyToOne
     @JoinColumn(name = "pid")
     private PostEntity pid;

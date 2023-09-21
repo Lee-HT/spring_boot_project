@@ -27,9 +27,11 @@ public class PostEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pid;
+    // JoinColumn : referencedColumnName 없을 시 기본 키를 컬럼으로 지정
     @ManyToOne
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private UserEntity username;
+    @JoinColumn(name = "uid")
+    private UserEntity uid;
+    private String username;
     @Column(nullable = false, length = 128)
     private String title;
     @Column(nullable = false, length = 1024)
@@ -40,6 +42,16 @@ public class PostEntity extends BaseTimeEntity {
     public void updatePost(String title, String contents, String category) {
         this.title = title;
         this.contents = contents;
+        this.category = category;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+    public void updateContents(String contents) {
+        this.contents = contents;
+    }
+    public void updateCategory(String category) {
         this.category = category;
     }
 

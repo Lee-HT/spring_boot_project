@@ -22,7 +22,7 @@ public class TokenProvider {
 
     private static final String AutorizationHeader = "Authorization";
     private final Key key = JwtProperties.secretKey;
-    private final String TokenType = "bearer";
+    private final String TokenType = "bearer ";
     private final long REFRESH_TOKEN_TIME = JwtProperties.refreshTime / 1000;
     private final long ACCESS_TOKEN_TIME = JwtProperties.accessTime / 1000;
 

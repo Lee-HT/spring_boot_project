@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class PostConverter {
 
     public PostEntity toEntity(PostDto postDto, UserEntity user) {
-        return PostEntity.builder().pid(postDto.getPid()).username(user)
+        return PostEntity.builder().pid(postDto.getPid()).uid(user).username(postDto.getUsername())
                 .title(postDto.getTitle()).contents(postDto.getContents())
                 .category(postDto.getCategory()).build();
     }
@@ -27,7 +27,7 @@ public class PostConverter {
     }
 
     public PostDto toDto(PostEntity post) {
-        return PostDto.builder().pid(post.getPid()).username(post.getUsername().getUsername())
+        return PostDto.builder().pid(post.getPid()).username(post.getUsername())
                 .title(post.getTitle()).contents(post.getContents()).category(post.getCategory())
                 .build();
     }

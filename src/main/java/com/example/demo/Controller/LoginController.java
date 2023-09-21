@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Config.Oauth2.Oauth2CustomService;
+import com.example.demo.Repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,11 +16,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("login")
 public class LoginController {
 
+    private final UserRepository userRepository;
+
     private final Oauth2CustomService oauth2CustomService;
 
     @Autowired
-    public LoginController(Oauth2CustomService oauth2CustomService) {
+    public LoginController(Oauth2CustomService oauth2CustomService,
+            UserRepository userRepository) {
         this.oauth2CustomService = oauth2CustomService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/login")
@@ -44,4 +49,5 @@ public class LoginController {
         oauth2CustomService.socialLogin(code, registrationId);
         return "oauth2 success";
     }
+
 }
