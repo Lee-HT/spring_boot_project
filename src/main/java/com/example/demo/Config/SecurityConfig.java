@@ -2,7 +2,8 @@ package com.example.demo.Config;
 
 import com.example.demo.Config.Oauth2.OAuth2Service;
 import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
-import com.example.demo.Config.Oauth2.Oauth2LogoutHandler;
+import com.example.demo.Config.Oauth2.OAuth2FailureHandler;
+import com.example.demo.Config.Oauth2.OAuth2LogoutHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +20,15 @@ public class SecurityConfig {
 
     private final OAuth2Service oAuth2Service;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final Oauth2LogoutHandler oauth2LogoutHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final OAuth2LogoutHandler oAuth2LogoutHandler;
 
     public SecurityConfig(OAuth2Service oAuth2Service, OAuth2SuccessHandler oAuth2SuccessHandler,
-            Oauth2LogoutHandler oauth2LogoutHandler) {
+            OAuth2FailureHandler oAuth2FailureHandler, OAuth2LogoutHandler oAuth2LogoutHandler) {
         this.oAuth2Service = oAuth2Service;
+        this.oAuth2FailureHandler = oAuth2FailureHandler;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
-        this.oauth2LogoutHandler = oauth2LogoutHandler;
+        this.oAuth2LogoutHandler = oAuth2LogoutHandler;
     }
 
     @Bean
@@ -44,14 +47,19 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
 
+        // 기존, 신규 세션 모두 사용 안함
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login/oauth2/test/*").permitAll()
+                .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login/login").permitAll()
                 .anyRequest().permitAll()
         );
-        http.logout(logout -> logout.logoutSuccessHandler(oauth2LogoutHandler));
 
-        // spring security 의 authorization uri 생성 url
+        // spring security 의 authorization uri 생성 uri
         // http://localhost:6550/oauth2/authorization/{registration_id}
         http.oauth2Login(oauth2 -> oauth2
                 // oauth2 로그인 요청 uri
@@ -60,14 +68,15 @@ public class SecurityConfig {
                 // redirect uri
                 .redirectionEndpoint(end -> end
                         .baseUri("/login/oauth2/code/*"))
-                .loginPage("/oauth2/authorization/google")
+//                .loginPage("/login")
+                // defaultSuccessUrl 과 동시 사용 x
                 .successHandler(oAuth2SuccessHandler)
-                .defaultSuccessUrl("/")
+                .failureHandler(oAuth2FailureHandler)
                 .userInfoEndpoint(userIEP -> userIEP.userService(oAuth2Service)));
-        // 기존, 신규 세션 모두 사용 안함
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.logout(logout -> logout
+                .logoutSuccessHandler(oAuth2LogoutHandler));
 
         return http.build();
     }
+
 }

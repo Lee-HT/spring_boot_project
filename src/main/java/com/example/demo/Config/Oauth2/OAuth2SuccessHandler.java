@@ -3,13 +3,11 @@ package com.example.demo.Config.Oauth2;
 import com.example.demo.Config.Cookie.CookieProvider;
 import com.example.demo.Config.Jwt.JwtProperties;
 import com.example.demo.Config.Jwt.TokenProvider;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -34,12 +32,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        Principal principal = request.getUserPrincipal();
-        String username = principal.getName();
-        log.info("successHandler : " + username);
-        String accessToken = tokenProvider.getAccessToken(username);
-        String refreshToken = tokenProvider.getRefreshToken(username);
+            Authentication authentication) throws IOException, ServletException {
+        log.info("successHandler");
+        String accessToken = tokenProvider.getAccessToken("access");
+        String refreshToken = tokenProvider.getRefreshToken("refresh");
 
         Cookie access = cookieProvider.getCookie(JwtProperties.accessTokenName, accessToken,
                 ACCESS_TOKEN_EXPIRE);
@@ -48,11 +44,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(access);
         response.addCookie(refresh);
 
-        String targetUrl = getTargetUrl(request.getRequestURI(), accessToken, refreshToken);
+        String targetUrl = getTargetUrl("/", accessToken, refreshToken);
         log.info(targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-
-//        super.onAuthenticationSuccess(request, response, chain, authentication);
     }
 
     private String getTargetUrl(String url, String accessToken, String refreshToken) {

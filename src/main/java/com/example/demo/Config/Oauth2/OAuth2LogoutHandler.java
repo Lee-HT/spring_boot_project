@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class Oauth2LogoutHandler extends SimpleUrlLogoutSuccessHandler {
+public class OAuth2LogoutHandler extends SimpleUrlLogoutSuccessHandler {
     private final CookieProvider cookieProvider;
     private final TokenProvider tokenProvider;
-    public Oauth2LogoutHandler(CookieProvider cookieProvider, TokenProvider tokenProvider){
+    public OAuth2LogoutHandler(CookieProvider cookieProvider, TokenProvider tokenProvider){
         this.cookieProvider = cookieProvider;
         this.tokenProvider = tokenProvider;
     }
