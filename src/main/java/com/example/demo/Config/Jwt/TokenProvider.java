@@ -22,7 +22,8 @@ public class TokenProvider {
 
     private static final String AutorizationHeader = "Authorization";
     private final Key key = JwtProperties.secretKey;
-    private final String TokenType = "bearer ";
+    // cookie 에 공백 사용 불가함으로 수정
+    private final String TokenType = "bearer-";
     private final long REFRESH_TOKEN_TIME = JwtProperties.refreshTime / 1000;
     private final long ACCESS_TOKEN_TIME = JwtProperties.accessTime / 1000;
 
@@ -38,7 +39,7 @@ public class TokenProvider {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    private String getjwtToken(Date expire, String username) {
+    private String getjwtToken(Date expire, String username, String provider) {
         Date now = new Date();
 
         // Header
@@ -49,6 +50,7 @@ public class TokenProvider {
         // Payload Claims (key : value)
         Claims claims = Jwts.claims().setIssuedAt(now).setExpiration(expire);
         claims.put("role", "ROLE_USER");
+        claims.put("prov", provider);
 
         String JwtToken = Jwts.builder().setHeader(headers).setClaims(claims).setSubject(username)
                 .signWith(key).compact();
@@ -58,33 +60,35 @@ public class TokenProvider {
         return JwtToken;
     }
 
-    public String getAccessToken(String username) {
+    public String getAccessToken(String username, String provider) {
         Date expire = expireTime(ACCESS_TOKEN_TIME);
 
-        String JwtToken = getjwtToken(expire, username);
+        String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("accessToken : %s", JwtToken));
 
         return JwtToken;
     }
 
-    public String getRefreshToken(String username) {
+    public String getRefreshToken(String username, String provider) {
         Date expire = expireTime(REFRESH_TOKEN_TIME);
-        String JwtToken = getjwtToken(expire, username);
+        String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("refreshToken : %s", JwtToken));
 
         return JwtToken;
     }
 
+    // claim 기반 authentication 객체 생성
     public Authentication getAuthentication(String token) {
         // payload parse 하여 claim 반환
         Claims claims = getClaims(token);
         String role = claims.get("role").toString();
+        String provider = claims.get("prov").toString();
         String username = claims.getSubject();
 
         // 권한 부여
-        return new UsernamePasswordAuthenticationToken("username", null,
+        return new UsernamePasswordAuthenticationToken(provider, null,
                 Collections.singleton(new SimpleGrantedAuthority(role)));
     }
 
@@ -126,5 +130,10 @@ public class TokenProvider {
     public String getUsername(String token) {
         Claims claims = getClaims(token);
         return claims.getSubject();
+    }
+
+    public String getProvider(String token) {
+        Claims claims = getClaims(token);
+        return (String) claims.get("prov");
     }
 }

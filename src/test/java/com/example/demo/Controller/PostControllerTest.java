@@ -62,10 +62,10 @@ public class PostControllerTest {
 
     @Test
     public void savePost() throws Exception {
-        PostDto post = PostDto.builder().pid(1L).title("title1").contents("contents1")
-                .username("user1").category("category1").build();
         UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com").build();
-        when(postService.savePost(any(PostDto.class),any(UserEntity.class))).thenReturn(post);
+        PostDto post = PostDto.builder().pid(1L).uid(user.getUid()).title("title1").contents("contents1")
+                .username("user1").category("category1").build();
+        when(postService.savePost(any(PostDto.class))).thenReturn(post);
 
         mvc.perform(post("/post").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(post)).content(objectMapper.writeValueAsString(user)).with(csrf()))

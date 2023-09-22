@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
 
 
-    UserDto findByUsername(String username);
+    UserDto findByUid(Long Uid);
 
     UserPageDto findByUsernameContaining(String username, Pageable pageable);
 

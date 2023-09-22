@@ -28,7 +28,7 @@ public class CommentEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
     @ManyToOne
-    @JoinColumn(name = "uid")
+    @JoinColumn(name = "uid",nullable = false)
     private UserEntity uid;
     private String username;
     @ManyToOne

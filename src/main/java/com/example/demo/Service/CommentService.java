@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface CommentService {
 
     CommentPageDto getCommentPage(Long pid, Pageable pageable);
-    CommentDto saveComment(CommentDto commentDto, UserEntity user);
+    CommentDto saveComment(CommentDto commentDto);
 
 
 }

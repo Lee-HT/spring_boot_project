@@ -29,7 +29,7 @@ public class PostEntity extends BaseTimeEntity {
     private Long pid;
     // JoinColumn : referencedColumnName 없을 시 기본 키를 컬럼으로 지정
     @ManyToOne
-    @JoinColumn(name = "uid")
+    @JoinColumn(name = "uid",nullable = false)
     private UserEntity uid;
     private String username;
     @Column(nullable = false, length = 128)

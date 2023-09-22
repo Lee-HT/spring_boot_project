@@ -49,11 +49,11 @@ class CommentRepositoryTest {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com").provider("google_"+i).build());
-            posts.add(PostEntity.builder().username(users.get(i - 1)).title("title" + i)
+            posts.add(PostEntity.builder().uid(users.get(i - 1)).title("title" + i)
                     .contents("contents" + i).category("category1").build());
         }
         for (int i = 0; i < 4; i++) {
-            comments.add(CommentEntity.builder().username(users.get(i / 2)).pid(posts.get(0))
+            comments.add(CommentEntity.builder().uid(users.get(i / 2)).pid(posts.get(0))
                     .contents("contents" + (i + 1)).build());
         }
         userRepository.saveAll(users);
@@ -90,12 +90,12 @@ class CommentRepositoryTest {
     }
 
     @Test
-    @DisplayName("USERNAME 기준 SELECT")
+    @DisplayName("UID 기준 SELECT")
     public void findByUsername() {
         System.out.println("======== findByUid ========");
         UserEntity user = UserEntity.builder().username("user1").email("email1@gmail.com")
                 .build();
-        List<CommentEntity> comments = commentRepository.findByUsername(user);
+        List<CommentEntity> comments = commentRepository.findByUid(user);
 
         Assertions.assertThat(comments).usingRecursiveComparison()
                 .isEqualTo(this.comments.subList(0, 2));
@@ -109,7 +109,7 @@ class CommentRepositoryTest {
         System.out.println("======== saveAll ========");
         List<CommentEntity> comments = new ArrayList<>();
         for (int i = 1; i < 3; i++) {
-            comments.add(CommentEntity.builder().username(users.get(2)).contents("contents" + i)
+            comments.add(CommentEntity.builder().uid(users.get(2)).contents("contents" + i)
                     .build());
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);

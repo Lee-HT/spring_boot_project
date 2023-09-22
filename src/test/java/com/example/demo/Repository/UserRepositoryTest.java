@@ -72,18 +72,6 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("USERNAME 기준 SELECT")
-    public void findByUsername() {
-        System.out.println("======== findByUsername ========");
-        String username = "user1";
-        UserEntity user = userRepository.findByUsername(username);
-
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
-
-        System.out.println(user);
-    }
-
-    @Test
     @DisplayName("PROVIDER 기준 SELECT")
     public void findByProvider() {
         System.out.println("======== findByProvider ========");

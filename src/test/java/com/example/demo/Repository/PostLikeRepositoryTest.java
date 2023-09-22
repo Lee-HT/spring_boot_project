@@ -42,7 +42,7 @@ public class PostLikeRepositoryTest {
                     .email("email" + i + "@gmail.com").provider("google_"+i).build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().title("title" + i).contents("contents" + i)
+            posts.add(PostEntity.builder().uid(users.get(i/2)).title("title" + i).contents("contents" + i)
                     .category("category" + i).build());
         }
         for (int i = 0; i < 5; i++) {
@@ -111,7 +111,8 @@ public class PostLikeRepositoryTest {
     @DisplayName("PID COUNT SELECT")
     public void countByPid() {
         System.out.println("======== countByPid ========");
-        int countLikes = postLikeRepository.countByPid(posts.get(0));
+        boolean likes = true;
+        int countLikes = postLikeRepository.countByPidAndLikes(posts.get(0),true);
 
         Assertions.assertThat(countLikes).isEqualTo(1);
 

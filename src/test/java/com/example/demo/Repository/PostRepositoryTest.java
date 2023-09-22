@@ -47,7 +47,7 @@ class PostRepositoryTest {
         }
         for (int i = 1; i < 6; i++) {
             posts.add(PostEntity.builder().title("title" + i).contents("content" + i)
-                    .username(users.get(0)).category("category" + i).build());
+                    .uid(users.get(0)).username("user" + 1).category("category" + i).build());
         }
         this.maxIdx = this.posts.size();
 
@@ -88,7 +88,7 @@ class PostRepositoryTest {
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),this.pageable,
                 this.posts.size());
-        Page<PostEntity> result = postRepository.findByUsername(users.get(0),this.pageable);
+        Page<PostEntity> result = postRepository.findByUsernameContaining(users.get(0).getUsername(),this.pageable);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
 
@@ -130,7 +130,7 @@ class PostRepositoryTest {
         List<PostEntity> Posts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Posts.add(PostEntity.builder().title("title3").contents("contents3")
-                    .username(this.users.get(1)).category("category3").build());
+                    .uid(this.users.get(1)).category("category3").build());
         }
         List<PostEntity> result = postRepository.saveAll(Posts);
 

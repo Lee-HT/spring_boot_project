@@ -14,7 +14,7 @@ public interface PostService {
 
     PostPageDto findPostByUsername(String username, Pageable pageable);
 
-    PostDto savePost(PostDto postDto, UserEntity user);
+    PostDto savePost(PostDto postDto);
 
     PostDto updatePost(PostDto postDto);
 

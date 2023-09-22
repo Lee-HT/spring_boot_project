@@ -44,8 +44,8 @@ public class PostController {
     }
 
     @PostMapping("")
-    public String savePost(@RequestBody PostDto postDto, UserEntity user) {
-        PostDto post = postService.savePost(postDto,user);
+    public String savePost(@RequestBody PostDto postDto) {
+        PostDto post = postService.savePost(postDto);
         return "redirect:post";
     }
 

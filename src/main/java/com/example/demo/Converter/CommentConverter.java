@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentConverter {
 
-    public CommentEntity toEntity(CommentDto commentDto, UserEntity user) {
-        return CommentEntity.builder().cid(commentDto.getCid()).uid(user).username(commentDto.getUsername())
+    public CommentEntity toEntity(CommentDto commentDto,UserEntity userEntity) {
+        return CommentEntity.builder().cid(commentDto.getCid()).uid(userEntity).username(commentDto.getUsername())
                 .contents(commentDto.getContents()).build();
     }
 
@@ -26,7 +26,7 @@ public class CommentConverter {
     }
 
     public CommentDto toDto(CommentEntity comment) {
-        return CommentDto.builder().cid(comment.getCid()).username(comment.getUsername())
+        return CommentDto.builder().cid(comment.getCid()).uid(comment.getUid().getUid()).username(comment.getUsername())
                 .contents(comment.getContents()).build();
     }
 

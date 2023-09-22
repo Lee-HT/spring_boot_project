@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,13 +59,16 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostPageDto findPostByUsername(String username, Pageable pageable) {
-        UserEntity user = userRepository.findByUsername(username);
-        return postConverter.toDto(postRepository.findByUsername(user, pageable));
+        return postConverter.toDto(postRepository.findByUsernameContaining(username, pageable));
     }
 
     @Override
     @Transactional
-    public PostDto savePost(PostDto postDto,UserEntity user) {
+    public PostDto savePost(PostDto postDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
+        UserEntity user = userRepository.findByProvider(provider);
+
         PostEntity post = postConverter.toEntity(postDto,user);
         return postConverter.toDto(postRepository.save(post));
     }

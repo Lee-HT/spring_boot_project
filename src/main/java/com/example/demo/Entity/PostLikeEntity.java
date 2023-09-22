@@ -26,11 +26,11 @@ public class PostLikeEntity extends BaseTimeEntity {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "uid")
+    @JoinColumn(name = "uid",nullable = false)
     private UserEntity uid;
     @Id
     @ManyToOne
-    @JoinColumn(name = "pid")
+    @JoinColumn(name = "pid",nullable = false)
     private PostEntity pid;
     private boolean likes;
     private boolean hate;

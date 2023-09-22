@@ -5,10 +5,12 @@ import com.example.demo.Service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -23,18 +25,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("my-page")
-    public String getUser(@RequestParam String username, Model model) {
-        UserDto user = userService.findByUsername(username);
-
-        Map<String,Object> attributes = new HashMap<>();
-        attributes.put("username",user.getUsername());
-        attributes.put("email",user.getEmail());
-        attributes.put("profilePic",user.getProfilePic());
-        model.addAllAttributes(attributes);
-
-        return "user/myPage";
-    }
+//    @GetMapping("my-page")
+//    public String getUser(Model model) {
+//        Map<String,Object> attributes = new HashMap<>();
+//        model.addAttribute("username","user");
+//
+//        return "user/myPage";
+//    }
 
     @PostMapping()
     public String saveUser(UserDto userDto) {

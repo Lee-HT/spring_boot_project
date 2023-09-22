@@ -42,7 +42,7 @@ class CommentLikeRepositoryTest {
                     .provider("google_" + i).build());
         }
         for (int i = 1; i < 6; i++) {
-            comments.add(CommentEntity.builder().username(users.get(i / 2)).contents("contents" + i)
+            comments.add(CommentEntity.builder().uid(users.get(i / 2)).contents("contents" + i)
                     .build());
         }
         for (int i = 0; i < 5; i++) {
@@ -99,10 +99,11 @@ class CommentLikeRepositoryTest {
 
     @Test
     @DisplayName("CID COUNT SELECT")
-    public void countByCid() {
+    public void countByCidAndLikes() {
         System.out.println("======== countByCid ========");
         CommentEntity commentEntity = CommentEntity.builder().cid(1L).build();
-        int countLikes = commentLikeRepository.countByCid(commentEntity);
+        boolean likes = true;
+        int countLikes = commentLikeRepository.countByCidAndLikes(commentEntity,likes);
 
         Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
 

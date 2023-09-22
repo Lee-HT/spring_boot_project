@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
 @Builder
 @Getter
-public class Oauth2Attributes {
+public class Oauth2Attributes{
 
     private String registrationId;
     private String attributeKey;
@@ -32,7 +32,7 @@ public class Oauth2Attributes {
     public static Oauth2Attributes ofGoogle(String registrationId, String usernameAttributeName,
             Map<String, Object> attributes) {
         return Oauth2Attributes.builder().registrationId(registrationId)
-                .username((String) attributes.get("username"))
+                .username((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .attributeKey((String) attributes.get(usernameAttributeName))
                 .provider(registrationId + attributes.get(usernameAttributeName)).build();

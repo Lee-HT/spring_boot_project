@@ -8,9 +8,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,9 +36,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-        log.info("successHandler");
-        String accessToken = tokenProvider.getAccessToken("access");
-        String refreshToken = tokenProvider.getRefreshToken("refresh");
+        Map<String,Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
+        log.info(attributes.toString());
+        String username = (String) attributes.get("username");
+        String provider = (String) attributes.get("provider");
+        String accessToken = tokenProvider.getAccessToken(username,provider);
+        String refreshToken = tokenProvider.getRefreshToken(username,provider);
 
         Cookie access = cookieProvider.getCookie(JwtProperties.accessTokenName, accessToken,
                 ACCESS_TOKEN_EXPIRE);

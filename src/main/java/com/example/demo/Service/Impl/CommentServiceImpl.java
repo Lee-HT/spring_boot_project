@@ -8,10 +8,14 @@ import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.PostRepository;
+import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,13 +23,16 @@ public class CommentServiceImpl implements CommentService{
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository, CommentConverter commentConverter,
-            PostRepository postRepository){
+            PostRepository postRepository,
+            UserRepository userRepository){
         this.commentRepository = commentRepository;
         this.commentConverter = commentConverter;
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -38,7 +45,10 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public CommentDto saveComment(CommentDto commentDto, UserEntity user) {
+    public CommentDto saveComment(CommentDto commentDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
+        UserEntity user = userRepository.findByProvider(provider);
         CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto,user));
 
         return commentConverter.toDto(comment);

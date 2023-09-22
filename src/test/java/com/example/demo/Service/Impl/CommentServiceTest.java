@@ -50,12 +50,12 @@ public class CommentServiceTest {
             users.add(UserEntity.builder().uid((long) i + 1).username("user" + i).email("email" + i)
                     .build());
             posts.add(
-                    PostEntity.builder().pid((long) i + 1).username(users.get(i)).title("title" + i)
+                    PostEntity.builder().pid((long) i + 1).uid(users.get(i)).title("title" + i)
                             .contents("contents" + i).category("category1").build());
         }
         for (int i = 0; i < 6; i++) {
             comments.add(CommentEntity.builder().cid((long) i + 1).pid(posts.get(i / 2))
-                    .username(users.get((i + 1) / 2)).contents("content" + i).build());
+                    .uid(users.get((i + 1) / 2)).contents("content" + i).build());
             commentDtos.add(
                     CommentDto.builder().cid((long) i).username("user" + i).contents("content" + i)
                             .build());
@@ -85,10 +85,10 @@ public class CommentServiceTest {
     @Test
     public void saveComment() {
         System.out.println("======== saveComment ========");
-        when(commentConverter.toEntity(commentDtos.get(0),users.get(0))).thenReturn(comments.get(0));
+        when(commentConverter.toEntity(commentDtos.get(0),any(UserEntity.class)).thenReturn(comments.get(0));
         when(commentRepository.save(any(CommentEntity.class))).thenReturn(comments.get(0));
         when(commentConverter.toDto(any(CommentEntity.class))).thenReturn(commentDtos.get(0));
-        CommentDto result = commentService.saveComment(commentDtos.get(0),users.get(0));
+        CommentDto result = commentService.saveComment(commentDtos.get(0));
 
         Assertions.assertThat(result).isEqualTo(commentDtos.get(0));
     }

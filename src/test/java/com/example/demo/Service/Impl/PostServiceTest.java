@@ -61,7 +61,7 @@ class PostServiceTest {
                     .build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().pid((long) i).username(users.get(0))
+            posts.add(PostEntity.builder().pid((long) i).uid(users.get(0))
                     .title("title" + i)
                     .contents("contents" + i)
                     .build());

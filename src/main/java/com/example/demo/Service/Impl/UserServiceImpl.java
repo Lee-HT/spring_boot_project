@@ -31,8 +31,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto findByUsername(String username) {
-        return userConverter.toDto(userRepository.findByUsername(username));
+    public UserDto findByUid(Long uid) {
+        return userConverter.toDto(userRepository.findByUid(uid));
     }
 
     @Override
