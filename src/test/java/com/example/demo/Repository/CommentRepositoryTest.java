@@ -91,11 +91,11 @@ class CommentRepositoryTest {
 
     @Test
     @DisplayName("UID 기준 SELECT")
-    public void findByUsername() {
+    public void findByUid() {
         System.out.println("======== findByUid ========");
-        UserEntity user = UserEntity.builder().username("user1").email("email1@gmail.com")
+        UserEntity user = UserEntity.builder().username("user1").email("email1@gmail.com").provider("google_1")
                 .build();
-        List<CommentEntity> comments = commentRepository.findByUid(user);
+        List<CommentEntity> comments = commentRepository.findByUid(users.get(0));
 
         Assertions.assertThat(comments).usingRecursiveComparison()
                 .isEqualTo(this.comments.subList(0, 2));

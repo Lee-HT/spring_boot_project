@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
@@ -27,8 +27,8 @@ public class CommentServiceImpl implements CommentService{
 
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository, CommentConverter commentConverter,
-            PostRepository postRepository,
-            UserRepository userRepository){
+                              PostRepository postRepository,
+                              UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.commentConverter = commentConverter;
         this.postRepository = postRepository;
@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public CommentPageDto getCommentPage(Long pid, Pageable pageable) {
         PostEntity postEntity = postRepository.findByPid(pid);
-        Page<CommentEntity> comments = commentRepository.findByPid(postEntity,pageable);
+        Page<CommentEntity> comments = commentRepository.findByPid(postEntity, pageable);
         CommentPageDto commentPageDto = commentConverter.toDto(comments);
 
         return commentPageDto;
@@ -46,12 +46,18 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public CommentDto saveComment(CommentDto commentDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
-        UserEntity user = userRepository.findByProvider(provider);
-        CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto,user));
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
+            UserEntity user = userRepository.findByProvider(provider);
+            CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user));
 
-        return commentConverter.toDto(comment);
+            return commentConverter.toDto(comment);
+        } catch (NullPointerException e) {
+            return null;
+        }
+
+
     }
 
 }

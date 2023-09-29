@@ -1,4 +1,4 @@
-package com.example.demo.Service.Impl;
+package com.example.demo.Service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -12,6 +12,8 @@ import com.example.demo.Repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.example.demo.Service.Impl.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,10 +55,9 @@ public class UserServiceTest {
     @Test
     public void findByUsername() {
         System.out.println("======== findByUsername ========");
-        String username = "user";
-        when(userRepository.findByUsername(any(String.class))).thenReturn(this.users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(this.users.get(0));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
-        UserDto user = userService.findByUsername(username);
+        UserDto user = userService.findByUid(1L);
 
         Assertions.assertThat(user).isEqualTo(this.userDtos.get(0));
 

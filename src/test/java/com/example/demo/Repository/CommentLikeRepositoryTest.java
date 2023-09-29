@@ -49,7 +49,6 @@ class CommentLikeRepositoryTest {
             commentLikes.add(CommentLikeEntity.builder().uid(users.get(i / 3)).cid(comments.get(i))
                     .likes(i % 2 == 0).hate(i % 2 != 0).build());
         }
-        System.out.println(users);
 
         userRepository.saveAll(users);
         commentRepository.saveAll(comments);
@@ -101,9 +100,8 @@ class CommentLikeRepositoryTest {
     @DisplayName("CID COUNT SELECT")
     public void countByCidAndLikes() {
         System.out.println("======== countByCid ========");
-        CommentEntity commentEntity = CommentEntity.builder().cid(1L).build();
         boolean likes = true;
-        int countLikes = commentLikeRepository.countByCidAndLikes(commentEntity,likes);
+        int countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0),likes);
 
         Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
 

@@ -8,7 +8,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
+        log.info("get Id : " + ((DefaultOAuth2User) authentication.getPrincipal()).getName());
         Map<String,Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
-        log.info(attributes.toString());
+        log.info("SuccessHandler attribute : " + attributes.toString());
         String username = (String) attributes.get("username");
         String provider = (String) attributes.get("provider");
         String accessToken = tokenProvider.getAccessToken(username,provider);
