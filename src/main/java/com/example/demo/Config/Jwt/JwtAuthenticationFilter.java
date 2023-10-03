@@ -7,9 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,11 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = tokens.get(JwtProperties.refreshTokenName);
 
         if (!tokens.isEmpty()) {
-            // AccessToken 유효 SecurityContext에 Authentication 저장
+            // AccessToken 유효 시 SecurityContext 에 Authentication 저장
             if (tokenProvider.validationToken(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            // RefreshToken 유효 accessToken 재발급
+            // RefreshToken 유효 시 accessToken 재발급
             } else if (tokenProvider.validationToken(refreshToken)) {
                 String newAccessToken = tokenProvider.getAccessToken(
                         tokenProvider.getUsername(refreshToken),tokenProvider.getProvider(refreshToken));

@@ -50,15 +50,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(access);
         response.addCookie(refresh);
 
-        String targetUrl = getTargetUrl("/", accessToken, refreshToken);
+        String targetUrl = getTargetUrl("/");
         log.info(targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    private String getTargetUrl(String url, String accessToken, String refreshToken) {
+    private String getTargetUrl(String url) {
         return UriComponentsBuilder.fromUriString(url)
-                .queryParam(JwtProperties.accessTokenName, accessToken)
-                .queryParam(JwtProperties.accessTokenName, refreshToken)
                 .build().toString();
     }
 }

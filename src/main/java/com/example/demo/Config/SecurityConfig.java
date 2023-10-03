@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -75,6 +76,9 @@ public class SecurityConfig {
                 .userInfoEndpoint(userIEP -> userIEP.userService(oAuth2Service)));
         http.logout(logout -> logout
                 .logoutSuccessHandler(oAuth2LogoutHandler));
+
+        // 스레드 별로 SecurityContext 저장 (Default Mode)
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_THREADLOCAL);
 
         return http.build();
     }
