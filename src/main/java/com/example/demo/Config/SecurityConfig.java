@@ -1,5 +1,8 @@
 package com.example.demo.Config;
 
+import com.example.demo.Config.Cookie.CookieProvider;
+import com.example.demo.Config.Jwt.JwtAuthenticationFilter;
+import com.example.demo.Config.Jwt.TokenProvider;
 import com.example.demo.Config.Oauth2.OAuth2Service;
 import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
 import com.example.demo.Config.Oauth2.OAuth2FailureHandler;
@@ -14,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,13 +27,18 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final OAuth2LogoutHandler oAuth2LogoutHandler;
+    private final TokenProvider tokenProvider;
+    private final CookieProvider cookieProvider;
 
     public SecurityConfig(OAuth2Service oAuth2Service, OAuth2SuccessHandler oAuth2SuccessHandler,
-            OAuth2FailureHandler oAuth2FailureHandler, OAuth2LogoutHandler oAuth2LogoutHandler) {
+            OAuth2FailureHandler oAuth2FailureHandler, OAuth2LogoutHandler oAuth2LogoutHandler,
+            TokenProvider tokenProvider, CookieProvider cookieProvider) {
         this.oAuth2Service = oAuth2Service;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.oAuth2LogoutHandler = oAuth2LogoutHandler;
+        this.tokenProvider = tokenProvider;
+        this.cookieProvider = cookieProvider;
     }
 
     @Bean
@@ -57,7 +66,8 @@ public class SecurityConfig {
                 .requestMatchers("/login/oauth2/test/*").permitAll()
                 .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login/login").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/login").permitAll()
+                .anyRequest().authenticated()
         );
 
         // spring security 의 authorization uri 생성 uri
@@ -76,6 +86,9 @@ public class SecurityConfig {
                 .userInfoEndpoint(userIEP -> userIEP.userService(oAuth2Service)));
         http.logout(logout -> logout
                 .logoutSuccessHandler(oAuth2LogoutHandler));
+
+        http.addFilterBefore(new JwtAuthenticationFilter(tokenProvider, cookieProvider),
+                UsernamePasswordAuthenticationFilter.class);
 
         // 스레드 별로 SecurityContext 저장 (Default Mode)
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_THREADLOCAL);

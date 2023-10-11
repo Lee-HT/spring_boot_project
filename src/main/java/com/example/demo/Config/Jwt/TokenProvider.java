@@ -24,13 +24,11 @@ public class TokenProvider {
     private final Key key = JwtProperties.secretKey;
     // cookie 에 공백 사용 불가함으로 수정
     private final String TokenType = "bearer-";
-    private final long REFRESH_TOKEN_TIME = JwtProperties.refreshTime / 1000;
-    private final long ACCESS_TOKEN_TIME = JwtProperties.accessTime / 1000;
-
 
     // Token 만료 시간
     private Date expireTime(long expire) {
         Date now = new Date();
+        log.info(String.valueOf(expire));
         return new Date(now.getTime() + expire);
     }
 
@@ -61,8 +59,8 @@ public class TokenProvider {
     }
 
     public String getAccessToken(String username, String provider) {
-        Date expire = expireTime(ACCESS_TOKEN_TIME);
-
+        Date expire = expireTime(JwtProperties.accessTime);
+        log.info(String.format("accessToken_expire : %s", expire.toString()));
         String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("accessToken : %s", JwtToken));
@@ -71,7 +69,8 @@ public class TokenProvider {
     }
 
     public String getRefreshToken(String username, String provider) {
-        Date expire = expireTime(REFRESH_TOKEN_TIME);
+        Date expire = expireTime(JwtProperties.refreshTime);
+        log.info(String.format("refreshToken_expire : %s", expire.toString()));
         String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("refreshToken : %s", JwtToken));
@@ -97,6 +96,7 @@ public class TokenProvider {
         try {
             if (token != null) {
                 Claims claims = getClaims(token);
+                log.info(claims.getExpiration().toString());
                 return claims.getExpiration().after(new Date());
             }
             return false;
@@ -109,22 +109,20 @@ public class TokenProvider {
     }
 
     // Cookie 에서 token get
-    public Map<String, String> resolveToken(Cookie[] cookies) {
-        HashMap<String, String> Tokens = new HashMap<>();
+    public String resolveToken(Cookie[] cookies,String tokenType) {
         try {
             for (Cookie cookie : cookies) {
                 String name = cookie.getName();
-                if (name.equals("accessToken")) {
-                    Tokens.put("accessToken", cookie.getValue());
-                } else if (name.equals("refreshToken")) {
-                    Tokens.put("refreshToken", cookie.getValue());
+                if (name.equals(tokenType)) {
+                    String accessToken = cookie.getValue().substring(7);
+                    return accessToken;
                 }
             }
-            return Tokens;
+            return "";
         } catch (Exception e) {
             log.info("resolve error");
         }
-        return null;
+        return "";
     }
 
     public String getUsername(String token) {

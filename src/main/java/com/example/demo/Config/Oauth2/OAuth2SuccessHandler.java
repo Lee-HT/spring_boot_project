@@ -50,9 +50,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(access);
         response.addCookie(refresh);
 
-        String targetUrl = getTargetUrl("/");
-        log.info(targetUrl);
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        setDefaultTargetUrl("/");
+        handle(request,response,authentication);
+        clearAuthenticationAttributes(request);
     }
 
     private String getTargetUrl(String url) {
