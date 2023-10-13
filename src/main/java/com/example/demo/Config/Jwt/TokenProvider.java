@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TokenProvider {
-
-    private static final String AutorizationHeader = "Authorization";
     private final Key key = JwtProperties.secretKey;
     // cookie 에 공백 사용 불가함으로 수정
     private final String TokenType = "bearer-";
@@ -28,7 +26,6 @@ public class TokenProvider {
     // Token 만료 시간
     private Date expireTime(long expire) {
         Date now = new Date();
-        log.info(String.valueOf(expire));
         return new Date(now.getTime() + expire);
     }
 
@@ -60,7 +57,6 @@ public class TokenProvider {
 
     public String getAccessToken(String username, String provider) {
         Date expire = expireTime(JwtProperties.accessTime);
-        log.info(String.format("accessToken_expire : %s", expire.toString()));
         String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("accessToken : %s", JwtToken));
@@ -70,7 +66,6 @@ public class TokenProvider {
 
     public String getRefreshToken(String username, String provider) {
         Date expire = expireTime(JwtProperties.refreshTime);
-        log.info(String.format("refreshToken_expire : %s", expire.toString()));
         String JwtToken = getjwtToken(expire, username, provider);
 
         log.info(String.format("refreshToken : %s", JwtToken));

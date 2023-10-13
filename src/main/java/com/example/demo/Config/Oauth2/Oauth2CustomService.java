@@ -1,5 +1,6 @@
 package com.example.demo.Config.Oauth2;
 
+import com.example.demo.Config.Jwt.JwtProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class Oauth2CustomService {
                 "spring.security.oauth2.client.registration." + registrationId + ".client-id");
         String clientSecret = env.getProperty(
                 "spring.security.oauth2.client.registration." + registrationId + ".client-secret");
-        String redirectUri = "http://localhost:6550/login/oauth2/test/google";
+        String redirectUri = String.format("http://%s:6550/login/oauth2/test/google", JwtProperties.domain);
         String tokenUri = env.getProperty(
                 "spring.security.oauth2.client.provider." + registrationId + ".token-uri");
         String grant_type = env.getProperty(
@@ -89,6 +90,7 @@ public class Oauth2CustomService {
 //        HttpEntity entity = new HttpEntity(headers);
 //        JsonNode userResource = restTemplate.exchange(resourceUri, HttpMethod.GET, entity,
 //                JsonNode.class).getBody();
+
         return userResource;
     }
 

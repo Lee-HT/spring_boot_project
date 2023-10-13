@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CookieProvider {
-    private String domain = JwtProperties.domain;
     private Cookie cookie;
 
     public void setCookie(String name){
         this.cookie = new Cookie(name,null);
         this.cookie.setHttpOnly(true);
-        this.cookie.setDomain(domain);
+        this.cookie.setDomain(JwtProperties.domain);
+        this.cookie.setDomain("localhost");
         this.cookie.setPath("/");
     }
 

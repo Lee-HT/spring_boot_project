@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 String refreshToken = tokenProvider.resolveToken(request.getCookies(),
                         JwtProperties.refreshTokenName);
-                // RefreshToken 유효 시 accessToken 재발급
+                // RefreshToken 유효 시 accessToken 재발급 후 Authentication 저장
                 if (!refreshToken.isEmpty() | tokenProvider.validationToken(refreshToken)) {
                     String newAccessToken = tokenProvider.getAccessToken(
                             tokenProvider.getUsername(refreshToken),
