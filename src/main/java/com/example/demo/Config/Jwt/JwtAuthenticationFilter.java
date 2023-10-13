@@ -24,6 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         try {
+            System.out.println("JwtAuthenticationFilter");
             String accessToken = tokenProvider.resolveToken(request.getCookies(),
                     JwtProperties.accessTokenName);
             // AccessToken 유효 시 SecurityContext 에 Authentication 저장

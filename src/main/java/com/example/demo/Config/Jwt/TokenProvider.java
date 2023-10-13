@@ -91,7 +91,6 @@ public class TokenProvider {
         try {
             if (token != null) {
                 Claims claims = getClaims(token);
-                log.info(claims.getExpiration().toString());
                 return claims.getExpiration().after(new Date());
             }
             return false;

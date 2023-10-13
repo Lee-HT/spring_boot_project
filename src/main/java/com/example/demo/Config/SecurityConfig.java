@@ -46,7 +46,6 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 // 정적 리소스 시큐리티 예외 처리
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-//                .requestMatchers("/login");
     }
 
     @Bean
@@ -68,8 +67,6 @@ public class SecurityConfig {
                 .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login/login").permitAll()
                 .requestMatchers("/login").permitAll()
-                // 에러 페이지 권한 제거
-                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
         );
 
