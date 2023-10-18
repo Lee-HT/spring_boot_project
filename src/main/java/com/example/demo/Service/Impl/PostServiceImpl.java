@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -43,38 +44,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional
     // 테스트 코드 x
     public PostPageDto findPost(Pageable pageable) {
         return postConverter.toDto(postRepository.findAll(pageable));
     }
 
     @Override
-    @Transactional
     // 테스트 코드 수정 필요
     public PostPageDto findPostByTitle(String title, Pageable pageable) {
         return postConverter.toDto(postRepository.findByTitleContaining(title, pageable));
     }
 
     @Override
-    @Transactional
     public PostPageDto findPostByUsername(String username, Pageable pageable) {
         return postConverter.toDto(postRepository.findByUsernameContaining(username, pageable));
     }
 
     @Override
-    @Transactional
     public PostDto savePost(PostDto postDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
+        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute(
+                "provider");
         UserEntity user = userRepository.findByProvider(provider);
 
-        PostEntity post = postConverter.toEntity(postDto,user);
+        PostEntity post = postConverter.toEntity(postDto, user);
         return postConverter.toDto(postRepository.save(post));
     }
 
     @Override
-    @Transactional
     public PostDto updatePost(PostDto postDto) {
         PostEntity post = postRepository.findByPid(postDto.getPid());
         post.updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
@@ -83,12 +80,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional
     public int deletePosts(List<Long> pid) {
         List<PostEntity> posts = new ArrayList<>();
         try {
             for (Long i : pid) {
-                posts.add(postRepository.findByPid(i));
+                posts.add(getPost(i));
             }
             postRepository.deleteAll(posts);
             if (posts.size() == pid.size()) {
@@ -102,24 +98,38 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional
-    public boolean likePost(Long pid, Long uid) {
-        PostEntity post = postRepository.findByPid(pid);
-        UserEntity user = userRepository.findByUid(uid);
-        PostLikeEntity postLike = postLikeRepository.findByPidAndUid(post, user);
-        postLike.updateLikes(!postLike.isLikes());
+    public boolean getLike(Long pid, Long uid) {
+        return getPostLike(pid, uid).isLikes();
+    }
+
+
+    @Override
+    public boolean likePost(Long pid, Long uid, boolean likes) {
+        PostLikeEntity postLike = getPostLike(pid, uid);
+        postLike.updateLikes(likes);
 
         return postLike.isLikes();
     }
 
     @Override
-    @Transactional
-    public boolean hatePost(Long pid, Long uid) {
-        PostEntity post = postRepository.findByPid(pid);
-        UserEntity user = userRepository.findByUid(uid);
-        PostLikeEntity postLike = postLikeRepository.findByPidAndUid(post, user);
-        postLike.updateHate(!postLike.isHate());
+    public boolean deleteLike(Long pid, Long uid) {
+        postLikeRepository.deleteByPidAndUid(getPost(pid), getUser(uid));
 
-        return postLike.isHate();
+        return true;
+    }
+
+    // get PostLikeEntity
+    private PostLikeEntity getPostLike(Long pid, Long uid) {
+        return postLikeRepository.findByPidAndUid(getPost(pid), getUser(uid));
+    }
+
+    // get PostEntity
+    private PostEntity getPost(Long pid) {
+        return postRepository.findByPid(pid);
+    }
+
+    // get UserEntity
+    private UserEntity getUser(Long uid) {
+        return userRepository.findByUid(uid);
     }
 }

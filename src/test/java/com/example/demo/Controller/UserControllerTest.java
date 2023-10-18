@@ -33,16 +33,6 @@ public class UserControllerTest {
         this.objectMapper = objectMapper;
     }
 
-//    @Test
-//    public void getUser() throws Exception {
-//        UserDto user = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
-//                .build();
-//        when(userService.findByUid(any(Long.class))).thenReturn(user);
-//
-//        mvc.perform(get("/user/my-page").with(oauth2Login()).queryParam("username", "user1")).andDo(print())
-//                .andExpect(status().isOk()).andExpect(view().name("user/myPage"));
-//    }
-
     @Test
     public void saveUser() throws Exception {
         UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")

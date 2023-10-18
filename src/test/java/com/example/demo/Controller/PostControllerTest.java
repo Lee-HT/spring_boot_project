@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.UserDto;
-import com.example.demo.Entity.UserEntity;
 import com.example.demo.Service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -93,18 +92,5 @@ public class PostControllerTest {
                 .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
     }
 
-    @Test
-    public void likePost() throws Exception {
-        when(postService.likePost(any(Long.class), any(Long.class))).thenReturn(true);
-
-        mvc.perform(get("/post/like").with(oauth2Login())).andDo(print()).andExpect(status().isOk());
-    }
-
-    @Test
-    public void hatePost() throws Exception {
-        when(postService.hatePost(any(Long.class), any(Long.class))).thenReturn(true);
-
-        mvc.perform(get("/post/like").with(oauth2Login())).andDo(print()).andExpect(status().isOk());
-    }
 
 }

@@ -72,7 +72,7 @@ class PostServiceTest {
         }
         for (int i = 0; i < 5; i++) {
             postLikes.add(
-                    PostLikeEntity.builder().pid(posts.get(i)).uid(users.get(i / 3)).likes(i % 2 == 0).hate(i % 2 != 0).build());
+                    PostLikeEntity.builder().pid(posts.get(i)).uid(users.get(i / 3)).likes(i % 2 == 0).build());
         }
         this.maxIdx = posts.size();
     }
@@ -182,26 +182,11 @@ class PostServiceTest {
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
         when(postLikeRepository.findByPidAndUid(posts.get(0), users.get(0))).thenReturn(
                 this.postLikes.get(0));
-        boolean result = postService.likePost(posts.get(0).getPid(), users.get(0).getUid());
+        boolean result = postService.likePost(posts.get(0).getPid(), users.get(0).getUid(),true);
 
         Assertions.assertThat(result).isEqualTo(!check);
 
         System.out.println(result);
     }
 
-    @Test
-    @DisplayName("POST 싫어요")
-    public void hatePost() {
-        System.out.println("======== hatePost ========");
-        Boolean check = this.postLikes.get(0).isHate();
-        when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(1));
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(1));
-        when(postLikeRepository.findByPidAndUid(posts.get(1), users.get(1))).thenReturn(
-                this.postLikes.get(1));
-        boolean result = postService.hatePost(posts.get(1).getPid(), users.get(1).getUid());
-
-        Assertions.assertThat(result).isEqualTo(check);
-
-        System.out.println(result);
-    }
 }

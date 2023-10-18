@@ -2,7 +2,6 @@ package com.example.demo.Service;
 
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
-import com.example.demo.Entity.UserEntity;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +19,10 @@ public interface PostService {
 
     int deletePosts(List<Long> pid);
 
-    boolean likePost(Long pid, Long uid);
+    boolean getLike(Long pid, Long uid);
 
-    boolean hatePost(Long pid, Long uid);
+    boolean likePost(Long pid, Long uid, boolean likes);
+
+    boolean deleteLike(Long pid,Long uid);
+
 }

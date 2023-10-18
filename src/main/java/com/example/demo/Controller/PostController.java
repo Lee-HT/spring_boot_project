@@ -2,23 +2,22 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
-import com.example.demo.Entity.UserEntity;
 import com.example.demo.Service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @Slf4j
 @RequestMapping("post")
 public class PostController {
@@ -31,51 +30,46 @@ public class PostController {
     }
 
     @GetMapping("")
-    public String postPage(Model model,
+    public PostPageDto postPage(
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
         PostPageDto posts = postService.findPost(pageable);
-        model.addAllAttributes(posts.getAttr());
-        return "main/post";
-    }
-
-    @GetMapping("/write")
-    public String uploadPost() {
-        return "post/write";
+        return posts;
     }
 
     @PostMapping("")
-    public String savePost(@RequestBody PostDto postDto) {
+    public Long savePost(@RequestBody PostDto postDto) {
         PostDto post = postService.savePost(postDto);
-        return "redirect:post";
+        return post.getUid();
     }
 
     @GetMapping("/title/{title}")
-    public String searchTitle(@PathVariable("title") String title, Model model,
+    public PostPageDto searchTitle(@PathVariable("title") String title,
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
         PostPageDto posts = postService.findPostByTitle(title, pageable);
-        model.addAllAttributes(posts.getAttr());
-        return "main/post";
+        return posts;
     }
 
     @GetMapping("/username/{username}")
     public String searchUsername(@PathVariable("username") String username, Model model,
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        PostPageDto posts = postService.findPostByUsername(username,pageable);
+        PostPageDto posts = postService.findPostByUsername(username, pageable);
         model.addAllAttributes(posts.getAttr());
         return "main/post";
     }
 
     @GetMapping("/like")
-    @ResponseBody
-    public Boolean likePost(Long pid, Long uid) {
-        return postService.likePost(pid, uid);
+    public Boolean getLike(Long pid, Long uid) {
+        return postService.getLike(pid, uid);
     }
 
-    @GetMapping("/hate")
-    @ResponseBody
-    public Boolean hatePost(Long pid, Long uid) {
-        return postService.hatePost(pid, uid);
+    @PostMapping("/like")
+    public Boolean putLike(Long pid, Long uid, boolean likes) {
+        return postService.likePost(pid, uid, likes);
     }
 
+    @DeleteMapping("/like")
+    public Boolean deleteLike(Long pid, Long uid) {
+        return postService.deleteLike(pid, uid);
+    }
 
 }
