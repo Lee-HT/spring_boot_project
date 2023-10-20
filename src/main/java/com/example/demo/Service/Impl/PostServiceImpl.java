@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,12 +62,18 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto savePost(PostDto postDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute(
-                "provider");
-        UserEntity user = userRepository.findByProvider(provider);
+        String provider = (String) authentication.getPrincipal();
+        System.out.println(provider);
+        try{
+            UserEntity user = userRepository.findByProvider(provider);
+            PostEntity post = postConverter.toEntity(postDto, user);
 
-        PostEntity post = postConverter.toEntity(postDto, user);
-        return postConverter.toDto(postRepository.save(post));
+            return postConverter.toDto(postRepository.save(post));
+        }catch (Exception e){
+            System.out.println(String.format("save error : %s",e));
+            return null;
+        }
+
     }
 
     @Override
@@ -104,7 +109,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public boolean likePost(Long pid, Long uid, boolean likes) {
+    public boolean likeState(Long pid, Long uid, boolean likes) {
         PostLikeEntity postLike = getPostLike(pid, uid);
         postLike.updateLikes(likes);
 

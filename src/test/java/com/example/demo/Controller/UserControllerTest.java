@@ -4,10 +4,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.Impl.UserServiceImpl;
@@ -39,9 +38,9 @@ public class UserControllerTest {
                 .build();
         when(userService.saveUser(any(UserDto.class))).thenReturn(dto);
 
-        mvc.perform(post("/user").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/user").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)).with(csrf())).andDo(print())
-                .andExpect(status().isOk()).andExpect(view().name("user/info"));
+                .andExpect(status().isOk());
     }
 
 }

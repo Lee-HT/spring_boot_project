@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("")
 public class HomeController {
-
     @GetMapping("")
     public String Home() {
         log.info("HomeController_Home");
         return "main/home";
     }
 
+    // 테스트용
     @PostMapping(value = "test",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @ResponseBody()
+    @ResponseBody
     public UserDto TestUri(UserDto userDto) {
         log.info("HomeController_Test");
         log.info(userDto.getUsername());

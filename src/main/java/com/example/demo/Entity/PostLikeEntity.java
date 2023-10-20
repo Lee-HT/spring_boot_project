@@ -33,7 +33,6 @@ public class PostLikeEntity extends BaseTimeEntity {
     @JoinColumn(name = "pid",nullable = false)
     private PostEntity pid;
     private boolean likes;
-
     public void updateLikes(boolean likes) {
         this.likes = likes;
     }

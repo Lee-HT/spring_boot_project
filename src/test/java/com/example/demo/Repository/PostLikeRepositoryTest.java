@@ -39,16 +39,17 @@ public class PostLikeRepositoryTest {
     void setPostLikes() {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
-                    .email("email" + i + "@gmail.com").provider("google_"+i).build());
+                    .email("email" + i + "@gmail.com").provider("google_" + i).build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().uid(users.get(i/2)).title("title" + i).contents("contents" + i)
+            posts.add(PostEntity.builder().uid(users.get(i / 2)).title("title" + i)
+                    .contents("contents" + i)
                     .category("category" + i).build());
         }
         for (int i = 0; i < 5; i++) {
             postLikes.add(
                     PostLikeEntity.builder().uid(users.get(i / 3)).pid(posts.get(i))
-                            .likes(i % 2 == 0).hate(i % 2 != 0).build());
+                            .likes(i % 2 == 0).build());
         }
 
         userRepository.saveAll(users);
@@ -98,7 +99,7 @@ public class PostLikeRepositoryTest {
         for (int i = 0; i < 2; i++) {
             postLikes.add(
                     PostLikeEntity.builder().uid(users.get(2)).pid(posts.get(i)).likes(i % 2 == 0)
-                            .hate(i % 2 != 0).build());
+                            .build());
         }
         List<PostLikeEntity> result = postLikeRepository.saveAll(postLikes);
 
@@ -112,7 +113,7 @@ public class PostLikeRepositoryTest {
     public void countByPid() {
         System.out.println("======== countByPid ========");
         boolean likes = true;
-        int countLikes = postLikeRepository.countByPidAndLikes(posts.get(0),true);
+        int countLikes = postLikeRepository.countByPidAndLikes(posts.get(0), true);
 
         Assertions.assertThat(countLikes).isEqualTo(1);
 

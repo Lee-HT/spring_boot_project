@@ -7,9 +7,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostPageDto;
@@ -44,52 +43,63 @@ public class PostControllerTest {
 
     @Test
     public void getPost() throws Exception {
-        when(postService.findPost(any(Pageable.class))).thenReturn(
-                PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
-                        .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid"))
-                        .build());
+        PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
+                .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
+        when(postService.findPost(any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post").with(oauth2Login())).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("main/post"));
-    }
-
-    @Test
-    public void uploadPost() throws Exception {
-        mvc.perform(get("/post/write").with(oauth2Login())).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("post/write"));
+                .andExpect(jsonPath("$.contents").isArray())
+                .andExpect(jsonPath("$.totalPages").exists())
+                .andExpect(jsonPath("$.size").exists())
+                .andExpect(jsonPath("$.numberOfElements").exists())
+                .andExpect(jsonPath("$.sorted").exists());
     }
 
     @Test
     public void savePost() throws Exception {
-        UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com").build();
-        PostDto post = PostDto.builder().pid(1L).uid(user.getUid()).title("title1").contents("contents1")
+        UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com")
+                .build();
+        PostDto post = PostDto.builder().pid(1L).uid(user.getUid()).title("title1")
+                .contents("contents1")
                 .username("user1").category("category1").build();
         when(postService.savePost(any(PostDto.class))).thenReturn(post);
 
         mvc.perform(post("/post").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(post)).content(objectMapper.writeValueAsString(user)).with(csrf()))
-                .andDo(print()).andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("post"));
+                        .content(objectMapper.writeValueAsString(post))
+                        .content(objectMapper.writeValueAsString(user)).with(csrf())).andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
     public void searchTitle() throws Exception {
+        PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
+                .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
-                PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
-                        .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
+                postPageDto);
 
-        mvc.perform(get("/post/title/title").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
+        mvc.perform(get("/post/title/title").with(oauth2Login())
+                .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents").isArray())
+                .andExpect(jsonPath("$.totalPages").exists())
+                .andExpect(jsonPath("$.size").exists())
+                .andExpect(jsonPath("$.numberOfElements").exists())
+                .andExpect(jsonPath("$.sorted").exists());
     }
 
     @Test
     public void searchUsername() throws Exception {
+        PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
+                .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
-                PostPageDto.builder().contents(new ArrayList<>()).totalPages(2).size(3)
-                        .numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build());
+                postPageDto);
 
-        mvc.perform(get("/post/username/user").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isOk()).andExpect(view().name("main/post"));
+        mvc.perform(get("/post/username/user").with(oauth2Login())
+                        .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents").isArray())
+                .andExpect(jsonPath("$.totalPages").exists())
+                .andExpect(jsonPath("$.size").exists())
+                .andExpect(jsonPath("$.numberOfElements").exists())
+                .andExpect(jsonPath("$.sorted").exists());
     }
 
 

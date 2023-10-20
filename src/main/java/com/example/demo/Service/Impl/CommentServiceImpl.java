@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto saveComment(CommentDto commentDto) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String provider = ((DefaultOAuth2User) authentication.getPrincipal()).getAttribute("provider");
+            String provider = (String) authentication.getPrincipal();
             UserEntity user = userRepository.findByProvider(provider);
             CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user));
 

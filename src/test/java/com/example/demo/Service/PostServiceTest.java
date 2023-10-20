@@ -4,7 +4,6 @@ package com.example.demo.Service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.example.demo.Config.Oauth2.Oauth2Attributes;
 import com.example.demo.Converter.PostConverter;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
@@ -19,7 +18,6 @@ import com.example.demo.Repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.example.demo.Service.Impl.PostServiceImpl;
 import org.assertj.core.api.Assertions;
@@ -37,7 +35,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -64,23 +61,26 @@ class PostServiceTest {
     @Autowired
     public PostServiceTest() {
         for (int i = 1; i < 3; i++) {
-            users.add(UserEntity.builder().uid((long) i).username("user" + i).email("email" + i + "@gmail.com").build());
+            users.add(UserEntity.builder().uid((long) i).username("user" + i)
+                    .email("email" + i + "@gmail.com").build());
         }
         for (int i = 1; i < 6; i++) {
-            posts.add(PostEntity.builder().pid((long) i).uid(users.get(0)).title("title" + i).contents("contents" + i).build());
-            postDtos.add(PostDto.builder().pid((long) i).title("title" + i).contents("contents" + i).build());
+            posts.add(PostEntity.builder().pid((long) i).uid(users.get(0)).title("title" + i)
+                    .contents("contents" + i).build());
+            postDtos.add(PostDto.builder().pid((long) i).title("title" + i).contents("contents" + i)
+                    .build());
         }
         for (int i = 0; i < 5; i++) {
             postLikes.add(
-                    PostLikeEntity.builder().pid(posts.get(i)).uid(users.get(i / 3)).likes(i % 2 == 0).build());
+                    PostLikeEntity.builder().pid(posts.get(i)).uid(users.get(i / 3))
+                            .likes(i % 2 == 0).build());
         }
         this.maxIdx = posts.size();
     }
 
     private void setUserContextByUsername() {
-        Map<String, Object> oauth2Attributes = Oauth2Attributes.builder().provider("google_1").build().toMap();
-        DefaultOAuth2User oAuth2User = new DefaultOAuth2User(null, oauth2Attributes, "provider");
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(oAuth2User, null, null));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
     @Test
@@ -116,7 +116,8 @@ class PostServiceTest {
                 .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
                 .sorted(pages.getSort()).build();
 
-        when(postRepository.findByUsernameContaining(users.get(0).getUsername(), this.pageable)).thenReturn(pages);
+        when(postRepository.findByUsernameContaining(users.get(0).getUsername(),
+                this.pageable)).thenReturn(pages);
         when(postConverter.toDto(pages)).thenReturn(pageDto);
         PostPageDto result = postService.findPostByUsername(username, this.pageable);
 
@@ -131,7 +132,8 @@ class PostServiceTest {
         System.out.println("======== savePost ========");
         setUserContextByUsername();
         when(userRepository.findByProvider(any(String.class))).thenReturn(users.get((0)));
-        when(postConverter.toEntity(any(PostDto.class), any(UserEntity.class))).thenReturn(this.posts.get(1));
+        when(postConverter.toEntity(any(PostDto.class), any(UserEntity.class))).thenReturn(
+                this.posts.get(1));
         when(postRepository.save(any(PostEntity.class))).thenReturn(this.posts.get(1));
         when(postConverter.toDto(any(PostEntity.class))).thenReturn(postDtos.get(0));
         PostDto result = postService.savePost(postDtos.get(0));
@@ -177,14 +179,13 @@ class PostServiceTest {
     @DisplayName("POST 좋아요")
     public void likesPost() {
         System.out.println("======== likesPost ========");
-        Boolean check = this.postLikes.get(0).isLikes();
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
         when(postLikeRepository.findByPidAndUid(posts.get(0), users.get(0))).thenReturn(
                 this.postLikes.get(0));
-        boolean result = postService.likePost(posts.get(0).getPid(), users.get(0).getUid(),true);
+        boolean result = postService.likeState(posts.get(0).getPid(), users.get(0).getUid(), false);
 
-        Assertions.assertThat(result).isEqualTo(!check);
+        Assertions.assertThat(result).isEqualTo(false);
 
         System.out.println(result);
     }

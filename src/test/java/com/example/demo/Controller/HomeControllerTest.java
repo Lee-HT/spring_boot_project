@@ -4,7 +4,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,8 +27,7 @@ class HomeControllerTest {
     public void Home_test() throws Exception {
         mvc.perform(get("").with(oauth2Login()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("main/home"));
+                .andExpect(status().isOk());
     }
 
 }

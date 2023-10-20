@@ -21,7 +21,7 @@ public interface PostService {
 
     boolean getLike(Long pid, Long uid);
 
-    boolean likePost(Long pid, Long uid, boolean likes);
+    boolean likeState(Long pid, Long uid, boolean likes);
 
     boolean deleteLike(Long pid,Long uid);
 

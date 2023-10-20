@@ -3,11 +3,12 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("user")
 public class UserController {
 
@@ -18,8 +19,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping()
-    public UserDto saveUser(UserDto userDto) {
+    @PutMapping
+    public UserDto saveUser(@RequestBody UserDto userDto) {
         UserDto user = userService.updateUser(userDto);
         return user;
     }

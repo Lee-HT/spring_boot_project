@@ -3,7 +3,6 @@ package com.example.demo.Service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.example.demo.Config.Oauth2.Oauth2Attributes;
 import com.example.demo.Converter.CommentConverter;
 import com.example.demo.DTO.CommentDto;
 import com.example.demo.DTO.CommentPageDto;
@@ -15,7 +14,6 @@ import com.example.demo.Repository.PostRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.CommentServiceImpl;
@@ -33,7 +31,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +52,7 @@ public class CommentServiceTest {
     private List<CommentDto> commentDtos = new ArrayList<>();
     private List<UserEntity> users = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
-    private int MaxIdx = comments.size();
+    private int MaxIdx;
 
     @Autowired
     public CommentServiceTest() {
@@ -70,15 +67,16 @@ public class CommentServiceTest {
             comments.add(CommentEntity.builder().cid((long) i).pid(posts.get((i - 1) / 2))
                     .uid(users.get(i / 2)).contents("content" + i).build());
             commentDtos.add(
-                    CommentDto.builder().cid((long) i).username("user" + i).contents("content" + i).build());
+                    CommentDto.builder().cid((long) i).username("user" + i).contents("content" + i)
+                            .build());
         }
+        MaxIdx = comments.size();
     }
 
     // SecurityContext 지정
     private void setUserContextByUsername() {
-        Map<String, Object> oauth2Attributes = Oauth2Attributes.builder().provider("google_1").build().toMap();
-        DefaultOAuth2User oAuth2User = new DefaultOAuth2User(null, oauth2Attributes, "provider");
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(oAuth2User, null, null));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
     @Test
@@ -106,12 +104,14 @@ public class CommentServiceTest {
         System.out.println("======== saveComment ========");
         setUserContextByUsername();
         when(userRepository.findByProvider(any(String.class))).thenReturn(users.get(0));
-        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class))).thenReturn(comments.get(0));
+        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class))).thenReturn(
+                comments.get(0));
         when(commentRepository.save(any(CommentEntity.class))).thenReturn(comments.get(0));
         when(commentConverter.toDto(any(CommentEntity.class))).thenReturn(commentDtos.get(0));
         CommentDto result = commentService.saveComment(commentDtos.get(0));
 
-        CommentDto commentDto = CommentDto.builder().cid(1L).username("user1").contents("content1").build();
+        CommentDto commentDto = CommentDto.builder().cid(1L).username("user1").contents("content1")
+                .build();
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentDto);
     }
 
