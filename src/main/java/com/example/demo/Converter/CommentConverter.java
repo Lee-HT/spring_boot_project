@@ -1,8 +1,11 @@
 package com.example.demo.Converter;
 
 import com.example.demo.DTO.CommentDto;
+import com.example.demo.DTO.CommentLikeDto;
 import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Entity.CommentEntity;
+import com.example.demo.Entity.CommentLikeEntity;
+import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,21 +15,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentConverter {
 
-    public CommentEntity toEntity(CommentDto commentDto,UserEntity userEntity) {
-        return CommentEntity.builder().cid(commentDto.getCid()).uid(userEntity).username(commentDto.getUsername())
+    public CommentEntity toEntity(CommentDto commentDto, UserEntity userEntity) {
+        return CommentEntity.builder().cid(commentDto.getCid()).uid(userEntity)
+                .username(commentDto.getUsername())
                 .contents(commentDto.getContents()).build();
     }
 
     public List<CommentEntity> toEntity(List<CommentDto> commentDto, List<UserEntity> userEntity) {
         List<CommentEntity> commentEntity = new ArrayList<>();
         for (int i = 0; i < commentDto.size(); i++) {
-            commentEntity.add(toEntity(commentDto.get(i),userEntity.get(i)));
+            commentEntity.add(toEntity(commentDto.get(i), userEntity.get(i)));
         }
         return commentEntity;
     }
 
     public CommentDto toDto(CommentEntity comment) {
-        return CommentDto.builder().cid(comment.getCid()).uid(comment.getUid().getUid()).username(comment.getUsername())
+        return CommentDto.builder().cid(comment.getCid()).uid(comment.getUid().getUid())
+                .username(comment.getUsername())
                 .contents(comment.getContents()).build();
     }
 
@@ -43,5 +48,6 @@ public class CommentConverter {
                 .totalPages(pages.getTotalPages()).size(pages.getSize())
                 .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort()).build();
     }
+
 
 }

@@ -15,7 +15,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostLikeDto {
-    private boolean good;
-    private boolean hate;
+    private Long uid;
+    private Long pid;
+    private boolean likes;
 
 }
