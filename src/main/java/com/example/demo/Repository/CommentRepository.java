@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<CommentEntity,Long> {
     CommentEntity findByCid(Long cid);
-    List<CommentEntity> findByUid(UserEntity uid);
+    Page<CommentEntity> findByUid(UserEntity uid, Pageable pageable);
     Page<CommentEntity> findByPid(PostEntity pid, Pageable pageable);
 }

@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PostController.class)
-public class PostControllerTest {
+class PostControllerTest {
 
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;

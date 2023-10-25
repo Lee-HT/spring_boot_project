@@ -4,6 +4,7 @@ import com.example.demo.Entity.CommentEntity;
 import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class CommentLikeRepositoryTest {
         }
         for (int i = 0; i < 5; i++) {
             commentLikes.add(CommentLikeEntity.builder().uid(users.get(i / 3)).cid(comments.get(i))
-                    .likes(i % 2 == 0).hate(i % 2 != 0).build());
+                    .likes(i % 2 == 0).build());
         }
 
         userRepository.saveAll(users);
@@ -70,10 +71,16 @@ class CommentLikeRepositoryTest {
     @DisplayName("UID 기준 SELECT")
     public void findByUid() {
         System.out.println("======== findByUid ========");
-        List<CommentLikeEntity> commentLikes = commentLikeRepository.findByUid(users.get(0));
+        List<CommentLikeEntity> result = commentLikeRepository.findByUidAndLikes(users.get(0),
+                true);
+        List<CommentLikeEntity> commentLikes = new ArrayList<>();
+        List<Integer> idxs = Arrays.asList(0,2);
+        for (int i: idxs){
+            commentLikes.add(this.commentLikes.get(i));
+        }
 
-        Assertions.assertThat(commentLikes).usingRecursiveComparison()
-                .isEqualTo(this.commentLikes.subList(0, 3));
+        Assertions.assertThat(result).usingRecursiveComparison()
+                .isEqualTo(commentLikes);
 
         System.out.println(commentLikes);
     }
@@ -84,10 +91,8 @@ class CommentLikeRepositoryTest {
         System.out.println("======== saveAll ========");
         List<CommentLikeEntity> commentLikes = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
-            commentLikes.add(
-                    CommentLikeEntity.builder().uid(users.get(2)).cid(comments.get(i))
-                            .likes(i % 2 == 0)
-                            .hate(i % 2 != 0).build());
+            commentLikes.add(CommentLikeEntity.builder().uid(users.get(2)).cid(comments.get(i))
+                    .likes(i % 2 == 0).build());
         }
         List<CommentLikeEntity> result = commentLikeRepository.saveAll(commentLikes);
 
@@ -101,7 +106,7 @@ class CommentLikeRepositoryTest {
     public void countByCidAndLikes() {
         System.out.println("======== countByCid ========");
         boolean likes = true;
-        int countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0),likes);
+        int countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0), likes);
 
         Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
 

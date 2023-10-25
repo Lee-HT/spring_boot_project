@@ -1,5 +1,6 @@
 package com.example.demo.DTO;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +23,5 @@ public class PostDto {
     private String title;
     private String contents;
     private String category;
+    private LocalDateTime updateAt;
 }

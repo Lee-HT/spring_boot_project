@@ -9,7 +9,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
 
-    CommentPageDto getCommentPage(Long pid, Pageable pageable);
+    CommentPageDto getPostCommentPage(Long pid, Pageable pageable);
+    CommentPageDto getUserCommentPage(Long uid, Pageable pageable);
     CommentDto saveComment(CommentDto commentDto);
     List<CommentLikeDto> getCommentLikeCid(Long cid,Boolean likes);
     List<CommentLikeDto> getCommentLikeUid(Long uid,Boolean likes);

@@ -26,21 +26,16 @@ public class CommentLikeEntity extends BaseTimeEntity {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "uid",nullable = false)
+    @JoinColumn(name = "uid", nullable = false)
     private UserEntity uid;
     @Id
     @ManyToOne
-    @JoinColumn(name = "cid",nullable = false)
+    @JoinColumn(name = "cid", nullable = false)
     private CommentEntity cid;
     private boolean likes;
-    private boolean hate;
 
     public void updateLikes(boolean likes) {
         this.likes = likes;
-    }
-
-    public void updateHates(boolean hate) {
-        this.hate = hate;
     }
 
 }

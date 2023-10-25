@@ -15,23 +15,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentConverter {
 
-    public CommentEntity toEntity(CommentDto commentDto, UserEntity userEntity) {
-        return CommentEntity.builder().cid(commentDto.getCid()).uid(userEntity)
+    public CommentEntity toEntity(CommentDto commentDto, UserEntity userEntity,
+            PostEntity postEntity) {
+        return CommentEntity.builder().cid(commentDto.getCid()).uid(userEntity).pid(postEntity)
                 .username(commentDto.getUsername())
                 .contents(commentDto.getContents()).build();
     }
 
-    public List<CommentEntity> toEntity(List<CommentDto> commentDto, List<UserEntity> userEntity) {
+    public List<CommentEntity> toEntity(List<CommentDto> commentDto, List<UserEntity> userEntity,
+            List<PostEntity> postEntity) {
         List<CommentEntity> commentEntity = new ArrayList<>();
         for (int i = 0; i < commentDto.size(); i++) {
-            commentEntity.add(toEntity(commentDto.get(i), userEntity.get(i)));
+            commentEntity.add(toEntity(commentDto.get(i), userEntity.get(i), postEntity.get(i)));
         }
         return commentEntity;
     }
 
     public CommentDto toDto(CommentEntity comment) {
         return CommentDto.builder().cid(comment.getCid()).uid(comment.getUid().getUid())
-                .username(comment.getUsername())
+                .pid(comment.getPid().getPid()).username(comment.getUsername())
                 .contents(comment.getContents()).build();
     }
 

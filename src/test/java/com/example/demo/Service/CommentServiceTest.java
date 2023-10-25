@@ -35,7 +35,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 @WithMockUser
-public class CommentServiceTest {
+class CommentServiceTest {
 
     @Mock
     private CommentRepository commentRepository;
@@ -67,7 +67,7 @@ public class CommentServiceTest {
             comments.add(CommentEntity.builder().cid((long) i).pid(posts.get((i - 1) / 2))
                     .uid(users.get(i / 2)).contents("content" + i).build());
             commentDtos.add(
-                    CommentDto.builder().cid((long) i).username("user" + i).contents("content" + i)
+                    CommentDto.builder().cid((long) i).pid((long) i).username("user" + i).contents("content" + i)
                             .build());
         }
         MaxIdx = comments.size();
@@ -94,7 +94,7 @@ public class CommentServiceTest {
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 pages);
         when(commentConverter.toDto(pages)).thenReturn(commentPageDto);
-        CommentPageDto result = commentService.getCommentPage(pid, pageable);
+        CommentPageDto result = commentService.getPostCommentPage(pid, pageable);
 
         Assertions.assertThat(result).isEqualTo(commentPageDto);
     }
@@ -104,13 +104,14 @@ public class CommentServiceTest {
         System.out.println("======== saveComment ========");
         setUserContextByUsername();
         when(userRepository.findByProvider(any(String.class))).thenReturn(users.get(0));
-        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class))).thenReturn(
-                comments.get(0));
+        when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
+        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
+                any(PostEntity.class))).thenReturn(comments.get(0));
         when(commentRepository.save(any(CommentEntity.class))).thenReturn(comments.get(0));
         when(commentConverter.toDto(any(CommentEntity.class))).thenReturn(commentDtos.get(0));
         CommentDto result = commentService.saveComment(commentDtos.get(0));
 
-        CommentDto commentDto = CommentDto.builder().cid(1L).username("user1").contents("content1")
+        CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).username("user1").contents("content1")
                 .build();
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentDto);
     }

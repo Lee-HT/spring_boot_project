@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentPageDto getCommentPage(Long pid, Pageable pageable) {
+    public CommentPageDto getPostCommentPage(Long pid, Pageable pageable) {
         PostEntity postEntity = postRepository.findByPid(pid);
         Page<CommentEntity> comments = commentRepository.findByPid(postEntity, pageable);
         CommentPageDto commentPageDto = commentConverter.toDto(comments);
@@ -53,12 +53,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public CommentPageDto getUserCommentPage(Long uid, Pageable pageable) {
+        UserEntity userEntity = userRepository.findByUid(uid);
+        Page<CommentEntity> comments = commentRepository.findByUid(userEntity,pageable);
+        CommentPageDto commentPageDto = commentConverter.toDto(comments);
+
+        return commentPageDto;
+    }
+
+
+    @Override
     public CommentDto saveComment(CommentDto commentDto) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String provider = (String) authentication.getPrincipal();
             UserEntity user = userRepository.findByProvider(provider);
-            CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user));
+            PostEntity post = postRepository.findByPid(commentDto.getPid());
+            CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user, post));
 
             return commentConverter.toDto(comment);
         } catch (NullPointerException e) {
