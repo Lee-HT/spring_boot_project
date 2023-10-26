@@ -36,6 +36,7 @@ class CommentLikeRepositoryTest {
         this.userRepository = userRepository;
     }
 
+    // commentLikes의 ID가 null이 아니라 Detached 상태로 판단 -> merge 수행
     @BeforeEach
     public void setCommentLikes() {
         for (int i = 1; i < 4; i++) {
@@ -53,7 +54,7 @@ class CommentLikeRepositoryTest {
 
         userRepository.saveAll(users);
         commentRepository.saveAll(comments);
-        commentLikeRepository.saveAll(commentLikes);
+        this.commentLikes = commentLikeRepository.saveAll(commentLikes);
     }
 
     @Test
@@ -62,9 +63,11 @@ class CommentLikeRepositoryTest {
         System.out.println("======== findAll ========");
         List<CommentLikeEntity> commentLikes = commentLikeRepository.findAll();
 
-        Assertions.assertThat(commentLikes).usingRecursiveComparison().isEqualTo(this.commentLikes);
-
         System.out.println(commentLikes);
+        System.out.println(this.commentLikes);
+
+        Assertions.assertThat(commentLikes).usingRecursiveComparison()
+                .isEqualTo(this.commentLikes);
     }
 
     @Test
@@ -74,15 +77,15 @@ class CommentLikeRepositoryTest {
         List<CommentLikeEntity> result = commentLikeRepository.findByUidAndLikes(users.get(0),
                 true);
         List<CommentLikeEntity> commentLikes = new ArrayList<>();
-        List<Integer> idxs = Arrays.asList(0,2);
-        for (int i: idxs){
+        List<Integer> idxs = Arrays.asList(0, 2);
+        for (int i : idxs) {
             commentLikes.add(this.commentLikes.get(i));
         }
 
+        System.out.println(result);
+
         Assertions.assertThat(result).usingRecursiveComparison()
                 .isEqualTo(commentLikes);
-
-        System.out.println(commentLikes);
     }
 
     @Test
@@ -96,9 +99,10 @@ class CommentLikeRepositoryTest {
         }
         List<CommentLikeEntity> result = commentLikeRepository.saveAll(commentLikes);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentLikes);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison()
+                .ignoringFields("createdAt","updatedAt").isEqualTo(commentLikes);
     }
 
     @Test
@@ -108,9 +112,9 @@ class CommentLikeRepositoryTest {
         boolean likes = true;
         int countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0), likes);
 
-        Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
-
         System.out.println(countLikes);
+
+        Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1);
     }
 
 }

@@ -71,9 +71,10 @@ class CommentRepositoryTest {
         System.out.println("======== findAll ========");
         List<CommentEntity> comments = commentRepository.findAll();
 
-        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments);
-
         System.out.println(comments);
+        System.out.println(this.comments);
+
+        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments);
     }
 
     @Test
@@ -84,9 +85,9 @@ class CommentRepositoryTest {
                 pageable, maxIdx);
         Page<CommentEntity> result = commentRepository.findByPid(pk.get(0), pageable);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
@@ -97,10 +98,10 @@ class CommentRepositoryTest {
                 pageable, maxIdx);
         Page<CommentEntity> comments = commentRepository.findByUid(users.get(0),pageable);
 
+        System.out.println(comments);
+
         Assertions.assertThat(comments).usingRecursiveComparison()
                 .isEqualTo(pages);
-
-        System.out.println(comments);
     }
 
     @Test
@@ -114,9 +115,9 @@ class CommentRepositoryTest {
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);
     }
 
 }

@@ -21,7 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(UidCid.class)
-@ToString
+@ToString(callSuper = true)
 public class CommentLikeEntity extends BaseTimeEntity {
 
     @Id

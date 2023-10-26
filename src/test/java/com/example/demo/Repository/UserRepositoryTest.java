@@ -55,9 +55,9 @@ class UserRepositoryTest {
         System.out.println("======== findAll ========");
         List<UserEntity> users = userRepository.findAll();
 
-        Assertions.assertThat(users).usingRecursiveComparison().isEqualTo(this.users);
-
         System.out.println(users);
+
+        Assertions.assertThat(users).usingRecursiveComparison().isEqualTo(this.users);
     }
 
     @Test
@@ -66,9 +66,9 @@ class UserRepositoryTest {
         System.out.println("======== findByUsername ========");
         UserEntity user = userRepository.findByUid(pk.get(0));
 
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
-
         System.out.println(user);
+
+        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
     }
 
     @Test
@@ -78,9 +78,9 @@ class UserRepositoryTest {
         String provider = "google_1";
         UserEntity user = userRepository.findByProvider(provider);
 
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
-
         System.out.println(user);
+
+        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
     }
 
     @Test
@@ -91,9 +91,9 @@ class UserRepositoryTest {
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
         Page<UserEntity> result = userRepository.findByUsernameContaining(username, this.pageable);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
@@ -108,9 +108,9 @@ class UserRepositoryTest {
         }
         List<UserEntity> result = userRepository.saveAll(newUsers);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(newUsers);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(newUsers);
     }
 
 }

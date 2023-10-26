@@ -54,7 +54,7 @@ class PostLikeRepositoryTest {
 
         userRepository.saveAll(users);
         postRepository.saveAll(posts);
-        postLikeRepository.saveAll(postLikes);
+        this.postLikes = postLikeRepository.saveAll(postLikes);
     }
 
     @Test
@@ -63,9 +63,9 @@ class PostLikeRepositoryTest {
         System.out.println("======== findAll ========");
         List<PostLikeEntity> postLikes = postLikeRepository.findAll();
 
-        Assertions.assertThat(postLikes).usingRecursiveComparison().isEqualTo(this.postLikes);
-
         System.out.println(postLikes);
+
+        Assertions.assertThat(postLikes).usingRecursiveComparison().isEqualTo(this.postLikes);
     }
 
     @Test
@@ -74,10 +74,10 @@ class PostLikeRepositoryTest {
         System.out.println("======== findByUid ========");
         List<PostLikeEntity> postLikes = postLikeRepository.findByUid(users.get(0));
 
+        System.out.println(postLikes);
+
         Assertions.assertThat(postLikes).usingRecursiveComparison()
                 .isEqualTo(this.postLikes.subList(0, 3));
-
-        System.out.println(postLikes);
     }
 
     @Test
@@ -86,9 +86,9 @@ class PostLikeRepositoryTest {
         System.out.println("======== findByPidAndUid ========");
         PostLikeEntity result = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes.get(0));
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes.get(0));
     }
 
     @Test
@@ -103,20 +103,20 @@ class PostLikeRepositoryTest {
         }
         List<PostLikeEntity> result = postLikeRepository.saveAll(postLikes);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison()
+                .ignoringFields("createdAt","updatedAt").isEqualTo(postLikes);
     }
 
     @Test
     @DisplayName("PID COUNT SELECT")
     public void countByPid() {
         System.out.println("======== countByPid ========");
-        boolean likes = true;
         int countLikes = postLikeRepository.countByPidAndLikes(posts.get(0), true);
 
-        Assertions.assertThat(countLikes).isEqualTo(1);
-
         System.out.println(countLikes);
+
+        Assertions.assertThat(countLikes).isEqualTo(1);
     }
 }

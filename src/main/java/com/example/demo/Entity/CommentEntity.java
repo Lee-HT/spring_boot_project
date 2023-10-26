@@ -15,13 +15,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Getter
 @Entity
 @Builder
 @Table(name = "comment")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@ToString
+@ToString(callSuper = true)
 public class CommentEntity extends BaseTimeEntity {
 
     @Id

@@ -13,14 +13,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Getter
 @Entity
 @Builder
 @Table(name = "user")
 @AllArgsConstructor
 // new 로 생성 불가능
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@ToString
+@ToString(callSuper = true)
 public class UserEntity extends BaseTimeEntity {
 
     @Id

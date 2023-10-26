@@ -65,9 +65,9 @@ class PostRepositoryTest {
         System.out.println("======== findAll ========");
         List<PostEntity> posts = postRepository.findAll();
 
-        Assertions.assertThat(posts).usingRecursiveComparison().isEqualTo(this.posts);
-
         System.out.println(posts);
+
+        Assertions.assertThat(posts).usingRecursiveComparison().isEqualTo(this.posts);
     }
 
     @Test
@@ -76,9 +76,9 @@ class PostRepositoryTest {
         System.out.println("======== findByPid ========");
         PostEntity result = postRepository.findByPid(pk.get(0));
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(posts.get(0));
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(posts.get(0));
     }
 
     @Test
@@ -90,9 +90,9 @@ class PostRepositoryTest {
                 this.posts.size());
         Page<PostEntity> result = postRepository.findByUsernameContaining(users.get(0).getUsername(),this.pageable);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
-
         System.out.println(result.getContent());
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
@@ -104,9 +104,9 @@ class PostRepositoryTest {
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
                 this.pageable, this.posts.size());
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
-
         System.out.println(result.getContent());
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
@@ -118,9 +118,9 @@ class PostRepositoryTest {
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
                 this.pageable, this.posts.size());
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
-
         System.out.println(result.getContent());
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
@@ -134,9 +134,9 @@ class PostRepositoryTest {
         }
         List<PostEntity> result = postRepository.saveAll(Posts);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Posts);
-
         System.out.println(result);
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Posts);
     }
 
 }
