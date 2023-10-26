@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostPageDto;
-import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -57,17 +56,15 @@ class PostControllerTest {
 
     @Test
     public void savePost() throws Exception {
-        UserDto user = UserDto.builder().uid(1L).username("username1").email("email1@gmail.com")
-                .build();
-        PostDto post = PostDto.builder().pid(1L).uid(user.getUid()).title("title1")
+        PostDto post = PostDto.builder().pid(1L).uid(1L).title("title1")
                 .contents("contents1")
                 .username("user1").category("category1").build();
         when(postService.savePost(any(PostDto.class))).thenReturn(post);
 
         mvc.perform(post("/post").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(post))
-                        .content(objectMapper.writeValueAsString(user)).with(csrf())).andDo(print())
-                .andExpect(status().isOk());
+                        .content(objectMapper.writeValueAsString(post)).with(csrf())).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pid").exists());
     }
 
     @Test
@@ -78,7 +75,7 @@ class PostControllerTest {
                 postPageDto);
 
         mvc.perform(get("/post/title/title").with(oauth2Login())
-                .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                        .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.totalPages").exists())
                 .andExpect(jsonPath("$.size").exists())
