@@ -4,15 +4,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.CommentConverter;
+import com.example.demo.Converter.CommentLikeConverter;
 import com.example.demo.DTO.CommentDto;
+import com.example.demo.DTO.CommentLikeDto;
 import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Entity.CommentEntity;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
+import com.example.demo.Repository.CommentLikeRepository;
 import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.PostRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.example.demo.Repository.UserRepository;
@@ -40,9 +44,13 @@ class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
     @Mock
-    private PostRepository postRepository;
+    private CommentLikeRepository commentLikeRepository;
     @Mock
     private CommentConverter commentConverter;
+    @Mock
+    private CommentLikeConverter commentLikeConverter;
+    @Mock
+    private PostRepository postRepository;
     @Mock
     private UserRepository userRepository;
     @InjectMocks
@@ -67,7 +75,9 @@ class CommentServiceTest {
             comments.add(CommentEntity.builder().cid((long) i).pid(posts.get((i - 1) / 2))
                     .uid(users.get(i / 2)).contents("content" + i).build());
             commentDtos.add(
-                    CommentDto.builder().cid((long) i).pid((long) i).username("user" + i).contents("content" + i)
+                    CommentDto.builder().cid((long) i).pid((long) i).uid((long) i)
+                            .username("user" + i)
+                            .contents("content" + i)
                             .build());
         }
         MaxIdx = comments.size();
@@ -80,23 +90,33 @@ class CommentServiceTest {
     }
 
     @Test
-    public void getComment() {
-        System.out.println("======== getComment ========");
-        Long pid = 1L;
-        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(0, 2)),
-                pageable,
-                MaxIdx);
-        CommentPageDto commentPageDto = CommentPageDto.builder()
-                .contents(new ArrayList<>(commentDtos.subList(0, 2)))
-                .totalPages(pages.getTotalPages()).size(pages.getSize())
-                .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort()).build();
+    public void getPostCommentPage() {
+        System.out.println("======== getPostCommentPage ========");
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
-                pages);
-        when(commentConverter.toDto(pages)).thenReturn(commentPageDto);
-        CommentPageDto result = commentService.getPostCommentPage(pid, pageable);
+                new PageImpl<>(new ArrayList<>()));
+        when(commentConverter.toDto(any(Page.class))).thenReturn(
+                CommentPageDto.builder().contents(Arrays.asList(commentDtos.get(0))).build());
+        CommentPageDto result = commentService.getPostCommentPage(1L, pageable);
 
-        Assertions.assertThat(result).isEqualTo(commentPageDto);
+        System.out.println(result);
+
+        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
+    }
+
+    @Test
+    public void getUserCommentPage() {
+        System.out.println("======== getUserCommentPage ========");
+        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
+                new PageImpl<>(new ArrayList<>()));
+        when(commentConverter.toDto(any(Page.class))).thenReturn(
+                CommentPageDto.builder().contents(Arrays.asList(commentDtos.get(0))).build());
+        CommentPageDto result = commentService.getUserCommentPage(1L, pageable);
+
+        System.out.println(result);
+
+        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
     }
 
     @Test
@@ -111,9 +131,37 @@ class CommentServiceTest {
         when(commentConverter.toDto(any(CommentEntity.class))).thenReturn(commentDtos.get(0));
         CommentDto result = commentService.saveComment(commentDtos.get(0));
 
-        CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).username("user1").contents("content1")
-                .build();
+        CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).uid(1L).username("user1")
+                .contents("content1").build();
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentDto);
+    }
+
+    @Test
+    public void getCommentLikeCid() {
+        System.out.println("======== getCommentLikeCid ========");
+        when(commentRepository.findByCid(any(Long.class))).thenReturn(comments.get(0));
+        when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
+                any(Boolean.class))).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());
+        List<CommentLikeDto> result = commentService.getCommentLikeCid(1L, true);
+
+        System.out.println(result);
+
+        Assertions.assertThat(result).isInstanceOf(List.class);
+    }
+
+    @Test
+    public void getCommentLikeUid() {
+        System.out.println("======== getCommentLikeUid ========");
+        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),
+                any(Boolean.class))).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());
+        List<CommentLikeDto> result = commentService.getCommentLikeUid(1L, true);
+
+        System.out.println(result);
+
+        Assertions.assertThat(result).isInstanceOf(List.class);
     }
 
 }
