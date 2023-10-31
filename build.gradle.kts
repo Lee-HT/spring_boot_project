@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.2"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
 }
 
 group = "com.example"
@@ -41,9 +42,43 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.2")
     testImplementation("org.springframework.security:spring-security-test")
+
+    // Spring rest Docs
+    testImplementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 }
 
-tasks.withType<Test> {
+tasks.test{
     useJUnitPlatform()
 }
 
+// Spring rest Docs
+val snippetsDir = file("build/generated-snippets")
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    outputs.dir(snippetsDir)
+}
+
+tasks.asciidoctor {
+    inputs.dir(snippetsDir)
+    dependsOn(tasks.test)
+    doFirst {
+        delete("src/main/resources/static/docs")
+    }
+}
+
+tasks.register("copyDocuments", Copy::class) {
+    dependsOn(tasks.asciidoctor)
+    from(file("build/asciidoc/html5"))
+    into(file("src/main/resource/static/docs"))
+}
+
+tasks.build {
+    dependsOn("copyDocuments")
+}
+
+tasks.bootJar {
+    dependsOn(tasks.asciidoctor)
+    dependsOn(tasks.getByName("copyDocuments"))
+}

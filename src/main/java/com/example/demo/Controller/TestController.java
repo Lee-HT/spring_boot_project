@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 @Controller
 @RequestMapping("")
-public class HomeController {
+public class TestController {
     @GetMapping("")
     public String Home() {
-        log.info("HomeController_Home");
+        log.info("TestController_Home");
         return "main/home";
     }
 

@@ -1,0 +1,13 @@
+= REST Docs
+:snippets: ../../../build/generated-snippets
+spring-boot 3.1.2
+:doctype: book
+:toc: left
+:toclevels: 2
+
+[[Home]]
+== Controller
+
+[[Home-test]]
+=== Test Method
+operation::HomeTest[snippets='http-request,http-response']
