@@ -83,6 +83,8 @@ class PostServiceTest {
                 .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
+    //given when then
+
     @Test
     @DisplayName("TITLE 기준 SELECT")
     public void findPostByTitle() {

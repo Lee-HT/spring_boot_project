@@ -51,7 +51,6 @@ public class Oauth2CustomService {
                 "spring.security.oauth2.client.registration." + registrationId + ".authorization-grant-type");
 
         // redirect-Uri 는 authorization code 발급의 redirect-Uri 와 유효성 검사에 사용
-        // 완전히 이해 되지 않음
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", authorizationCode);
         params.add("client_id", clientId);
@@ -59,7 +58,7 @@ public class Oauth2CustomService {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", grant_type);
 
-        // restTemplate deprecated 대비
+        // restTemplate will be deprecated
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 //        ResponseEntity<JsonNode> responseNode = restTemplate.exchange(tokenUri, HttpMethod.POST,

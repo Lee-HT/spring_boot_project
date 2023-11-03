@@ -4,10 +4,21 @@ spring-boot 3.1.2
 :doctype: book
 :toc: left
 :toclevels: 2
+:source-highlighter: highlightjs
 
-[[Home]]
-== Controller
+include::Test-API.adoc[]
 
-[[Home-test]]
-=== Test Method
-operation::HomeTest[snippets='http-request,http-response']
+[[Post-API]]
+== Post API
+
+[[Get-Post-Page]]
+=== 게시글 조회
+operation::post_controller_test/get_post_page[snippets="http-request,query-parameters,http-response,response-fields"]
+
+[[Save-Post]]
+=== 게시글 저장
+operation::post_controller_test/save_post[snippets="http-request,request-fields,http-response,response-fields"]
+
+[[Get-Post-Title]]
+=== 게시글 조회 ( 제목 )
+operation::post_controller_test/get_post_title[snippets="http-request,path-parameters,query-parameters,http-response,response-fields"]

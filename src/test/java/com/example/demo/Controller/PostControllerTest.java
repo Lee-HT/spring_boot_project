@@ -2,10 +2,15 @@ package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,15 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(PostController.class)
+@AutoConfigureRestDocs
 class PostControllerTest {
 
     private final MockMvc mvc;
@@ -41,12 +50,31 @@ class PostControllerTest {
     }
 
     @Test
-    public void getPost() throws Exception {
+    public void getPostPage() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPost(any(Pageable.class))).thenReturn(postPageDto);
 
-        mvc.perform(get("/post").with(oauth2Login())).andDo(print()).andExpect(status().isOk())
+        mvc.perform(RestDocumentationRequestBuilders.get("/post?page=0&size=10&sort=pid")
+                        .with(oauth2Login()))
+                .andDo(print())
+                .andDo(document("post_controller_test/get_post_page",
+                        queryParameters(
+                                parameterWithName("page").description("page"),
+                                parameterWithName("size").description("size"),
+                                parameterWithName("sort").description("sort")
+                        ),
+                        responseFields(
+                                fieldWithPath("contents").description("contents"),
+                                fieldWithPath("totalPages").description("totalPages"),
+                                fieldWithPath("size").description("size"),
+                                fieldWithPath("numberOfElements").description("numberOfElements"),
+                                fieldWithPath("sorted.empty").description("empty"),
+                                fieldWithPath("sorted.sorted").description("sorted.sorted"),
+                                fieldWithPath("sorted.unsorted").description("unsorted")
+                        )
+                ))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.totalPages").exists())
                 .andExpect(jsonPath("$.size").exists())
@@ -61,8 +89,30 @@ class PostControllerTest {
                 .username("user1").category("category1").build();
         when(postService.savePost(any(PostDto.class))).thenReturn(post);
 
-        mvc.perform(post("/post").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(RestDocumentationRequestBuilders.post("/post").with(oauth2Login())
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(post)).with(csrf())).andDo(print())
+                .andDo(document("post_controller_test/save_post",
+                        requestFields(
+                                fieldWithPath("pid").description("pid"),
+                                fieldWithPath("uid").description("uid"),
+                                fieldWithPath("title").description("title"),
+                                fieldWithPath("contents").description("contents"),
+                                fieldWithPath("username").description("username"),
+                                fieldWithPath("category").description("category"),
+                                fieldWithPath("updatedAt").ignored()
+                        ),
+                        responseFields(
+                                fieldWithPath("pid").description("pid"),
+                                fieldWithPath("uid").description("uid"),
+                                fieldWithPath("title").description("title"),
+                                fieldWithPath("contents").description("contents"),
+                                fieldWithPath("username").description("username"),
+                                fieldWithPath("category").description("category"),
+                                fieldWithPath("updatedAt").type("LocalDateTime")
+                                        .description("updatedAt")
+                        )
+                ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pid").exists());
     }
@@ -74,8 +124,28 @@ class PostControllerTest {
         when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 
-        mvc.perform(get("/post/title/title").with(oauth2Login())
-                        .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+        mvc.perform(RestDocumentationRequestBuilders.get("/post/title/{title}?page=0&size=10&sort=pid", "title")
+                        .with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+                .andDo(document("post_controller_test/get_post_title",
+                        pathParameters(
+                                parameterWithName("title").description("title")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("page"),
+                                parameterWithName("size").description("size"),
+                                parameterWithName("sort").description("sort")
+                        ),
+                        responseFields(
+                                fieldWithPath("contents").description("contents"),
+                                fieldWithPath("totalPages").description("totalPages"),
+                                fieldWithPath("size").description("size"),
+                                fieldWithPath("numberOfElements").description("numberOfElements"),
+                                fieldWithPath("sorted.empty").description("empty"),
+                                fieldWithPath("sorted.sorted").description("sorted.sorted"),
+                                fieldWithPath("sorted.unsorted").description("unsorted")
+                        )
+                ))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.totalPages").exists())
                 .andExpect(jsonPath("$.size").exists())
@@ -90,7 +160,7 @@ class PostControllerTest {
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 
-        mvc.perform(get("/post/username/user").with(oauth2Login())
+        mvc.perform(MockMvcRequestBuilders.get("/post/username/user").with(oauth2Login())
                         .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.totalPages").exists())

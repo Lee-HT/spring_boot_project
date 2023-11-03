@@ -23,5 +23,5 @@ public class PostDto {
     private String title;
     private String contents;
     private String category;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 }

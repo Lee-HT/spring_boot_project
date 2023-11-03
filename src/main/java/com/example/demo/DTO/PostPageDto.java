@@ -1,8 +1,6 @@
 package com.example.demo.DTO;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,14 +28,4 @@ public class PostPageDto {
     private int numberOfElements;
     // 정렬 상태
     private Sort sorted;
-
-    public Map<String, Object> getAttr() {
-        Map<String, Object> Attr = new HashMap<>();
-        Attr.put("contents", this.contents);
-        Attr.put("totalPages", this.totalPages);
-        Attr.put("size", this.size);
-        Attr.put("numberOfElements", this.numberOfElements);
-        Attr.put("sorted", this.sorted);
-        return Attr;
-    }
 }
