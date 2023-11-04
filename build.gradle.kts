@@ -48,10 +48,6 @@ dependencies {
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 }
 
-tasks.test{
-    useJUnitPlatform()
-}
-
 // Spring rest Docs
 val snippetsDir = file("build/generated-snippets")
 
