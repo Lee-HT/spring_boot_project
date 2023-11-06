@@ -2,7 +2,7 @@ package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.demo.Config.Doc.RestDocsSetUp;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.Service.PostService;
@@ -22,29 +23,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(PostController.class)
-@AutoConfigureRestDocs
-class PostControllerTest {
-
-    private final MockMvc mvc;
+//@AutoConfigureRestDocs(uriHost = "localhost", uriPort = 6550, uriScheme = "http")
+class PostControllerTest extends RestDocsSetUp {
     private final ObjectMapper objectMapper;
     @MockBean
     private final PostService postService;
 
     @Autowired
-    public PostControllerTest(MockMvc mockMvc, PostService postService, ObjectMapper objectMapper) {
-        this.mvc = mockMvc;
+    public PostControllerTest(RestDocumentationResultHandler restDocs, MockMvc mockMvc,
+            PostService postService, ObjectMapper objectMapper) {
+        super(restDocs, mockMvc);
         this.postService = postService;
         this.objectMapper = objectMapper;
     }
@@ -55,10 +54,9 @@ class PostControllerTest {
                 .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPost(any(Pageable.class))).thenReturn(postPageDto);
 
-        mvc.perform(RestDocumentationRequestBuilders.get("/post?page=0&size=10&sort=pid")
+        mvc.perform(get("/post?page=0&size=10&sort=pid")
                         .with(oauth2Login()))
-                .andDo(print())
-                .andDo(document("post_controller_test/get_post_page",
+                .andDo(restDocs.document(
                         queryParameters(
                                 parameterWithName("page").description("page"),
                                 parameterWithName("size").description("size"),
@@ -89,10 +87,10 @@ class PostControllerTest {
                 .username("user1").category("category1").build();
         when(postService.savePost(any(PostDto.class))).thenReturn(post);
 
-        mvc.perform(RestDocumentationRequestBuilders.post("/post").with(oauth2Login())
+        mvc.perform(post("/post").with(oauth2Login())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(post)).with(csrf())).andDo(print())
-                .andDo(document("post_controller_test/save_post",
+                .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("pid").description("pid"),
                                 fieldWithPath("uid").description("uid"),
@@ -118,15 +116,15 @@ class PostControllerTest {
     }
 
     @Test
-    public void searchTitle() throws Exception {
+    public void getPostTitle() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 
-        mvc.perform(RestDocumentationRequestBuilders.get("/post/title/{title}?page=0&size=10&sort=pid", "title")
+        mvc.perform(get("/post/title/{title}?page=0&size=10&sort=pid", "title")
                         .with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)).andDo(print())
-                .andDo(document("post_controller_test/get_post_title",
+                .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("title").description("title")
                         ),
@@ -154,7 +152,7 @@ class PostControllerTest {
     }
 
     @Test
-    public void searchUsername() throws Exception {
+    public void getPostUsername() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "pid")).build();
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
