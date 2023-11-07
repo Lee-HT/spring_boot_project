@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
@@ -22,6 +21,6 @@ public class CommentPageDto {
     private int totalPages;
     private int size;
     private int numberOfElements;
-    private Sort sorted;
+    private boolean sorted;
 
 }

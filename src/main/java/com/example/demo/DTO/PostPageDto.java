@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
@@ -27,5 +26,5 @@ public class PostPageDto {
     // 현재 페이지 출력 개수
     private int numberOfElements;
     // 정렬 상태
-    private Sort sorted;
+    private boolean sorted;
 }

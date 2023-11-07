@@ -95,7 +95,7 @@ class PostServiceTest {
                 .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
                 .totalPages(pages.getTotalPages())
                 .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
-                .sorted(pages.getSort()).build();
+                .sorted(pages.getSort().isSorted()).build();
         when(postRepository.findByTitleContaining("title", this.pageable)).thenReturn(pages);
         when(postConverter.toDto(pages)).thenReturn(pageDto);
         PostPageDto result = postService.findPostByTitle("title", pageable);
@@ -116,7 +116,7 @@ class PostServiceTest {
                 .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
                 .totalPages(pages.getTotalPages())
                 .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
-                .sorted(pages.getSort()).build();
+                .sorted(pages.getSort().isSorted()).build();
 
         when(postRepository.findByUsernameContaining(users.get(0).getUsername(),
                 this.pageable)).thenReturn(pages);

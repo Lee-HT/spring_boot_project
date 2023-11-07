@@ -23,9 +23,9 @@ public abstract class RestDocsSetUp {
     protected MockMvc mvc;
 
     @Autowired
-    protected RestDocsSetUp(RestDocumentationResultHandler restDocs, MockMvc mockMvc) {
+    protected RestDocsSetUp(RestDocumentationResultHandler restDocs, MockMvc mvc) {
         this.restDocs = restDocs;
-        this.mvc = mockMvc;
+        this.mvc = mvc;
     }
 
     @BeforeEach

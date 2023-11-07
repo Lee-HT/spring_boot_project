@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,7 +42,7 @@ class CommentControllerTest {
     @Test
     void getCommentsByPost() throws Exception {
         CommentPageDto commentPageDto = CommentPageDto.builder().contents(new ArrayList<>())
-                .totalPages(2).size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "cid"))
+                .totalPages(2).size(3).numberOfElements(3).sorted(true)
                 .build();
         when(commentService.getPostCommentPage(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);
@@ -60,7 +58,7 @@ class CommentControllerTest {
     @Test
     void getCommentsByUser() throws Exception {
         CommentPageDto commentPageDto = CommentPageDto.builder().contents(new ArrayList<>())
-                .totalPages(2).size(3).numberOfElements(3).sorted(Sort.by(Direction.DESC, "cid"))
+                .totalPages(2).size(3).numberOfElements(3).sorted(true)
                 .build();
         when(commentService.getUserCommentPage(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);

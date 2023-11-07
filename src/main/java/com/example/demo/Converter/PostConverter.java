@@ -44,7 +44,7 @@ public class PostConverter {
     public PostPageDto toDto(Page<PostEntity> pages) {
         return PostPageDto.builder().contents(toDto(pages.getContent()))
                 .totalPages(pages.getTotalPages()).numberOfElements(pages.getNumberOfElements())
-                .size(pages.getSize()).sorted(pages.getSort()).build();
+                .size(pages.getSize()).sorted(pages.getSort().isSorted()).build();
     }
 
 }

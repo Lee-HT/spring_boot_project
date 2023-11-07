@@ -1,10 +1,8 @@
 package com.example.demo.Converter;
 
 import com.example.demo.DTO.CommentDto;
-import com.example.demo.DTO.CommentLikeDto;
 import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Entity.CommentEntity;
-import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
@@ -48,7 +46,7 @@ public class CommentConverter {
     public CommentPageDto toDto(Page<CommentEntity> pages) {
         return CommentPageDto.builder().contents(toDto(pages.getContent()))
                 .totalPages(pages.getTotalPages()).size(pages.getSize())
-                .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort()).build();
+                .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort().isSorted()).build();
     }
 
 
