@@ -16,7 +16,6 @@ import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.PostRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.example.demo.Repository.UserRepository;
@@ -94,7 +93,7 @@ class CommentServiceTest {
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
-                CommentPageDto.builder().contents(Arrays.asList(commentDtos.get(0))).build());
+                CommentPageDto.builder().build());
         CommentPageDto result = commentService.getPostCommentPage(1L, pageable);
 
         System.out.println(result);
@@ -109,7 +108,7 @@ class CommentServiceTest {
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
-                CommentPageDto.builder().contents(Arrays.asList(commentDtos.get(0))).build());
+                CommentPageDto.builder().build());
         CommentPageDto result = commentService.getUserCommentPage(1L, pageable);
 
         System.out.println(result);

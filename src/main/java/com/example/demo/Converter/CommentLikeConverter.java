@@ -13,7 +13,7 @@ public class CommentLikeConverter {
 
     public CommentLikeEntity toEntity(
             CommentLikeDto commentLikeDto, UserEntity uid, CommentEntity cid) {
-        return CommentLikeEntity.builder().likes(commentLikeDto.isLikes()).uid(uid).cid(cid)
+        return CommentLikeEntity.builder().likes(commentLikeDto.getLikes()).uid(uid).cid(cid)
                 .build();
     }
 

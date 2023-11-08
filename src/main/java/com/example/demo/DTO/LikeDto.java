@@ -14,9 +14,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommentLikeDto {
-    private Long uid;
-    private Long cid;
+public class LikeDto {
     private Boolean likes;
 
 }

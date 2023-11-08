@@ -17,6 +17,7 @@ import lombok.ToString;
 public class PostLikeDto {
     private Long uid;
     private Long pid;
-    private boolean likes;
+    // getter setter 차이 발생 Boolean : get set , boolean : is set
+    private Boolean likes;
 
 }

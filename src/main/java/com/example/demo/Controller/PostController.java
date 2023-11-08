@@ -1,5 +1,7 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Service.PostService;
@@ -57,21 +59,21 @@ public class PostController {
     }
 
     // 현재 좋아요 상태
-    @GetMapping("/like")
-    public Boolean getLike(Long pid, Long uid) {
+    @GetMapping("/{pid}/username/{uid}/likes")
+    public LikeDto getLike(@PathVariable Long pid, @PathVariable Long uid) {
         return postService.getLike(pid, uid);
     }
 
     // 좋아요 or 싫어요 추가
-    @PostMapping("/like")
-    public Boolean likeState(Long pid, Long uid, boolean likes) {
-        return postService.likeState(pid, uid, likes);
+    @PostMapping("/likes")
+    public LikeDto likeState(PostLikeDto dto) {
+        return postService.likeState(dto);
     }
 
     // 성공시 true
-    @DeleteMapping("/like")
-    public Boolean deleteLike(Long pid, Long uid) {
-        return postService.deleteLike(pid, uid);
+    @DeleteMapping("{pid}/username/{uid}/likes")
+    public int deleteLike(@PathVariable Long pid, @PathVariable Long uid) {
+        return postService.deleteLike(pid,uid);
     }
 
 }

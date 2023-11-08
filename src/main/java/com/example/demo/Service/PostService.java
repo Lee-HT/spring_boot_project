@@ -1,5 +1,7 @@
 package com.example.demo.Service;
 
+import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import java.util.List;
@@ -19,10 +21,10 @@ public interface PostService {
 
     int deletePosts(List<Long> pid);
 
-    boolean getLike(Long pid, Long uid);
+    LikeDto getLike(Long pid, Long uid);
 
-    boolean likeState(Long pid, Long uid, boolean likes);
+    LikeDto likeState(PostLikeDto dto);
 
-    boolean deleteLike(Long pid,Long uid);
+    int deleteLike(Long pid, Long uid);
 
 }

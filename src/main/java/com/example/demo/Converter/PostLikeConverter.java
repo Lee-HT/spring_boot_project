@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 public class PostLikeConverter {
 
     public PostLikeEntity toEntity(PostLikeDto postLikeDto, UserEntity uid, PostEntity pid) {
-        return PostLikeEntity.builder().likes(postLikeDto.isLikes()).uid(uid).pid(pid).build();
+        return PostLikeEntity.builder().likes(postLikeDto.getLikes()).uid(uid).pid(pid).build();
     }
 
     public List<PostLikeEntity> toEntity(List<PostLikeDto> postLikeDto, List<UserEntity> uid,
             List<PostEntity> pid) {
         List<PostLikeEntity> postLike = new ArrayList<>();
         for (int i = 0; i < postLikeDto.size(); i++) {
-            PostLikeEntity.builder().likes(postLikeDto.get(0).isLikes()).uid(uid.get(i))
+            PostLikeEntity.builder().likes(postLikeDto.get(0).getLikes()).uid(uid.get(i))
                     .pid(pid.get(i)).build();
         }
         return postLike;

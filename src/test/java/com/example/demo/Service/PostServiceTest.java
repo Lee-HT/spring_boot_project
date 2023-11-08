@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
+import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
@@ -181,13 +183,15 @@ class PostServiceTest {
     @DisplayName("POST 좋아요")
     public void likesPost() {
         System.out.println("======== likesPost ========");
+        PostLikeDto dto = PostLikeDto.builder().pid(posts.get(0).getPid())
+                .uid(users.get(0).getUid()).likes(false).build();
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
         when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
         when(postLikeRepository.findByPidAndUid(posts.get(0), users.get(0))).thenReturn(
                 this.postLikes.get(0));
-        boolean result = postService.likeState(posts.get(0).getPid(), users.get(0).getUid(), false);
+        LikeDto result = postService.likeState(dto);
 
-        Assertions.assertThat(result).isEqualTo(false);
+        Assertions.assertThat(result.getLikes()).isEqualTo(false);
 
         System.out.println(result);
     }

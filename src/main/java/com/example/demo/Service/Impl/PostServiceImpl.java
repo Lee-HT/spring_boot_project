@@ -1,6 +1,8 @@
 package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.PostConverter;
+import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
@@ -103,24 +105,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public boolean getLike(Long pid, Long uid) {
-        return getPostLike(pid, uid).isLikes();
+    public LikeDto getLike(Long pid, Long uid) {
+        return LikeDto.builder().likes(getPostLike(pid, uid).isLikes()).build();
     }
 
 
     @Override
-    public boolean likeState(Long pid, Long uid, boolean likes) {
-        PostLikeEntity postLike = getPostLike(pid, uid);
-        postLike.updateLikes(likes);
+    public LikeDto likeState(PostLikeDto dto) {
+        PostLikeEntity postLike = getPostLike(dto.getPid(), dto.getUid());
+        postLike.updateLikes(dto.getLikes());
 
-        return postLike.isLikes();
+        return LikeDto.builder().likes(postLike.isLikes()).build();
     }
 
     @Override
-    public boolean deleteLike(Long pid, Long uid) {
-        postLikeRepository.deleteByPidAndUid(getPost(pid), getUser(uid));
-
-        return true;
+    public int deleteLike(Long pid,Long uid) {
+        try {
+            postLikeRepository.deleteByPidAndUid(getPost(pid), getUser(uid));
+            return 1;
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     // get PostLikeEntity
