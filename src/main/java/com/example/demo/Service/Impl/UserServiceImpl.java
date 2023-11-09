@@ -31,26 +31,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto findByUid(Long uid) {
         return userConverter.toDto(userRepository.findByUid(uid));
     }
 
     @Override
-    @Transactional
     public UserPageDto findByUsernameContaining(String username, Pageable pageable) {
         return userConverter.toDto(userRepository.findByUsernameContaining(username,pageable));
     }
 
     @Override
-    @Transactional
     public UserDto saveUser(UserDto userDto) {
         UserEntity user = userConverter.toEntity(userDto);
         return userConverter.toDto(userRepository.save(user));
     }
 
     @Override
-    @Transactional
     // save 삭제 필요
     public UserDto updateUser(UserDto userDto) {
         UserEntity user = userRepository.findByUid(userDto.getUid());
@@ -60,7 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public int deleteUsers(List<Long> uid){
         try{
             List<UserEntity> userEntities = new ArrayList<>();

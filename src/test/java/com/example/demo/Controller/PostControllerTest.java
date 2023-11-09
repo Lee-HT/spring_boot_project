@@ -101,8 +101,8 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("updatedAt").ignored()
                         ),
                         responseFields(
-                                fieldWithPath("pid").description("게시글 pk"),
-                                fieldWithPath("uid").description("유저 pk"),
+                                fieldWithPath("pid").description("게시글 PK"),
+                                fieldWithPath("uid").description("유저 FK"),
                                 fieldWithPath("title").description("게시글 제목"),
                                 fieldWithPath("contents").description("게시글 내용"),
                                 fieldWithPath("username").description("유저명"),
@@ -116,7 +116,7 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
-    void getPostTitle() throws Exception {
+    void getPostByTitle() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(true).build();
         when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
@@ -149,7 +149,7 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
-    void getPostUsername() throws Exception {
+    void getPostByUsername() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(true).build();
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
@@ -192,7 +192,7 @@ class PostControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("pid").description("게시글 PK"),
-                                parameterWithName("uid").description("유저 PK")
+                                parameterWithName("uid").description("유저 FK")
                         ),
                         responseFields(
                                 fieldWithPath("likes").description("좋아요 상태")
@@ -212,7 +212,7 @@ class PostControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("pid").description("게시글 PK"),
-                                fieldWithPath("uid").description("유저 PK"),
+                                fieldWithPath("uid").description("유저 FK"),
                                 fieldWithPath("likes").description("좋아요 상태")
                         ),
                         responseFields(
@@ -223,7 +223,7 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
-    void deleteLike() throws Exception {
+    void deletePostLike() throws Exception {
         when(postService.deleteLike(any(Long.class), any(Long.class))).thenReturn(1);
 
         mvc.perform(
@@ -232,7 +232,7 @@ class PostControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("pid").description("게시글 PK"),
-                                parameterWithName("uid").description("유저 PK")
+                                parameterWithName("uid").description("유저 FK")
                         ),
                         responseBody()
                 ))

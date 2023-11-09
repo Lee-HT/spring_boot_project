@@ -31,33 +31,28 @@ public class CommentController {
 
     @GetMapping("post/{pid}/comments")
     public CommentPageDto getCommentsByPost(@PathVariable Long pid,
-            @PageableDefault(page = 0, size = 10, sort = "createAt", direction = Direction.DESC) Pageable pageable) {
-        CommentPageDto commentPageDto = commentService.getPostCommentPage(pid, pageable);
-        return commentPageDto;
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+        return commentService.getCommentByPost(pid, pageable);
     }
 
     @GetMapping("user/{uid}/comments")
     public CommentPageDto getCommentsByUser(@PathVariable Long uid,
-            @PageableDefault(page = 0, size = 10, sort = "createAt", direction = Direction.DESC) Pageable pageable) {
-        CommentPageDto commentPageDto = commentService.getUserCommentPage(uid, pageable);
-        return commentPageDto;
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+        return commentService.getCommentByUser(uid, pageable);
     }
 
     @PostMapping("comment")
     public CommentDto saveComment(@RequestBody CommentDto commentDto) {
-        CommentDto comment = commentService.saveComment(commentDto);
-        return comment;
+        return commentService.saveComment(commentDto);
     }
 
-    @GetMapping("user/{uid}/comment-likes")
-    public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid, boolean likes) {
-        List<CommentLikeDto> dtos = commentService.getCommentLikeUid(uid,likes);
-        return dtos;
+    @GetMapping("user/{uid}/comment-likes/{likes}")
+    public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid, @PathVariable boolean likes) {
+        return commentService.getCommentLikeUid(uid,likes);
     }
 
-    @GetMapping("comment/{cid}/comment-likes")
-    public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid, boolean likes) {
-        List<CommentLikeDto> dtos = commentService.getCommentLikeCid(cid,likes);
-        return dtos;
+    @GetMapping("comment/{cid}/comment-likes/{likes}")
+    public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid, @PathVariable boolean likes) {
+        return commentService.getCommentLikeCid(cid,likes);
     }
 }

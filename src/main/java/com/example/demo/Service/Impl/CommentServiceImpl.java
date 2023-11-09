@@ -46,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentPageDto getPostCommentPage(Long pid, Pageable pageable) {
+    public CommentPageDto getCommentByPost(Long pid, Pageable pageable) {
         PostEntity postEntity = postRepository.findByPid(pid);
         Page<CommentEntity> comments = commentRepository.findByPid(postEntity, pageable);
         CommentPageDto commentPageDto = commentConverter.toDto(comments);
@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentPageDto getUserCommentPage(Long uid, Pageable pageable) {
+    public CommentPageDto getCommentByUser(Long uid, Pageable pageable) {
         UserEntity userEntity = userRepository.findByUid(uid);
         Page<CommentEntity> comments = commentRepository.findByUid(userEntity,pageable);
         CommentPageDto commentPageDto = commentConverter.toDto(comments);

@@ -1,0 +1,22 @@
+[[Comment-API]]
+== Comment API
+
+[[Get-Comment-By-Post]]
+=== 댓글 조회 ( 게시글 )
+operation::comment-controller-test/get-comments-by-post[snippets="http-request,path-parameters,query-parameters,response-fields"]
+
+[[Get-Comment-By-User]]
+=== 댓글 조회 ( 유저 )
+operation::comment-controller-test/get-comments-by-user[snippets="http-request,path-parameters,query-parameters,response-fields"]
+
+[[Save-User]]
+=== 댓글 저장
+operation::comment-controller-test/get-comments-by-user[snippets="http-request,path-parameters,query-parameters,response-fields"]
+
+[[Get-Comment-Like-By-User]]
+=== 댓글 좋아요 조회 ( 유저 )
+operation::comment-controller-test/get-comment-like-by-user[snippets="http-request,path-parameters,response-fields"]
+
+[[Get-Comment-Like-By-Comment]]
+=== 댓글 좋아요 조회 ( 댓글 )
+operation::comment-controller-test/get-comment-like-by-comment[snippets="http-request,path-parameters,response-fields"]

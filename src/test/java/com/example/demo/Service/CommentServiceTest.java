@@ -94,7 +94,7 @@ class CommentServiceTest {
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
                 CommentPageDto.builder().build());
-        CommentPageDto result = commentService.getPostCommentPage(1L, pageable);
+        CommentPageDto result = commentService.getCommentByPost(1L, pageable);
 
         System.out.println(result);
 
@@ -109,7 +109,7 @@ class CommentServiceTest {
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
                 CommentPageDto.builder().build());
-        CommentPageDto result = commentService.getUserCommentPage(1L, pageable);
+        CommentPageDto result = commentService.getCommentByUser(1L, pageable);
 
         System.out.println(result);
 

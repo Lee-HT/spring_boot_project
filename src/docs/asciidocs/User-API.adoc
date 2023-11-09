@@ -1,0 +1,6 @@
+[[User-API]]
+== User API
+
+[[Update-User]]
+=== 유저 정보 수정
+operation::user-controller-test/update-user[snippets="http-request,request-fields,response-fields"]

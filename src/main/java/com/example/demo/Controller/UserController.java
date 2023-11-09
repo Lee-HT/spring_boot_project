@@ -20,7 +20,7 @@ public class UserController {
     }
 
     @PutMapping
-    public UserDto saveUser(@RequestBody UserDto userDto) {
+    public UserDto updateUser(@RequestBody UserDto userDto) {
         UserDto user = userService.updateUser(userDto);
         return user;
     }

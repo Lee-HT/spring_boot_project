@@ -21,5 +21,5 @@ public class CommentDto {
     private Long uid;
     private String username;
     private String contents;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 }
