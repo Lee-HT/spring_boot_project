@@ -94,10 +94,10 @@ class PostControllerTest extends RestDocsSetUp {
                         requestFields(
                                 fieldWithPath("pid").ignored(),
                                 fieldWithPath("uid").ignored(),
-                                fieldWithPath("title").description("게시글 제목"),
-                                fieldWithPath("contents").description("게시글 내용"),
+                                fieldWithPath("title").optional().description("게시글 제목"),
+                                fieldWithPath("contents").optional().description("게시글 내용"),
                                 fieldWithPath("username").description("현재 유저명"),
-                                fieldWithPath("category").description("게시글 카테고리"),
+                                fieldWithPath("category").optional().description("게시글 카테고리"),
                                 fieldWithPath("updatedAt").ignored()
                         ),
                         responseFields(
@@ -125,7 +125,7 @@ class PostControllerTest extends RestDocsSetUp {
         mvc.perform(get("/post/title/{title}?page=0&size=10&sort=pid", "title").with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("title").description("게시글 제목")
+                                parameterWithName("title").optional().description("게시글 제목")
                         ),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
@@ -160,7 +160,7 @@ class PostControllerTest extends RestDocsSetUp {
                                 oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("username").description("유저명")
+                                parameterWithName("username").optional().description("유저명")
                         ),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
@@ -191,8 +191,8 @@ class PostControllerTest extends RestDocsSetUp {
         mvc.perform(get("/post/{pid}/username/{uid}/likes", "1", "1").with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("pid").description("게시글 PK"),
-                                parameterWithName("uid").description("유저 FK")
+                                parameterWithName("pid").optional().description("게시글 PK"),
+                                parameterWithName("uid").optional().description("유저 FK")
                         ),
                         responseFields(
                                 fieldWithPath("likes").description("좋아요 상태")
@@ -211,9 +211,9 @@ class PostControllerTest extends RestDocsSetUp {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andDo(restDocs.document(
                         requestFields(
-                                fieldWithPath("pid").description("게시글 PK"),
-                                fieldWithPath("uid").description("유저 FK"),
-                                fieldWithPath("likes").description("좋아요 상태")
+                                fieldWithPath("pid").optional().description("게시글 PK"),
+                                fieldWithPath("uid").optional().description("유저 FK"),
+                                fieldWithPath("likes").optional().description("좋아요 상태")
                         ),
                         responseFields(
                                 fieldWithPath("likes").description("좋아요 상태")
@@ -231,8 +231,8 @@ class PostControllerTest extends RestDocsSetUp {
                 )
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("pid").description("게시글 PK"),
-                                parameterWithName("uid").description("유저 FK")
+                                parameterWithName("pid").optional().description("게시글 PK"),
+                                parameterWithName("uid").optional().description("유저 FK")
                         ),
                         responseBody()
                 ))

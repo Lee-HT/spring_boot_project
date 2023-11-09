@@ -47,7 +47,7 @@ class UserControllerTest extends RestDocsSetUp {
                         .content(objectMapper.writeValueAsString(dto)).with(csrf()))
                 .andDo(restDocs.document(
                         requestFields(
-                                fieldWithPath("uid").description("유저 PK"),
+                                fieldWithPath("uid").optional().description("유저 PK"),
                                 fieldWithPath("email").description("유저 이메일"),
                                 fieldWithPath("username").description("유저명"),
                                 fieldWithPath("profilePic").description("프로필 사진")

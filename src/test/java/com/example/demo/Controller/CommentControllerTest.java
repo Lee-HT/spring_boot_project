@@ -59,7 +59,7 @@ class CommentControllerTest extends RestDocsSetUp {
                         get("/post/{pid}/comments?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("pid").description("게시글 PK")
+                                parameterWithName("pid").optional().description("게시글 PK")
                         ),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
@@ -93,7 +93,7 @@ class CommentControllerTest extends RestDocsSetUp {
                         get("/user/{uid}/comments?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("uid").description("유저 PK")
+                                parameterWithName("uid").optional().description("유저 PK")
                         ),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
@@ -126,10 +126,10 @@ class CommentControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("cid").ignored(),
-                                fieldWithPath("pid").description("게시글 FK"),
-                                fieldWithPath("uid").description("유저 FK"),
-                                fieldWithPath("username").description("현재 유저명"),
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("pid").optional().description("게시글 FK"),
+                                fieldWithPath("uid").optional().description("유저 FK"),
+                                fieldWithPath("username").optional().description("현재 유저명"),
+                                fieldWithPath("contents").optional().description("내용"),
                                 fieldWithPath("updatedAt").ignored()
                         ),
                         responseFields(
@@ -155,8 +155,8 @@ class CommentControllerTest extends RestDocsSetUp {
         mvc.perform(get("/user/{uid}/comment-likes/{likes}", 1, true).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("uid").description("유저 FK"),
-                                parameterWithName("likes").description("좋아요 or 싫어요")
+                                parameterWithName("uid").optional().description("유저 FK"),
+                                parameterWithName("likes").optional().description("좋아요 or 싫어요")
                         ),
                         responseFields(
                                 fieldWithPath("[].cid").description("댓글 PK"),
@@ -177,8 +177,8 @@ class CommentControllerTest extends RestDocsSetUp {
         mvc.perform(get("/comment/{cid}/comment-likes/{likes}", 1, true).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("cid").description("댓글 FK"),
-                                parameterWithName("likes").description("좋아요 or 싫어요")
+                                parameterWithName("cid").optional().description("댓글 FK"),
+                                parameterWithName("likes").optional().description("좋아요 or 싫어요")
                         ),
                         responseFields(
                                 fieldWithPath("[].cid").description("댓글 PK"),
