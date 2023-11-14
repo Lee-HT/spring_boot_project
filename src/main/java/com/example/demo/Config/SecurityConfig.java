@@ -45,7 +45,9 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 // 정적 리소스 시큐리티 예외 처리
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                // 권한 필요 없는 path
+                .requestMatchers("/");
     }
 
     @Bean
@@ -63,10 +65,8 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/").permitAll()
                 .requestMatchers("/login/oauth2/test/*").permitAll()
                 .requestMatchers("/oauth2/authorization/*").permitAll()
-                .requestMatchers("/login/login").permitAll()
                 .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated()
         );
