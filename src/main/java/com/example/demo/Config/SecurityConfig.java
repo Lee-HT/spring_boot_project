@@ -63,7 +63,7 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("").permitAll()
+                .requestMatchers("/").permitAll()
                 .requestMatchers("/login/oauth2/test/*").permitAll()
                 .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login/login").permitAll()
