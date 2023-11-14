@@ -63,6 +63,7 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("").permitAll()
                 .requestMatchers("/login/oauth2/test/*").permitAll()
                 .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login/login").permitAll()
@@ -79,7 +80,7 @@ public class SecurityConfig {
                 // redirect uri
                 .redirectionEndpoint(end -> end
                         .baseUri("/login/oauth2/code/*"))
-//                .loginPage("/login")
+                //.loginPage("/login")
                 // defaultSuccessUrl 과 동시 사용 x
                 .successHandler(oAuth2SuccessHandler)
                 .failureHandler(oAuth2FailureHandler)
