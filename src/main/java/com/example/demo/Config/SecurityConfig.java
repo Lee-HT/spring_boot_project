@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .requestMatchers("/login/oauth2/test/*").permitAll()
                 .requestMatchers("/oauth2/authorization/*").permitAll()
                 .requestMatchers("/login").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
         );
 
         // spring security 의 authorization uri 생성 uri
