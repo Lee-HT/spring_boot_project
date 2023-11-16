@@ -6,6 +6,7 @@ files:
   # 리눅스 최상위 dir -> root -> application
     destination: /root/application
     overwrite: yes
+file_exists_behavior: OVERWRITE
 
 permissions:
   - object: /root/application
