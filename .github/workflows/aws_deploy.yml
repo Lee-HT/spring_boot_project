@@ -30,6 +30,8 @@ jobs:
     - name: application yml
       run: touch ./src/main/resources/application.yml
     - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
+    - run: touch ./src/main/resources/application-local.yml
+    - run: echo "${{secrets.APPLICATION_LOCAL}}" > ./src/main/resources/application-local.yml
     - run: touch ./src/main/resources/application-prod.yml
     - run: echo "${{secrets.APPLICATION_PROD}}" > ./src/main/resources/application-prod.yml
     - run: touch ./src/main/resources/application-test.yml
