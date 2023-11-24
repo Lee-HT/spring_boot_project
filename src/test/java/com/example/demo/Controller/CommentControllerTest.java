@@ -56,7 +56,7 @@ class CommentControllerTest extends RestDocsSetUp {
         when(commentService.getCommentByPost(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);
         mvc.perform(
-                        get("/post/{pid}/comments?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
+                        get("/comment/post/{pid}?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("pid").optional().description("게시글 PK")
@@ -90,7 +90,7 @@ class CommentControllerTest extends RestDocsSetUp {
         when(commentService.getCommentByUser(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);
         mvc.perform(
-                        get("/user/{uid}/comments?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
+                        get("/comment/user/{uid}?page=0&size=10&sort=createdAt", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("uid").optional().description("유저 PK")
@@ -152,7 +152,7 @@ class CommentControllerTest extends RestDocsSetUp {
                 CommentLikeDto.builder().cid(2L).uid(1L).likes(true).build());
         when(commentService.getCommentLikeUid(any(Long.class), any(boolean.class))).thenReturn(
                 result);
-        mvc.perform(get("/user/{uid}/comment-likes/{likes}", 1, true).with(oauth2Login()))
+        mvc.perform(get("/comment/user/{uid}/likes/{likes}", 1, true).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("uid").optional().description("유저 FK"),
@@ -174,7 +174,7 @@ class CommentControllerTest extends RestDocsSetUp {
                 CommentLikeDto.builder().cid(1L).uid(2L).likes(true).build());
         when(commentService.getCommentLikeCid(any(Long.class), any(boolean.class))).thenReturn(
                 result);
-        mvc.perform(get("/comment/{cid}/comment-likes/{likes}", 1, true).with(oauth2Login()))
+        mvc.perform(get("/comment/{cid}/likes/{likes}", 1, true).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("cid").optional().description("댓글 FK"),

@@ -10,6 +10,7 @@ import com.example.demo.Config.Oauth2.OAuth2LogoutHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -46,7 +47,7 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 // 정적 리소스 시큐리티 예외 처리
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                // 권한 필요 없는 path
+                // 예외 처리 할 customURL
                 .requestMatchers("/");
     }
 
@@ -65,14 +66,20 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login/oauth2/test/*").permitAll()
-                .requestMatchers("/oauth2/authorization/*").permitAll()
-                .requestMatchers("/login").permitAll()
+                .requestMatchers(HttpMethod.GET,"/").permitAll()
+
+                .requestMatchers(URLPattern.loginUrls).permitAll()
+
+                .requestMatchers(HttpMethod.GET,URLPattern.permitAllGetMethod).permitAll()
+                .requestMatchers(HttpMethod.POST,URLPattern.permitAllPostMethod).permitAll()
+                .requestMatchers(HttpMethod.GET,URLPattern.authenticatedGetMethod).authenticated()
+                .requestMatchers(HttpMethod.POST,URLPattern.authenticatedPostMethod).authenticated()
+
                 .anyRequest().authenticated()
         );
 
         // spring security 의 authorization uri 생성 uri
-        // http://localhost:6550/oauth2/authorization/{registration_id}
+        // localhost:6550/oauth2/authorization/{registration_id}
         http.oauth2Login(oauth2 -> oauth2
                 // oauth2 로그인 요청 uri
                 .authorizationEndpoint(end -> end

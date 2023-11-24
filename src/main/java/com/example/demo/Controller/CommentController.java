@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping
+@RequestMapping("comment")
 public class CommentController {
 
     private final CommentService commentService;
@@ -29,29 +29,29 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("post/{pid}/comments")
+    @GetMapping("/post/{pid}")
     public CommentPageDto getCommentsByPost(@PathVariable Long pid,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         return commentService.getCommentByPost(pid, pageable);
     }
 
-    @GetMapping("user/{uid}/comments")
+    @GetMapping("/user/{uid}")
     public CommentPageDto getCommentsByUser(@PathVariable Long uid,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         return commentService.getCommentByUser(uid, pageable);
     }
 
-    @PostMapping("comment")
+    @PostMapping("")
     public CommentDto saveComment(@RequestBody CommentDto commentDto) {
         return commentService.saveComment(commentDto);
     }
 
-    @GetMapping("user/{uid}/comment-likes/{likes}")
+    @GetMapping("/user/{uid}/likes/{likes}")
     public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid, @PathVariable boolean likes) {
         return commentService.getCommentLikeUid(uid,likes);
     }
 
-    @GetMapping("comment/{cid}/comment-likes/{likes}")
+    @GetMapping("/{cid}/likes/{likes}")
     public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid, @PathVariable boolean likes) {
         return commentService.getCommentLikeCid(cid,likes);
     }
