@@ -17,7 +17,7 @@ public interface URLPattern {
             "/comment/*/likes/*"
     };
     String[] permitAllPostMethod = new String[]{
-
+            "/post"
     };
 
     // isAuthenticated

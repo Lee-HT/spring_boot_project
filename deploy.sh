@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REPOSITORY=/root/application
+REPOSITORY=/root/codelia_spring
 PROJECT_NAME=new
 cd $REPOSITORY || exit
 

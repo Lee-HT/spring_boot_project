@@ -46,6 +46,9 @@ dependencies {
     // Spring rest Docs
     testImplementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+
+    // H2
+    runtimeOnly("com.h2database:h2")
 }
 
 // Spring rest Docs

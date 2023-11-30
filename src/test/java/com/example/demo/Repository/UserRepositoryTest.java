@@ -21,9 +21,11 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(profiles = "test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
+
 // 테스트 단위 인스턴스 생성 (before All static 없이 사용 가능)
 // @TestInstance(Lifecycle.PER_CLASS)
 // 초기화 문제
+
 class UserRepositoryTest {
 
     private final UserRepository userRepository;
@@ -40,7 +42,7 @@ class UserRepositoryTest {
     void setUsers() {
         for (int i = 1; i < 2; i++) {
             users.add(UserEntity.builder().username("user" + i).email("email" + i + "@gmail.com")
-                    .provider("google_"+i).roles("ROLE_USER").build());
+                    .provider("google_" + i).roles("ROLE_USER").build());
         }
         userRepository.saveAll(users);
 
@@ -104,7 +106,7 @@ class UserRepositoryTest {
         for (int i = 3; i < 5; i++) {
             newUsers.add(UserEntity.builder().username("user" + i)
                     .email("email" + i + "@gmail.com")
-                    .roles("ROLE_USER").provider("google_"+i).build());
+                    .roles("ROLE_USER").provider("google_" + i).build());
         }
         List<UserEntity> result = userRepository.saveAll(newUsers);
 

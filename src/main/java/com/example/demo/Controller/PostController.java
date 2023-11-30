@@ -1,9 +1,9 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
-import com.example.demo.DTO.PostDto;
 import com.example.demo.Service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
