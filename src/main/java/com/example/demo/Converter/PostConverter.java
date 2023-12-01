@@ -12,8 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostConverter {
 
-    public PostEntity toEntity(PostDto postDto,UserEntity userEntity) {
-        return PostEntity.builder().pid(postDto.getPid()).uid(userEntity).username(postDto.getUsername())
+    public PostEntity toEntity(PostDto postDto, UserEntity userEntity) {
+        return PostEntity.builder().pid(postDto.getPid()).uid(userEntity)
+                .username(postDto.getUsername())
                 .title(postDto.getTitle()).contents(postDto.getContents())
                 .category(postDto.getCategory()).build();
     }
@@ -21,14 +22,16 @@ public class PostConverter {
     public List<PostEntity> toEntity(List<PostDto> postDto, List<UserEntity> userEntity) {
         List<PostEntity> postEntity = new ArrayList<>();
         for (int i = 0; i < postDto.size(); i++) {
-            postEntity.add(toEntity(postDto.get(i),userEntity.get(i)));
+            postEntity.add(toEntity(postDto.get(i), userEntity.get(i)));
         }
         return postEntity;
     }
 
     public PostDto toDto(PostEntity post) {
-        return PostDto.builder().pid(post.getPid()).uid(post.getUid().getUid()).username(post.getUsername())
+        return PostDto.builder().pid(post.getPid()).uid(post.getUid().getUid())
+                .username(post.getUsername())
                 .title(post.getTitle()).contents(post.getContents()).category(post.getCategory())
+                .updatedAt(post.getUpdatedAt()).createdAt(post.getCreatedAt()).view(post.getView())
                 .build();
     }
 

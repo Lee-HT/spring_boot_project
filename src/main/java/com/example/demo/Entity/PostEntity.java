@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
@@ -31,6 +32,7 @@ public class PostEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "uid",nullable = false)
     private UserEntity uid;
+    @Column(length = 31)
     private String username;
     @Column(nullable = false, length = 128)
     private String title;
@@ -38,6 +40,8 @@ public class PostEntity extends BaseTimeEntity {
     private String contents;
     @Column(nullable = false, length = 128)
     private String category;
+    @ColumnDefault("0")
+    private Integer view;
 
     public void updatePost(String title, String contents, String category) {
         this.title = title;
@@ -54,5 +58,6 @@ public class PostEntity extends BaseTimeEntity {
     public void updateCategory(String category) {
         this.category = category;
     }
+    public void updateView(Long viewCount) { this.view += view; }
 
 }

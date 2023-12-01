@@ -67,7 +67,7 @@ class CommentControllerTest extends RestDocsSetUp {
                                 parameterWithName("sort").description("정렬 기준")
                         ),
                         responseFields(
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("contents").description("댓글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
                                 fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
@@ -101,7 +101,7 @@ class CommentControllerTest extends RestDocsSetUp {
                                 parameterWithName("sort").description("정렬 기준")
                         ),
                         responseFields(
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("contents").description("댓글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
                                 fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),

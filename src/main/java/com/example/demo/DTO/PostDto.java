@@ -24,4 +24,6 @@ public class PostDto {
     private String contents;
     private String category;
     private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private Integer view;
 }

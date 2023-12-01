@@ -65,7 +65,7 @@ class PostControllerTest extends RestDocsSetUp {
                                 parameterWithName("sort").description("정렬 기준")
                         ),
                         responseFields(
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
                                 fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
@@ -98,7 +98,9 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").optional().description("게시글 내용"),
                                 fieldWithPath("username").description("현재 유저명"),
                                 fieldWithPath("category").optional().description("게시글 카테고리"),
-                                fieldWithPath("updatedAt").ignored()
+                                fieldWithPath("updatedAt").ignored(),
+                                fieldWithPath("createdAt").ignored(),
+                                fieldWithPath("view").ignored()
                         ),
                         responseFields(
                                 fieldWithPath("pid").description("게시글 PK"),
@@ -108,7 +110,10 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("username").description("유저명"),
                                 fieldWithPath("category").description("카테고리"),
                                 fieldWithPath("updatedAt").type("LocalDateTime")
-                                        .description("수정 시간")
+                                        .description("수정 시간"),
+                                fieldWithPath("createdAt").type("LocalDateTime")
+                                        .description("생성 시간"),
+                                fieldWithPath("view").description("조회수")
                         )
                 ))
                 .andExpect(status().isOk())
@@ -133,7 +138,7 @@ class PostControllerTest extends RestDocsSetUp {
                                 parameterWithName("sort").description("정렬 기준")
                         ),
                         responseFields(
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
                                 fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
@@ -168,7 +173,7 @@ class PostControllerTest extends RestDocsSetUp {
                                 parameterWithName("sort").description("정렬 기준")
                         ),
                         responseFields(
-                                fieldWithPath("contents").description("내용"),
+                                fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
                                 fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
