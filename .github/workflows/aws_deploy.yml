@@ -48,6 +48,10 @@ jobs:
         path: ./src/main/resources/application-prod.yml
     - uses: actions/upload-artifact@v3
       with:
+        name: application-local.yml
+        path: ./src/main/resources/application-local.yml
+    - uses: actions/upload-artifact@v3
+      with:
         name: application-test.yml
         path: ./src/main/resources/application-test.yml
         
