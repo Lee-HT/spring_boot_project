@@ -1,5 +1,7 @@
+# Letsencrypt 인증서 재발급
+
 certbot renew
-cd /etc/letsencrypt/live/codelia.shop/
+cd /etc/letsencrypt/live/codelia.shop/ || exit
 expect <<EOF
 spawn sudo openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name tomcat -CAfile chain.pem -caname root
 expect "Password:"
