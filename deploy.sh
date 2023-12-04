@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 REPOSITORY=/root/codelia_spring
 PROJECT_NAME=new
+
 cd $REPOSITORY || exit
 
 # 해당 디렉토리에서 -> jar 패턴 검색 -> 맨 마지막 라인 1줄 출력

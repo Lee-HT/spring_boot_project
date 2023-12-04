@@ -14,7 +14,6 @@ public class CookieProvider {
         this.cookie = new Cookie(name,null);
         this.cookie.setHttpOnly(true);
         this.cookie.setDomain(JwtProperties.domain);
-        this.cookie.setDomain("localhost");
         this.cookie.setPath("/");
     }
 

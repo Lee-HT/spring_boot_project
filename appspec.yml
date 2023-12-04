@@ -1,15 +1,17 @@
 version: 0.0
 os: linux
+# 저장할 디렉토리 변수
+dir: &directory /root/codelia_spring
 files:
   # 인스턴스에 복사 할 파일 or 디렉터리
   - source: /
   # 리눅스 최상위 dir -> root -> application
-    destination: /root/application
+    destination: *directory
     overwrite: yes
 file_exists_behavior: OVERWRITE
 
 permissions:
-  - object: /root/application
+  - object: *directory
     owner: ubuntu
     group: ubuntu
     mode: 755
