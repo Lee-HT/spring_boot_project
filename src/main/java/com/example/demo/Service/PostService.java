@@ -9,7 +9,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostService {
 
-    PostPageDto findPost(Pageable pageable);
+    PostPageDto findPostPage(Pageable pageable);
+    PostDto findPost(Long pid);
 
     PostPageDto findPostByTitle(String title, Pageable pageable);
 

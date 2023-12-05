@@ -60,7 +60,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 SELECT")
+    @DisplayName("POST PAGE SELECT")
     public void findAll() {
         System.out.println("======== findAll ========");
         List<PostEntity> posts = postRepository.findAll();

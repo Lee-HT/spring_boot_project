@@ -54,7 +54,7 @@ class PostControllerTest extends RestDocsSetUp {
     void getPostPage() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
                 .size(3).numberOfElements(3).sorted(true).build();
-        when(postService.findPost(any(Pageable.class))).thenReturn(postPageDto);
+        when(postService.findPostPage(any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post?page=0&size=10&sort=pid")
                         .with(oauth2Login()))
@@ -118,6 +118,29 @@ class PostControllerTest extends RestDocsSetUp {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pid").exists());
+    }
+
+    @Test
+    void getPost() throws Exception {
+        PostDto postDto = PostDto.builder().build();
+        when(postService.findPost(any(Long.class))).thenReturn(postDto);
+
+        mvc.perform(get("/post/{pid}",1L).with(oauth2Login())).andDo(restDocs.document(
+                pathParameters(
+                        parameterWithName("pid").description("게시글 PK")
+                ),
+                responseFields(
+                        fieldWithPath("pid").description("게시글 PK"),
+                        fieldWithPath("uid").description("유저 PK"),
+                        fieldWithPath("username").description("유저명"),
+                        fieldWithPath("title").description("게시글 제목"),
+                        fieldWithPath("contents").description("게시글 내용"),
+                        fieldWithPath("category").description("카테고리"),
+                        fieldWithPath("updatedAt").description("수정 시간"),
+                        fieldWithPath("createdAt").description("생성 시간"),
+                        fieldWithPath("view").description("조회 수")
+                )
+        ));
     }
 
     @Test

@@ -33,14 +33,19 @@ public class PostController {
     @GetMapping("")
     public PostPageDto getPostPage(
             @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        PostPageDto posts = postService.findPost(pageable);
+        PostPageDto posts = postService.findPostPage(pageable);
         return posts;
     }
 
     @PostMapping("")
     public PostDto savePost(@RequestBody PostDto postDto) {
-        System.out.println(postDto);
         PostDto post = postService.savePost(postDto);
+        return post;
+    }
+
+    @GetMapping("/{pid}")
+    public PostDto searchPid(@PathVariable("pid") Long pid){
+        PostDto post = postService.findPost(pid);
         return post;
     }
 

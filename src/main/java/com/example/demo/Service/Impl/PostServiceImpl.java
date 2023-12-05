@@ -45,9 +45,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    // 테스트 코드 x
-    public PostPageDto findPost(Pageable pageable) {
+    public PostPageDto findPostPage(Pageable pageable) {
         return postConverter.toDto(postRepository.findAll(pageable));
+    }
+
+    @Override
+    public PostDto findPost(Long pid) {
+        return postConverter.toDto(postRepository.findByPid(pid));
     }
 
     @Override

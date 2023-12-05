@@ -9,6 +9,7 @@ public interface URLPattern {
     String[] permitAllGetMethod = new String[]{
             // PostController
             "/post",
+            "/post/*",
             "/post/title/*", "/post/username/*",
             "/post/*/username/*/likes",
 

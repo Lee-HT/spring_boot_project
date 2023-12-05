@@ -85,7 +85,39 @@ class PostServiceTest {
                 .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
-    //given when then
+    @Test
+    @DisplayName("POST PAGE SELECT")
+    public void findPostPage() {
+        System.out.println("======== findPostPage ========");
+        Page<PostEntity> pages = new PageImpl<>(
+                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
+        PostPageDto pageDto = PostPageDto.builder()
+                .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
+                .totalPages(pages.getTotalPages())
+                .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
+                .sorted(pages.getSort().isSorted()).build();
+        when(postRepository.findAll(this.pageable)).thenReturn(pages);
+        when(postConverter.toDto(pages)).thenReturn(pageDto);
+        PostPageDto result = postService.findPostPage(this.pageable);
+
+        Assertions.assertThat(result).isEqualTo(pageDto);
+
+        System.out.println(result);
+    }
+
+    @Test
+    @DisplayName("PID 기준 SELECT")
+    public void findPost() {
+        System.out.println("======== findByPid ========");
+
+        when(postRepository.findByPid(any(Long.class))).thenReturn(this.posts.get(0));
+        when(postConverter.toDto(any(PostEntity.class))).thenReturn(this.postDtos.get(0));
+        PostDto result = postService.findPost(1L);
+
+        Assertions.assertThat(result).isEqualTo(this.postDtos.get(0));
+
+        System.out.println(result);
+    }
 
     @Test
     @DisplayName("TITLE 기준 SELECT")
@@ -111,7 +143,6 @@ class PostServiceTest {
     @DisplayName("USERNAME 기준 SELECT")
     public void findPostByUsername() {
         System.out.println("======== findPostByUsername ========");
-        String username = "user1";
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
         PostPageDto pageDto = PostPageDto.builder()
@@ -123,7 +154,7 @@ class PostServiceTest {
         when(postRepository.findByUsernameContaining(users.get(0).getUsername(),
                 this.pageable)).thenReturn(pages);
         when(postConverter.toDto(pages)).thenReturn(pageDto);
-        PostPageDto result = postService.findPostByUsername(username, this.pageable);
+        PostPageDto result = postService.findPostByUsername("user1", this.pageable);
 
         Assertions.assertThat(result).isEqualTo(pageDto);
 
