@@ -45,6 +45,7 @@ public class PostController {
 
     @GetMapping("/{pid}")
     public PostDto searchPid(@PathVariable("pid") Long pid){
+        log.info(pid.toString());
         PostDto post = postService.findPost(pid);
         return post;
     }

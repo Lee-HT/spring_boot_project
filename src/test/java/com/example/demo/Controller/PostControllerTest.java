@@ -24,6 +24,7 @@ import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.Service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,25 +123,29 @@ class PostControllerTest extends RestDocsSetUp {
 
     @Test
     void getPost() throws Exception {
-        PostDto postDto = PostDto.builder().build();
+        PostDto postDto = PostDto.builder().pid(1L).uid(1L).username("user1").title("title1")
+                .contents("contents1").category("category1").updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now()).view(0).build();
         when(postService.findPost(any(Long.class))).thenReturn(postDto);
 
-        mvc.perform(get("/post/{pid}",1L).with(oauth2Login())).andDo(restDocs.document(
-                pathParameters(
-                        parameterWithName("pid").description("게시글 PK")
-                ),
-                responseFields(
-                        fieldWithPath("pid").description("게시글 PK"),
-                        fieldWithPath("uid").description("유저 PK"),
-                        fieldWithPath("username").description("유저명"),
-                        fieldWithPath("title").description("게시글 제목"),
-                        fieldWithPath("contents").description("게시글 내용"),
-                        fieldWithPath("category").description("카테고리"),
-                        fieldWithPath("updatedAt").description("수정 시간"),
-                        fieldWithPath("createdAt").description("생성 시간"),
-                        fieldWithPath("view").description("조회 수")
-                )
-        ));
+        mvc.perform(get("/post/{pid}", 1L).with(oauth2Login())).andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("pid").description("게시글 PK")
+                        ),
+                        responseFields(
+                                fieldWithPath("pid").description("게시글 PK"),
+                                fieldWithPath("uid").description("유저 PK"),
+                                fieldWithPath("username").description("유저명"),
+                                fieldWithPath("title").description("게시글 제목"),
+                                fieldWithPath("contents").description("게시글 내용"),
+                                fieldWithPath("category").description("카테고리"),
+                                fieldWithPath("updatedAt").description("수정 시간"),
+                                fieldWithPath("createdAt").description("생성 시간"),
+                                fieldWithPath("view").description("조회 수")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pid").exists());
     }
 
     @Test
