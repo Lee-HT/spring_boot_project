@@ -44,7 +44,7 @@ public class Oauth2Attributes {
                 .username((String) attribute.get("nickname"))
                 .email((String) attribute.get("email"))
                 .attributeKey((String) attribute.get("id"))
-                .provider(registrationId + "_" + attributes.get("id")).build();
+                .provider(registrationId + "_" + attribute.get("id")).build();
     }
 
     public UserEntity toEntity() {

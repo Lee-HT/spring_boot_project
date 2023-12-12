@@ -17,8 +17,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,9 +65,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto saveComment(CommentDto commentDto) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String provider = (String) authentication.getPrincipal();
-            UserEntity user = userRepository.findByProvider(provider);
+            UserEntity user = userRepository.findByUid(commentDto.getUid());
             PostEntity post = postRepository.findByPid(commentDto.getPid());
             CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user, post));
 

@@ -31,7 +31,7 @@ public class CommentController {
 
     @GetMapping("/post/{pid}")
     public CommentPageDto getCommentsByPost(@PathVariable Long pid,
-            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
         return commentService.getCommentByPost(pid, pageable);
     }
 

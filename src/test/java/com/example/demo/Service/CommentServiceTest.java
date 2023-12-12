@@ -119,8 +119,7 @@ class CommentServiceTest {
     @Test
     public void saveComment() {
         System.out.println("======== saveComment ========");
-        setUserContextByUsername();
-        when(userRepository.findByProvider(any(String.class))).thenReturn(users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
         when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
         when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
                 any(PostEntity.class))).thenReturn(comments.get(0));
