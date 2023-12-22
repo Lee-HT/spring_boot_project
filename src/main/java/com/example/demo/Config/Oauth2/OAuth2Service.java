@@ -64,7 +64,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
 //        return oAuth2User.getAttributes();
 //    }
 
-    // DefaultOauth2UserService 내부 구조 파악
+    // DefaultOauth2UserService
 //    private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
 //        // requestEntityConverter
 //        HttpHeaders headers = new HttpHeaders();

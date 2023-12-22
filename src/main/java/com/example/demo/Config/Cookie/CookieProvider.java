@@ -13,6 +13,7 @@ public class CookieProvider {
     public void setCookie(String name){
         this.cookie = new Cookie(name,null);
         this.cookie.setHttpOnly(true);
+        this.cookie.setSecure(true);
         this.cookie.setDomain(JwtProperties.domain);
         this.cookie.setPath("/");
     }

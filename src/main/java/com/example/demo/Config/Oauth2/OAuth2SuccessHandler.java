@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -23,41 +24,43 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final CookieProvider cookieProvider;
     private final TokenProvider tokenProvider;
+    private final Environment env;
     private final int REFRESH_TOKEN_EXPIRE = (int) (JwtProperties.refreshTime / 1000);
-    private final int ACCESS_TOKEN_EXPIRE = (int) (JwtProperties.accessTime / 1000);
 
     @Autowired
-    public OAuth2SuccessHandler(CookieProvider cookieProvider, TokenProvider tokenProvider) {
+    public OAuth2SuccessHandler(CookieProvider cookieProvider, TokenProvider tokenProvider,
+            Environment env) {
         this.cookieProvider = cookieProvider;
         this.tokenProvider = tokenProvider;
+        this.env = env;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         log.info("get Id : " + ((DefaultOAuth2User) authentication.getPrincipal()).getName());
-        Map<String,Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
+        Map<String, Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
         log.info("SuccessHandler attribute : " + attributes.toString());
         String username = (String) attributes.get("username");
         String provider = (String) attributes.get("provider");
-        String accessToken = tokenProvider.getAccessToken(username,provider);
-        String refreshToken = tokenProvider.getRefreshToken(username,provider);
+        String accessToken = tokenProvider.getAccessToken(username, provider);
+        String refreshToken = tokenProvider.getRefreshToken(username, provider);
 
-        Cookie access = cookieProvider.getCookie(JwtProperties.accessTokenName, accessToken,
-                ACCESS_TOKEN_EXPIRE);
+        response.addHeader("Authentication", accessToken);
+
         Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, refreshToken,
                 REFRESH_TOKEN_EXPIRE);
-        response.addCookie(access);
         response.addCookie(refresh);
 
-        String redirectURL = "/";
-        setDefaultTargetUrl(redirectURL);
-        handle(request,response,authentication);
+        setDefaultTargetUrl(getTargetUrl());
+        handle(request, response, authentication);
         clearAuthenticationAttributes(request);
     }
 
-    private String getTargetUrl(String url) {
-        return UriComponentsBuilder.fromUriString(url)
+    private String getTargetUrl() {
+        String path = "/oauth2/redirect";
+        String host = env.getProperty("front");
+        return UriComponentsBuilder.fromUriString(host + path)
                 .build().toString();
     }
 }
