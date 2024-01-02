@@ -119,7 +119,7 @@ public class TokenProvider {
     }
 
     public String resolveToken(String token) {
-        return token == null ? "" : token;
+        return token == null ? "" : token.substring(7);
     }
 
     public String getUsername(String token) {

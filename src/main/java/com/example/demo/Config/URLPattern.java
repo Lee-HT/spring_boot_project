@@ -19,10 +19,8 @@ public interface URLPattern {
     };
     String[] permitAllPostMethod = new String[]{
             // PostController
-            "/post",
 
             // CommentController
-            "/comment"
     };
 
     // isAuthenticated
