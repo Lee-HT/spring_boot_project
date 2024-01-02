@@ -16,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
@@ -46,21 +48,23 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.getAccessToken(username, provider);
         String refreshToken = tokenProvider.getRefreshToken(username, provider);
 
-        response.addHeader("Authentication", accessToken);
+        MultiValueMap<String,String> tokens = new LinkedMultiValueMap<>();
+        tokens.add("authorization",accessToken);
 
         Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, refreshToken,
                 REFRESH_TOKEN_EXPIRE);
         response.addCookie(refresh);
 
-        setDefaultTargetUrl(getTargetUrl());
+        setDefaultTargetUrl(getTargetUrl(tokens));
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);
     }
 
-    private String getTargetUrl() {
+    private String getTargetUrl(MultiValueMap<String, String> tokens) {
         String path = "/oauth2/redirect";
         String host = env.getProperty("front");
         return UriComponentsBuilder.fromUriString(host + path)
+                .queryParams(tokens)
                 .build().toString();
     }
 }

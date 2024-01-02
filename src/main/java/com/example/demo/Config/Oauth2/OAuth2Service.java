@@ -56,41 +56,6 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
                 "provider");
     }
 
-    // DefaultOauth2UserService 에서 user-info 가져옴
-//    private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
-//        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
-//        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
-//
-//        return oAuth2User.getAttributes();
-//    }
-
-    // DefaultOauth2UserService
-//    private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
-//        // requestEntityConverter
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        String accessToken = userRequest.getAccessToken().getTokenValue();
-//        String uri = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
-//                .getUri();
-//
-//        RequestEntity<?> request = null;
-//        if (HttpMethod.POST.equals(getHttpMethod(userRequest.getClientRegistration()))) {
-//            MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
-//            formParameters.add(OAuth2ParameterNames.ACCESS_TOKEN, accessToken);
-//            request = new RequestEntity<>(formParameters,headers,
-//                    getHttpMethod(userRequest.getClientRegistration()), URI.create(uri));
-//        }else {
-//            headers.setBearerAuth(accessToken);
-//            request = new RequestEntity<>(headers,
-//                    getHttpMethod(userRequest.getClientRegistration()), URI.create(uri));
-//        }
-//        log.info("RequestEntity : " + request.toString());
-//
-//        ResponseEntity<Map<String, Object>> response = new RestTemplate().exchange(request,
-//                new ParameterizedTypeReference<Map<String, Object>>() {});
-//        return response.getBody();
-//    }
-
     // (WebClient) get user info
     private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
         String uri = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
@@ -141,4 +106,40 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         }
         return HttpMethod.GET;
     }
+
+    // DefaultOauth2UserService 에서 user-info 가져옴
+//    private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
+//        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
+//        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+//
+//        return oAuth2User.getAttributes();
+//    }
+
+    // DefaultOauth2UserService
+//    private Map<String, Object> getAttributes(OAuth2UserRequest userRequest) {
+//        // requestEntityConverter
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        String accessToken = userRequest.getAccessToken().getTokenValue();
+//        String uri = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
+//                .getUri();
+//
+//        RequestEntity<?> request = null;
+//        if (HttpMethod.POST.equals(getHttpMethod(userRequest.getClientRegistration()))) {
+//            MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
+//            formParameters.add(OAuth2ParameterNames.ACCESS_TOKEN, accessToken);
+//            request = new RequestEntity<>(formParameters,headers,
+//                    getHttpMethod(userRequest.getClientRegistration()), URI.create(uri));
+//        }else {
+//            headers.setBearerAuth(accessToken);
+//            request = new RequestEntity<>(headers,
+//                    getHttpMethod(userRequest.getClientRegistration()), URI.create(uri));
+//        }
+//        log.info("RequestEntity : " + request.toString());
+//
+//        ResponseEntity<Map<String, Object>> response = new RestTemplate().exchange(request,
+//                new ParameterizedTypeReference<Map<String, Object>>() {});
+//        return response.getBody();
+//    }
+
 }

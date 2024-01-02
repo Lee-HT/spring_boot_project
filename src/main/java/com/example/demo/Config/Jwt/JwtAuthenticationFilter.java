@@ -1,23 +1,22 @@
 package com.example.demo.Config.Jwt;
 
-import com.example.demo.Config.Cookie.CookieProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
-    private final CookieProvider cookieProvider;
 
-    public JwtAuthenticationFilter(TokenProvider tokenProvider, CookieProvider cookieProvider) {
+    public JwtAuthenticationFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
-        this.cookieProvider = cookieProvider;
     }
 
     @Override
@@ -25,24 +24,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         try {
             System.out.println("JwtAuthenticationFilter");
-            String accessToken = tokenProvider.resolveToken(request.getCookies(),
-                    JwtProperties.accessTokenName);
+            String accessToken = tokenProvider.resolveToken(request.getHeader("Authorization"));
             // AccessToken 유효 시 SecurityContext 에 Authentication 저장
-            if (!accessToken.isEmpty() | tokenProvider.validationToken(accessToken)) {
+            if (!accessToken.isBlank() && tokenProvider.validationToken(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                String refreshToken = tokenProvider.resolveToken(request.getCookies(),
+                String refreshToken = tokenProvider.resolveCookie(request.getCookies(),
                         JwtProperties.refreshTokenName);
                 // RefreshToken 유효 시 accessToken 재발급 후 Authentication 저장
-                if (!refreshToken.isEmpty() | tokenProvider.validationToken(refreshToken)) {
+                if (!refreshToken.isBlank() && tokenProvider.validationToken(refreshToken)) {
                     String newAccessToken = tokenProvider.getAccessToken(
                             tokenProvider.getUsername(refreshToken),
                             tokenProvider.getProvider(refreshToken));
-                    response.addCookie(
-                            cookieProvider.getCookie(JwtProperties.accessTokenName,
-                                    newAccessToken,
-                                    (int) (JwtProperties.accessTime / 1000)));
+                    response.addHeader("Authorization",newAccessToken);
 
                     Authentication authentication = tokenProvider.getAuthentication(
                             refreshToken);
@@ -52,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            System.out.println(e);
+            log.info(String.valueOf(e));
             filterChain.doFilter(request, response);
         }
 

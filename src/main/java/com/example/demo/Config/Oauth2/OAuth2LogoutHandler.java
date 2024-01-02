@@ -2,7 +2,6 @@ package com.example.demo.Config.Oauth2;
 
 import com.example.demo.Config.Cookie.CookieProvider;
 import com.example.demo.Config.Jwt.JwtProperties;
-import com.example.demo.Config.Jwt.TokenProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +15,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class OAuth2LogoutHandler extends SimpleUrlLogoutSuccessHandler {
+
     private final CookieProvider cookieProvider;
-    private final TokenProvider tokenProvider;
-    public OAuth2LogoutHandler(CookieProvider cookieProvider, TokenProvider tokenProvider){
+
+    public OAuth2LogoutHandler(CookieProvider cookieProvider) {
         this.cookieProvider = cookieProvider;
-        this.tokenProvider = tokenProvider;
     }
 
     @Override

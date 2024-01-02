@@ -19,9 +19,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TokenProvider {
+
     private final Key key = JwtProperties.secretKey;
-    // cookie 에 공백 사용 불가함으로 수정
-    private final String TokenType = "bearer-";
 
     // Token 만료 시간
     private Date expireTime(long expire) {
@@ -50,7 +49,9 @@ public class TokenProvider {
         String JwtToken = Jwts.builder().setHeader(headers).setClaims(claims).setSubject(username)
                 .signWith(key).compact();
 
-        JwtToken = TokenType + JwtToken;
+        // cookie 에 공백 사용 불가함으로 수정
+        String tokenType = "bearer-";
+        JwtToken = tokenType + JwtToken;
 
         return JwtToken;
     }
@@ -79,7 +80,6 @@ public class TokenProvider {
         Claims claims = getClaims(token);
         String role = claims.get("role").toString();
         String provider = claims.get("prov").toString();
-        String username = claims.getSubject();
 
         // 권한 부여
         return new UsernamePasswordAuthenticationToken(provider, null,
@@ -89,7 +89,7 @@ public class TokenProvider {
     // token 유효성 검증
     public boolean validationToken(String token) {
         try {
-            if (token != null) {
+            if (!token.isBlank()) {
                 Claims claims = getClaims(token);
                 return claims.getExpiration().after(new Date());
             }
@@ -103,13 +103,12 @@ public class TokenProvider {
     }
 
     // Cookie 에서 token get
-    public String resolveToken(Cookie[] cookies,String tokenType) {
+    public String resolveCookie(Cookie[] cookies, String tokenType) {
         try {
             for (Cookie cookie : cookies) {
                 String name = cookie.getName();
                 if (name.equals(tokenType)) {
-                    String accessToken = cookie.getValue().substring(7);
-                    return accessToken;
+                    return cookie.getValue().substring(7);
                 }
             }
             return "";
@@ -117,6 +116,10 @@ public class TokenProvider {
             log.info("resolve error");
         }
         return "";
+    }
+
+    public String resolveToken(String token) {
+        return token == null ? "" : token;
     }
 
     public String getUsername(String token) {

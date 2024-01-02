@@ -31,13 +31,13 @@ public class CommentController {
 
     @GetMapping("/post/{pid}")
     public CommentPageDto getCommentsByPost(@PathVariable Long pid,
-            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 15, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
         return commentService.getCommentByPost(pid, pageable);
     }
 
     @GetMapping("/user/{uid}")
     public CommentPageDto getCommentsByUser(@PathVariable Long uid,
-            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 15, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         return commentService.getCommentByUser(uid, pageable);
     }
 
