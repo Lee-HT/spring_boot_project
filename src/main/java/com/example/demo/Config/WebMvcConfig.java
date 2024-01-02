@@ -1,5 +1,6 @@
 package com.example.demo.Config;
 
+import com.example.demo.Config.Jwt.JwtProperties;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
     private final Environment env;
 
     public WebMvcConfig(Environment env) {
@@ -30,14 +32,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     // CORS
     @Bean
-    public WebMvcConfigurer corsConfigurer(){
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(env.getProperty("front"))
                         .allowedMethods("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .allowCredentials(true)
+                        .exposedHeaders(JwtProperties.headerName);
             }
         };
     }

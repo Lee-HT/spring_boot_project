@@ -8,6 +8,7 @@ public interface JwtProperties {
 
     String accessTokenName = "accessToken";
     String refreshTokenName = "refreshToken";
+    String headerName = "Authorization";
     String domain = System.getProperty("Domain");
     //    Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     Key secretKey = Keys.hmacShaKeyFor(Base64.getEncoder().encodeToString(

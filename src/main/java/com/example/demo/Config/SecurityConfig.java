@@ -1,12 +1,11 @@
 package com.example.demo.Config;
 
-import com.example.demo.Config.Cookie.CookieProvider;
 import com.example.demo.Config.Jwt.JwtAuthenticationFilter;
 import com.example.demo.Config.Jwt.TokenProvider;
-import com.example.demo.Config.Oauth2.OAuth2Service;
-import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
 import com.example.demo.Config.Oauth2.OAuth2FailureHandler;
 import com.example.demo.Config.Oauth2.OAuth2LogoutHandler;
+import com.example.demo.Config.Oauth2.OAuth2Service;
+import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,19 +40,17 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final OAuth2LogoutHandler oAuth2LogoutHandler;
     private final TokenProvider tokenProvider;
-    private final CookieProvider cookieProvider;
 
     public SecurityConfig(Environment env, OAuth2Service oAuth2Service,
             OAuth2SuccessHandler oAuth2SuccessHandler,
             OAuth2FailureHandler oAuth2FailureHandler, OAuth2LogoutHandler oAuth2LogoutHandler,
-            TokenProvider tokenProvider, CookieProvider cookieProvider) {
+            TokenProvider tokenProvider) {
         this.env = env;
         this.oAuth2Service = oAuth2Service;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.oAuth2LogoutHandler = oAuth2LogoutHandler;
         this.tokenProvider = tokenProvider;
-        this.cookieProvider = cookieProvider;
     }
 
     @Bean
@@ -121,7 +118,7 @@ public class SecurityConfig {
         http.logout(logout -> logout
                 .logoutSuccessHandler(oAuth2LogoutHandler));
 
-        http.addFilterBefore(new JwtAuthenticationFilter(tokenProvider, cookieProvider),
+        http.addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
                 UsernamePasswordAuthenticationFilter.class);
 
         // 스레드 별로 SecurityContext 저장 (Default Mode)
@@ -130,8 +127,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-
     // CORS Configure
     CorsConfigurationSource getConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -139,6 +134,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(
                 Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -24,7 +24,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         try {
             System.out.println("JwtAuthenticationFilter");
+            log.info(request.getHeader("Authorization"));
             String accessToken = tokenProvider.resolveToken(request.getHeader("Authorization"));
+            log.info("accessToken : " + accessToken);
             // AccessToken 유효 시 SecurityContext 에 Authentication 저장
             if (!accessToken.isBlank() && tokenProvider.validationToken(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
@@ -37,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String newAccessToken = tokenProvider.getAccessToken(
                             tokenProvider.getUsername(refreshToken),
                             tokenProvider.getProvider(refreshToken));
-                    response.addHeader("Authorization",newAccessToken);
+                    response.addHeader("Authorization", newAccessToken);
 
                     Authentication authentication = tokenProvider.getAuthentication(
                             refreshToken);
