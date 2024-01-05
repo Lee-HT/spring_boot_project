@@ -1,6 +1,6 @@
 name: CI/CD
 
-# 지정한 branch ([main])에서 command(pull)가 수행되면 이 workflow가 동작
+# 지정한 branch ([master])에서 command(pull)가 수행되면 이 workflow가 동작
 on:
   push:
     branches:
@@ -11,76 +11,75 @@ on:
 
   # trigger 없어도 수동으로 동작
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-    - name: checkout release
-      uses: actions/checkout@v3
+      - name: checkout release
+        uses: actions/checkout@v3
 
-    - name: Set up Jdk 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: 17
-        distribution: "adopt"
+      - name: Set up Jdk 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: "adopt"
 
-    # touch 명령어로 빈 파일 생성
-    # echo 명령어로 파일 덮어쓰기
-    - name: application yml
-      run: touch ./src/main/resources/application.yml
-    - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
-    - run: touch ./src/main/resources/application-local.yml
-    - run: echo "${{secrets.APPLICATION_LOCAL}}" > ./src/main/resources/application-local.yml
-    - run: touch ./src/main/resources/application-prod.yml
-    - run: echo "${{secrets.APPLICATION_PROD}}" > ./src/main/resources/application-prod.yml
-    - run: touch ./src/main/resources/application-test.yml
-    - run: echo "${{secrets.APPLICATION_TEST}}" > ./src/main/resources/application-test.yml
+      # touch 명령어로 빈 파일 생성
+      # echo 명령어로 파일 덮어쓰기
+      - name: application yml
+        run: touch ./src/main/resources/application.yml
+      - run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
+      - run: touch ./src/main/resources/application-local.yml
+      - run: echo "${{secrets.APPLICATION_LOCAL}}" > ./src/main/resources/application-local.yml
+      - run: touch ./src/main/resources/application-prod.yml
+      - run: echo "${{secrets.APPLICATION_PROD}}" > ./src/main/resources/application-prod.yml
+      - run: touch ./src/main/resources/application-test.yml
+      - run: echo "${{secrets.APPLICATION_TEST}}" > ./src/main/resources/application-test.yml
 
-    # 결과 다운로드 생성
-    - uses: actions/upload-artifact@v3
-      with:
-        name: application.yml
-        path: ./src/main/resources/application.yml
-    - uses: actions/upload-artifact@v3
-      with:
-        name: application-prod.yml
-        path: ./src/main/resources/application-prod.yml
-    - uses: actions/upload-artifact@v3
-      with:
-        name: application-local.yml
-        path: ./src/main/resources/application-local.yml
-    - uses: actions/upload-artifact@v3
-      with:
-        name: application-test.yml
-        path: ./src/main/resources/application-test.yml
-        
-    # gradlew 실행 권한 추가
-    - name: Grant excute permission for gradlew
-      run: chmod +x ./gradlew
-      shell: bash
+      # 결과 다운로드 생성
+      - uses: actions/upload-artifact@v3
+        with:
+          name: application.yml
+          path: ./src/main/resources/application.yml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: application-prod.yml
+          path: ./src/main/resources/application-prod.yml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: application-local.yml
+          path: ./src/main/resources/application-local.yml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: application-test.yml
+          path: ./src/main/resources/application-test.yml
 
-    # gradle build
-    - name: Build Gradle
-      run: ./gradlew clean build
-      shell: bash
+      # gradlew 실행 권한 추가
+      - name: Grant excute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
 
-    # qq == 출력 x , r == 하위 폴더 같이 압축
-    - name: Make zip file
-      run: zip -qq -r ./${{ secrets.ZIP_NAME }}.zip .
-      shell: bash
+      # gradle build
+      - name: Build Gradle
+        run: ./gradlew clean build
+        shell: bash
 
-    - name: AWS configure credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.SECRET_KEY }}
-        aws-region: ${{ secrets.REGION }}
-        
-    # S3 s3::bucketname/path
-    - name: Upload to S3
-      run: aws s3 cp --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
+      # qq == 출력 x , r == 하위 폴더 같이 압축
+      - name: Make zip file
+        run: zip -qq -r ./${{ secrets.ZIP_NAME }}.zip .
+        shell: bash
 
-    
-    - name: Code Deploy
-      run: aws deploy create-deployment --application-name code_deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name github_active_group --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+          aws-region: ${{ secrets.REGION }}
+
+      # S3 s3::bucketname/path
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./${{ secrets.ZIP_NAME }}.zip s3://${{ secrets.S3_BUCKET }}/${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
+
+      - name: Code Deploy
+        run: aws deploy create-deployment --application-name code_deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name github_active_group --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=${{ secrets.S3_PROJECT_DIR }}/${{ secrets.ZIP_NAME }}.zip
