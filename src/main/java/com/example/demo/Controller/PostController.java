@@ -77,7 +77,7 @@ public class PostController {
     }
 
     // 성공시 true
-    @DeleteMapping("{pid}/username/{uid}/likes")
+    @DeleteMapping("/{pid}/username/{uid}/likes")
     public int deleteLike(@PathVariable Long pid, @PathVariable Long uid) {
         return postService.deleteLike(pid,uid);
     }
