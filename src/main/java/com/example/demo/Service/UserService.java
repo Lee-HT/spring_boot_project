@@ -11,6 +11,7 @@ public interface UserService {
     UserDto findByUid(Long Uid);
 
     UserPageDto findByUsernameContaining(String username, Pageable pageable);
+    UserDto getUidByProvider();
 
     UserDto saveUser(UserDto userDto);
 

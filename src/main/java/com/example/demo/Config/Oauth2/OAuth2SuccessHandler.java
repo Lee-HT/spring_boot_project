@@ -48,8 +48,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.getAccessToken(username, provider);
         String refreshToken = tokenProvider.getRefreshToken(username, provider);
 
-        MultiValueMap<String,String> tokens = new LinkedMultiValueMap<>();
-        tokens.add("authorization",accessToken);
+        MultiValueMap<String, String> tokens = new LinkedMultiValueMap<>();
+        tokens.add("authorization", accessToken);
 
         Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, refreshToken,
                 REFRESH_TOKEN_EXPIRE);
@@ -61,7 +61,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private String getTargetUrl(MultiValueMap<String, String> tokens) {
-        String path = "/oauth2/redirect";
+        String path = "/codelia_react/oauth2/redirect";
         String host = env.getProperty("front");
         return UriComponentsBuilder.fromUriString(host + path)
                 .queryParams(tokens)

@@ -4,9 +4,12 @@ public interface URLPattern {
 
     // permitAll
     String[] loginUrls = new String[]{
-            "/login", "/login/oauth2/test/*", "/oauth2/authorization/*"
+            "/oauth2/userinfo", "/login",
+            "/login/oauth2/test/*", "/oauth2/authorization/*"
     };
     String[] permitAllGetMethod = new String[]{
+            "/error",
+
             // PostController
             "/post",
             "/post/*",
@@ -14,7 +17,7 @@ public interface URLPattern {
             "/post/*/username/*/likes",
 
             // CommentController
-            "/comment/post/*","/comment/user/*",
+            "/comment/post/*", "/comment/user/*",
             "/comment/*/likes/*"
     };
     String[] permitAllPostMethod = new String[]{
