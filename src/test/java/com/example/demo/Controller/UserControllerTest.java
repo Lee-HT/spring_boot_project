@@ -6,8 +6,11 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.Config.Doc.RestDocsSetUp;
@@ -54,12 +57,49 @@ class UserControllerTest extends RestDocsSetUp {
                         ),
                         responseFields(
                                 fieldWithPath("uid").description("유저 PK"),
-                                fieldWithPath("email").description("유저 이메일"),
                                 fieldWithPath("username").description("유저명"),
+                                fieldWithPath("email").description("유저 이메일"),
                                 fieldWithPath("profilePic").description("프로필 사진")
                         )
                 ))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getUser() throws Exception {
+        UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
+                .build();
+        when(userService.findByProvider()).thenReturn(dto);
+
+        mvc.perform(get("/user/{uid}", 1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("uid").description("유저 PK")
+                        ),
+                        responseFields(
+                                fieldWithPath("uid").description("유저 PK"),
+                                fieldWithPath("username").description("유저명"),
+                                fieldWithPath("email").description("유저 이메일"),
+                                fieldWithPath("profilePic").description("프로필 사진"),
+                                fieldWithPath("createdAt").description("생성 시간")
+                        )
+                ))
+                .andExpect(jsonPath("$uid").isNumber())
+                .andExpect(jsonPath("username").exists())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteUser() throws Exception {
+        when(userService.deleteUser()).thenReturn(1L);
+
+        mvc.perform(delete("/user").with(oauth2Login()))
+                .andDo(restDocs.document(responseFields(
+                                fieldWithPath("uid").description("유저 PK")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$uid").isNumber());
     }
 
 }

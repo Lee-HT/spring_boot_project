@@ -30,6 +30,10 @@ public class UserServiceImpl implements UserService {
         this.userConverter = userConverter;
     }
 
+    private String getProvider() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    }
+
     @Override
     public UserDto findByUid(Long uid) {
         return userConverter.toDto(userRepository.findByUid(uid));
@@ -41,10 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUidByProvider() {
+    public UserDto findByProvider() {
         try {
-            String provider = SecurityContextHolder.getContext().getAuthentication().getPrincipal()
-                    .toString();
+            String provider = getProvider();
             UserEntity userEntity = userRepository.findByProvider(provider);
             return UserDto.builder().uid(userEntity.getUid())
                     .username(userEntity.getUsername())
@@ -71,6 +74,7 @@ public class UserServiceImpl implements UserService {
         return userConverter.toDto(user);
     }
 
+    @Transactional
     @Override
     public int deleteUsers(List<Long> uid) {
         try {
@@ -88,6 +92,11 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             throw e;
         }
+    }
 
+    @Override
+    public Long deleteUser(){
+        String provider = getProvider();
+        return userRepository.deleteByProvider(provider);
     }
 }

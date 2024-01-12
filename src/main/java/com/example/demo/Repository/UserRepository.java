@@ -10,5 +10,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUid(Long uid);
     UserEntity findByProvider(String provider);
     Page<UserEntity> findByUsernameContaining(String name, Pageable pageable);
+    Long deleteByProvider(String provider);
 
 }

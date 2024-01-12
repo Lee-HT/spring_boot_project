@@ -9,13 +9,10 @@ public interface UserService {
 
 
     UserDto findByUid(Long Uid);
-
     UserPageDto findByUsernameContaining(String username, Pageable pageable);
-    UserDto getUidByProvider();
-
+    UserDto findByProvider();
     UserDto saveUser(UserDto userDto);
-
     UserDto updateUser(UserDto userDto);
-
     int deleteUsers(List<Long> uid);
+    Long deleteUser();
 }

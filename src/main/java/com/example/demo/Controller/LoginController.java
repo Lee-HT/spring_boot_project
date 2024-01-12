@@ -29,7 +29,7 @@ public class LoginController {
     @ResponseBody
     @GetMapping("/oauth2/userinfo")
     public UserDto getUserInfo(){
-        return userService.getUidByProvider();
+        return userService.findByProvider();
     }
 
     // oauth2 test
