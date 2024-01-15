@@ -1,18 +1,11 @@
 package com.example.demo.Service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import com.example.demo.Converter.UserConverter;
 import com.example.demo.DTO.UserDto;
 import com.example.demo.DTO.UserPageDto;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Repository.UserRepository;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.example.demo.Service.Impl.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +18,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -50,6 +52,11 @@ class UserServiceTest {
             userDtos.add(UserDto.builder().uid((long) i).username("user" + i)
                     .email("email" + i + "@gmail.com").build());
         }
+    }
+
+    private void setUserContextByUsername() {
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
     @Test
@@ -111,8 +118,8 @@ class UserServiceTest {
     }
 
     @Test
-    public void deleteUser() {
-        System.out.println("======== deleteUser ========");
+    public void deleteUsers() {
+        System.out.println("======== deleteUsers ========");
         List<Long> uid = Arrays.asList(1L, 2L);
         for (Long i : uid) {
             when(userRepository.findByUid(i)).thenReturn(users.get(i.intValue() - 1));
@@ -120,5 +127,22 @@ class UserServiceTest {
         int count = userService.deleteUsers(uid);
 
         Assertions.assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    public void deleteUser() {
+        System.out.println("======== deleteUser ========");
+        Long uid = 1L;
+
+        setUserContextByUsername();
+        when(userRepository.findByProvider(any(String.class))).thenReturn(users.get(0));
+        // 메소드 동작 x
+        doNothing().when(userRepository).delete(any(UserEntity.class));
+
+        Long result = userService.deleteUser();
+        // 메소드 한번(times(int)) 호출 확인
+        verify(userRepository, times(1)).delete(any(UserEntity.class));
+
+        Assertions.assertThat(result).isEqualTo(uid);
     }
 }

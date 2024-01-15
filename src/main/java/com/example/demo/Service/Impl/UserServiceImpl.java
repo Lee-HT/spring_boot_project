@@ -74,7 +74,6 @@ public class UserServiceImpl implements UserService {
         return userConverter.toDto(user);
     }
 
-    @Transactional
     @Override
     public int deleteUsers(List<Long> uid) {
         try {
@@ -97,6 +96,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long deleteUser(){
         String provider = getProvider();
-        return userRepository.deleteByProvider(provider);
+        UserEntity user = userRepository.findByProvider(provider);
+        userRepository.delete(user);
+        return user.getUid();
     }
 }
