@@ -2,22 +2,21 @@ package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.PostConverter;
 import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
-import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
-import com.example.demo.Mapper.PostMapper;
 import com.example.demo.Repository.PostLikeRepository;
 import com.example.demo.Repository.PostRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.PostService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,21 +26,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final PostMapper postMapper;
     private final PostConverter postConverter;
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, PostMapper postMapper,
+    public PostServiceImpl(PostRepository postRepository,
             PostConverter postConverter,
             UserRepository userRepository,
             PostLikeRepository postLikeRepository) {
         this.postRepository = postRepository;
-        this.postMapper = postMapper;
         this.postConverter = postConverter;
         this.userRepository = userRepository;
         this.postLikeRepository = postLikeRepository;
+    }
+
+    private String getProvider() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
     @Override
@@ -51,7 +52,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto findPost(Long pid) {
-        return postConverter.toDto(postRepository.findByPid(pid));
+        PostEntity postEntity = postRepository.findByPid(pid)
+                .orElseGet(() -> PostEntity.builder().build());
+        return postConverter.toDto(postEntity);
     }
 
     @Override
@@ -67,27 +70,30 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto savePost(PostDto postDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String provider = (String) authentication.getPrincipal();
-        System.out.println(provider);
-        try{
-            UserEntity user = userRepository.findByProvider(provider);
-            PostEntity post = postConverter.toEntity(postDto, user);
+        String provider = getProvider();
+        Optional<UserEntity> user = userRepository.findByProvider(provider);
 
+        if (user.isPresent()) {
+            PostEntity post = postConverter.toEntity(postDto, user.get());
             return postConverter.toDto(postRepository.save(post));
-        }catch (Exception e){
-            System.out.println(String.format("save error : %s",e));
-            return null;
+        } else {
+            return PostDto.builder().build();
         }
-
     }
 
     @Override
     public PostDto updatePost(PostDto postDto) {
-        PostEntity post = postRepository.findByPid(postDto.getPid());
-        post.updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
+        Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
-        return postConverter.toDto(post);
+        if (postEntity.isPresent()) {
+            postEntity.get()
+                    .updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
+
+            return postConverter.toDto(postEntity.get());
+        } else {
+            return PostDto.builder().build();
+        }
+
     }
 
     @Override
@@ -123,27 +129,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public int deleteLike(Long pid,Long uid) {
+    public int deleteLike(Long pid, Long uid) {
         try {
             postLikeRepository.deleteByPidAndUid(getPost(pid), getUser(uid));
             return 1;
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
 
     // get PostLikeEntity
     private PostLikeEntity getPostLike(Long pid, Long uid) {
-        return postLikeRepository.findByPidAndUid(getPost(pid), getUser(uid));
+        return postLikeRepository.findByPidAndUid(getPost(pid),
+                getUser(uid)).orElseGet(() -> PostLikeEntity.builder().build());
+
     }
 
     // get PostEntity
     private PostEntity getPost(Long pid) {
-        return postRepository.findByPid(pid);
+        return postRepository.findByPid(pid).orElseGet(() -> PostEntity.builder().build());
     }
 
     // get UserEntity
     private UserEntity getUser(Long uid) {
-        return userRepository.findByUid(uid);
+        return userRepository.findByUid(uid).orElseGet(() -> UserEntity.builder().build());
     }
 }

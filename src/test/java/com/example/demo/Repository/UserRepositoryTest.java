@@ -3,6 +3,7 @@ package com.example.demo.Repository;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class UserRepositoryTest {
 
     private final UserRepository userRepository;
     private List<UserEntity> users = new ArrayList<>();
-    private Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
+    private final Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
     private List<Long> pk = new ArrayList<>();
 
     @Autowired
@@ -66,11 +67,12 @@ class UserRepositoryTest {
     @DisplayName("UID 기준 SELECT")
     public void FindByUid() {
         System.out.println("======== findByUsername ========");
-        UserEntity user = userRepository.findByUid(pk.get(0));
+        Optional<UserEntity> user = userRepository.findByUid(pk.get(0));
 
         System.out.println(user);
 
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
+        Assertions.assertThat(user).usingRecursiveComparison()
+                .isEqualTo(Optional.of(this.users.get(0)));
     }
 
     @Test
@@ -78,11 +80,11 @@ class UserRepositoryTest {
     public void findByProvider() {
         System.out.println("======== findByProvider ========");
         String provider = "google_1";
-        UserEntity user = userRepository.findByProvider(provider);
+        Optional<UserEntity> user = userRepository.findByProvider(provider);
 
         System.out.println(user);
 
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(this.users.get(0));
+        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(Optional.of(this.users.get(0)));
     }
 
     @Test

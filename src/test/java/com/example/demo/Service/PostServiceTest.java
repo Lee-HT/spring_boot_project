@@ -6,22 +6,20 @@ import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
 import com.example.demo.DTO.LikeDto;
+import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
-import com.example.demo.DTO.PostDto;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
-import com.example.demo.Mapper.PostMapper;
 import com.example.demo.Repository.PostLikeRepository;
 import com.example.demo.Repository.PostRepository;
 import com.example.demo.Repository.UserRepository;
-
+import com.example.demo.Service.Impl.PostServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.example.demo.Service.Impl.PostServiceImpl;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,8 +45,6 @@ class PostServiceTest {
     private PostLikeRepository postLikeRepository;
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private PostMapper postMapper;
     @Mock
     private PostConverter postConverter;
     @InjectMocks
@@ -110,7 +106,7 @@ class PostServiceTest {
     public void findPost() {
         System.out.println("======== findByPid ========");
 
-        when(postRepository.findByPid(any(Long.class))).thenReturn(this.posts.get(0));
+        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(this.posts.get(0)));
         when(postConverter.toDto(any(PostEntity.class))).thenReturn(this.postDtos.get(0));
         PostDto result = postService.findPost(1L);
 
@@ -166,7 +162,8 @@ class PostServiceTest {
     public void savePost() {
         System.out.println("======== savePost ========");
         setUserContextByUsername();
-        when(userRepository.findByProvider(any(String.class))).thenReturn(users.get((0)));
+        when(userRepository.findByProvider(any(String.class))).thenReturn(
+                Optional.of(users.get(0)));
         when(postConverter.toEntity(any(PostDto.class), any(UserEntity.class))).thenReturn(
                 this.posts.get(1));
         when(postRepository.save(any(PostEntity.class))).thenReturn(this.posts.get(1));
@@ -186,7 +183,7 @@ class PostServiceTest {
         PostDto postDto = PostDto.builder().pid(1L).title("title3").contents("contents3").build();
         PostEntity postEntity = PostEntity.builder().pid(1L).title("title1").contents("contents1")
                 .build();
-        when(postRepository.findByPid(1L)).thenReturn(postEntity);
+        when(postRepository.findByPid(1L)).thenReturn(Optional.of(postEntity));
         when(postConverter.toDto(any(PostEntity.class))).thenReturn(postDto);
         PostDto result = postService.updatePost(postDto);
 
@@ -201,8 +198,8 @@ class PostServiceTest {
         System.out.println("======== deletePost ========");
 
         List<Long> pid = Arrays.asList(1L, 2L);
-        when(postRepository.findByPid(1L)).thenReturn(posts.get(0));
-        when(postRepository.findByPid(2L)).thenReturn(posts.get(1));
+        when(postRepository.findByPid(1L)).thenReturn(Optional.of(posts.get(0)));
+        when(postRepository.findByPid(2L)).thenReturn(Optional.of(posts.get(1)));
         int count = postService.deletePosts(pid);
 
         Assertions.assertThat(count).isEqualTo(2);
@@ -216,10 +213,10 @@ class PostServiceTest {
         System.out.println("======== likesPost ========");
         PostLikeDto dto = PostLikeDto.builder().pid(posts.get(0).getPid())
                 .uid(users.get(0).getUid()).likes(false).build();
-        when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(postLikeRepository.findByPidAndUid(posts.get(0), users.get(0))).thenReturn(
-                this.postLikes.get(0));
+                Optional.of(this.postLikes.get(0)));
         LikeDto result = postService.likeState(dto);
 
         Assertions.assertThat(result.getLikes()).isEqualTo(false);

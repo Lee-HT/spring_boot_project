@@ -7,6 +7,7 @@ import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.UserServiceImpl;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +63,7 @@ class UserServiceTest {
     @Test
     public void findByUsername() {
         System.out.println("======== findByUsername ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(this.users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(this.users.get(0)));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(this.userDtos.get(0));
         UserDto user = userService.findByUid(1L);
 
@@ -108,7 +109,7 @@ class UserServiceTest {
         System.out.println("======== updateUser ========");
         UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(userDto);
         UserDto user = userService.updateUser(userDto);
 
@@ -122,7 +123,7 @@ class UserServiceTest {
         System.out.println("======== deleteUsers ========");
         List<Long> uid = Arrays.asList(1L, 2L);
         for (Long i : uid) {
-            when(userRepository.findByUid(i)).thenReturn(users.get(i.intValue() - 1));
+            when(userRepository.findByUid(i)).thenReturn(Optional.of(users.get(i.intValue() - 1)));
         }
         int count = userService.deleteUsers(uid);
 
@@ -135,7 +136,8 @@ class UserServiceTest {
         Long uid = 1L;
 
         setUserContextByUsername();
-        when(userRepository.findByProvider(any(String.class))).thenReturn(users.get(0));
+        when(userRepository.findByProvider(any(String.class))).thenReturn(
+                Optional.of(users.get(0)));
         // 메소드 동작 x
         doNothing().when(userRepository).delete(any(UserEntity.class));
 

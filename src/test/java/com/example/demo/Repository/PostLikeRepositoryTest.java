@@ -5,6 +5,7 @@ import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,11 +85,11 @@ class PostLikeRepositoryTest {
     @DisplayName("PID,UID 기준 SELECT")
     public void findByPidAndUid() {
         System.out.println("======== findByPidAndUid ========");
-        PostLikeEntity result = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
+        Optional<PostLikeEntity> result = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
 
         System.out.println(result);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(postLikes.get(0));
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Optional.of(postLikes.get(0)));
     }
 
     @Test

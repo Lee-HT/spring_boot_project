@@ -13,7 +13,9 @@ import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.PostRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.CommentService;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class CommentServiceImpl implements CommentService {
+
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
@@ -31,10 +34,12 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeConverter commentLikeConverter;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentConverter commentConverter,
-                              PostRepository postRepository,
-                              UserRepository userRepository,
-            CommentLikeRepository commentLikeRepository, CommentLikeConverter commentLikeConverter) {
+    public CommentServiceImpl(CommentRepository commentRepository,
+            CommentConverter commentConverter,
+            PostRepository postRepository,
+            UserRepository userRepository,
+            CommentLikeRepository commentLikeRepository,
+            CommentLikeConverter commentLikeConverter) {
         this.commentRepository = commentRepository;
         this.commentConverter = commentConverter;
         this.postRepository = postRepository;
@@ -45,46 +50,66 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentPageDto getCommentByPost(Long pid, Pageable pageable) {
-        PostEntity postEntity = postRepository.findByPid(pid);
-        Page<CommentEntity> comments = commentRepository.findByPid(postEntity, pageable);
-        CommentPageDto commentPageDto = commentConverter.toDto(comments);
+        Optional<PostEntity> postEntity = postRepository.findByPid(pid);
 
-        return commentPageDto;
+        if (postEntity.isPresent()) {
+            Page<CommentEntity> comments = commentRepository.findByPid(postEntity.get(), pageable);
+            return commentConverter.toDto(comments);
+        } else {
+            return CommentPageDto.builder().build();
+        }
     }
 
     @Override
     public CommentPageDto getCommentByUser(Long uid, Pageable pageable) {
-        UserEntity userEntity = userRepository.findByUid(uid);
-        Page<CommentEntity> comments = commentRepository.findByUid(userEntity,pageable);
-        CommentPageDto commentPageDto = commentConverter.toDto(comments);
+        Optional<UserEntity> userEntity = userRepository.findByUid(uid);
+        if (userEntity.isPresent()) {
+            Page<CommentEntity> comments = commentRepository.findByUid(userEntity.get(), pageable);
+            return commentConverter.toDto(comments);
+        } else {
+            return CommentPageDto.builder().build();
+        }
 
-        return commentPageDto;
+
     }
 
 
     @Override
     public CommentDto saveComment(CommentDto commentDto) {
-        try {
-            UserEntity user = userRepository.findByUid(commentDto.getUid());
-            PostEntity post = postRepository.findByPid(commentDto.getPid());
-            CommentEntity comment = commentRepository.save(commentConverter.toEntity(commentDto, user, post));
+        Optional<UserEntity> user = userRepository.findByUid(commentDto.getUid());
+        Optional<PostEntity> post = postRepository.findByPid(commentDto.getPid());
 
+        if (user.isPresent() && post.isPresent()) {
+            CommentEntity comment = commentRepository.save(
+                    commentConverter.toEntity(commentDto, user.get(), post.get()));
             return commentConverter.toDto(comment);
-        } catch (NullPointerException e) {
-            return null;
+        } else {
+            return CommentDto.builder().build();
         }
     }
 
     @Override
     public List<CommentLikeDto> getCommentLikeCid(Long cid, Boolean likes) {
-        CommentEntity commentEntity = commentRepository.findByCid(cid);
-        return commentLikeConverter.toDto(commentLikeRepository.findByCidAndLikes(commentEntity,likes));
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
+        if (commentEntity.isPresent()) {
+            return commentLikeConverter.toDto(
+                    commentLikeRepository.findByCidAndLikes(commentEntity.get(), likes));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public List<CommentLikeDto> getCommentLikeUid(Long uid, Boolean likes) {
-        UserEntity userEntity = userRepository.findByUid(uid);
-        return commentLikeConverter.toDto(commentLikeRepository.findByUidAndLikes(userEntity,likes));
+        Optional<UserEntity> userEntity = userRepository.findByUid(uid);
+
+        if (userEntity.isPresent()) {
+            return commentLikeConverter.toDto(
+                    commentLikeRepository.findByUidAndLikes(userEntity.get(), likes));
+        } else {
+            return Collections.emptyList();
+        }
+
     }
 
 }

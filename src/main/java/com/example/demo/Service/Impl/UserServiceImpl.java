@@ -8,6 +8,7 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.UserService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +37,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findByUid(Long uid) {
-        return userConverter.toDto(userRepository.findByUid(uid));
+        return userConverter.toDto(
+                userRepository.findByUid(uid).orElseGet(() -> UserEntity.builder().build()));
     }
 
     @Override
@@ -48,11 +50,8 @@ public class UserServiceImpl implements UserService {
     public UserDto findByProvider() {
         try {
             String provider = getProvider();
-            UserEntity userEntity = userRepository.findByProvider(provider);
-            return UserDto.builder().uid(userEntity.getUid())
-                    .username(userEntity.getUsername())
-                    .email(userEntity.getEmail())
-                    .profilePic(userEntity.getProfilePic()).build();
+            Optional<UserEntity> userEntity = userRepository.findByProvider(provider);
+            return userConverter.toDto(userEntity.get());
         } catch (Exception e) {
             log.info(String.valueOf(e));
         }
@@ -68,10 +67,12 @@ public class UserServiceImpl implements UserService {
     @Override
     // save 삭제 필요
     public UserDto updateUser(UserDto userDto) {
-        UserEntity user = userRepository.findByUid(userDto.getUid());
-        user.updateUser(userDto.getUsername(), userDto.getEmail(), user.getProfilePic());
+        UserEntity userEntity = userRepository.findByUid(userDto.getUid())
+                .orElseGet(() -> UserEntity.builder().build());
+        userEntity.updateUser(userDto.getUsername(), userDto.getEmail(),
+                userEntity.getProfilePic());
 
-        return userConverter.toDto(user);
+        return userConverter.toDto(userEntity);
     }
 
     @Override
@@ -80,7 +81,8 @@ public class UserServiceImpl implements UserService {
             List<UserEntity> userEntities = new ArrayList<>();
             for (Long i : uid
             ) {
-                userEntities.add(userRepository.findByUid(i));
+                Optional<UserEntity> userEntity = userRepository.findByUid(i);
+                userEntity.ifPresent(userEntities::add);
             }
             userRepository.deleteAll(userEntities);
             if (userEntities.size() == uid.size()) {
@@ -94,10 +96,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long deleteUser(){
+    public Long deleteUser() {
         String provider = getProvider();
-        UserEntity user = userRepository.findByProvider(provider);
-        userRepository.delete(user);
-        return user.getUid();
+        Optional<UserEntity> user = userRepository.findByProvider(provider);
+        if (user.isPresent()) {
+            userRepository.delete(user.get());
+            return user.get().getUid();
+        } else {
+            return 0L;
+        }
+
+
     }
 }

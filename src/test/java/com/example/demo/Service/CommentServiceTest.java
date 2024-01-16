@@ -14,12 +14,11 @@ import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.CommentLikeRepository;
 import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.PostRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.CommentServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,7 +88,7 @@ class CommentServiceTest {
     @Test
     public void getPostCommentPage() {
         System.out.println("======== getPostCommentPage ========");
-        when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
+        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
@@ -104,7 +103,7 @@ class CommentServiceTest {
     @Test
     public void getUserCommentPage() {
         System.out.println("======== getUserCommentPage ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(any(Page.class))).thenReturn(
@@ -119,8 +118,8 @@ class CommentServiceTest {
     @Test
     public void saveComment() {
         System.out.println("======== saveComment ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
-        when(postRepository.findByPid(any(Long.class))).thenReturn(posts.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
+        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
         when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
                 any(PostEntity.class))).thenReturn(comments.get(0));
         when(commentRepository.save(any(CommentEntity.class))).thenReturn(comments.get(0));
@@ -135,7 +134,7 @@ class CommentServiceTest {
     @Test
     public void getCommentLikeCid() {
         System.out.println("======== getCommentLikeCid ========");
-        when(commentRepository.findByCid(any(Long.class))).thenReturn(comments.get(0));
+        when(commentRepository.findByCid(any(Long.class))).thenReturn(Optional.of(comments.get(0)));
         when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
                 any(Boolean.class))).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());
@@ -149,7 +148,7 @@ class CommentServiceTest {
     @Test
     public void getCommentLikeUid() {
         System.out.println("======== getCommentLikeUid ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(users.get(0));
+        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),
                 any(Boolean.class))).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());

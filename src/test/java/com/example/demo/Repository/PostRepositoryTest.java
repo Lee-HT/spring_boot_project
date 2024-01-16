@@ -4,6 +4,7 @@ import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,7 @@ class PostRepositoryTest {
     private List<UserEntity> users = new ArrayList<>();
     private List<PostEntity> posts = new ArrayList<>();
     // 0 페이지, 페이지당 3개, 내림차순, 정렬기준 pid
-    private Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
+    private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
     private int maxIdx;
     private List<Long> pk = new ArrayList<>();
 
@@ -43,7 +44,7 @@ class PostRepositoryTest {
     void setPosts() {
         for (int i = 1; i < 3; i++) {
             users.add(UserEntity.builder().username("user" + i)
-                    .email("email" + i + "@gmail.com").provider("google_"+i).build());
+                    .email("email" + i + "@gmail.com").provider("google_" + i).build());
         }
         for (int i = 1; i < 6; i++) {
             posts.add(PostEntity.builder().title("title" + i).contents("content" + i)
@@ -74,11 +75,12 @@ class PostRepositoryTest {
     @DisplayName("PID 기준 SELECT")
     public void findByPid() {
         System.out.println("======== findByPid ========");
-        PostEntity result = postRepository.findByPid(pk.get(0));
+        Optional<PostEntity> result = postRepository.findByPid(pk.get(0));
 
         System.out.println(result);
 
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(posts.get(0));
+        Assertions.assertThat(result).usingRecursiveComparison()
+                .isEqualTo(Optional.of(posts.get(0)));
     }
 
     @Test
@@ -86,9 +88,10 @@ class PostRepositoryTest {
     public void findByUsernamePaging() {
         System.out.println("======== findByUsernamePaging ========");
         Page<PostEntity> pages = new PageImpl<>(
-                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),this.pageable,
+                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable,
                 this.posts.size());
-        Page<PostEntity> result = postRepository.findByUsernameContaining(users.get(0).getUsername(),this.pageable);
+        Page<PostEntity> result = postRepository.findByUsernameContaining(
+                users.get(0).getUsername(), this.pageable);
 
         System.out.println(result.getContent());
 

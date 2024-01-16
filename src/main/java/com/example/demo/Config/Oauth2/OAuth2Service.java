@@ -4,6 +4,7 @@ import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.UserRepository;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -88,13 +89,13 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
     // DB에 유저 정보 삽입
     private UserEntity saveUser(Oauth2Attributes oauth2Attributes) {
         // naver email 은 고유하지 않음
-        UserEntity user = userRepository.findByProvider(oauth2Attributes.getProvider());
-        if (user != null) {
-            user.updateUsername(oauth2Attributes.getUsername());
+        Optional<UserEntity> user = userRepository.findByProvider(oauth2Attributes.getProvider());
+        if (user.isPresent()) {
+            user.get().updateUsername(oauth2Attributes.getUsername());
         } else {
-            user = userRepository.save(oauth2Attributes.toEntity());
+            return userRepository.save(oauth2Attributes.toEntity());
         }
-        return user;
+        return user.get();
     }
 
     // ClientRegistration AuthenticationMethod -> HttpMethod
