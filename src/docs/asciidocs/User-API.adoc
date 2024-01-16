@@ -4,3 +4,7 @@
 [[Update-User]]
 === 유저 정보 수정
 operation::user-controller-test/update-user[snippets="http-request,request-fields,response-fields"]
+
+operation::user-controller-test/get-user[snippets="http-request,response-fields"]
+
+operation::user-controller-test/delete-user[snippets="http-request,response-fields"]
