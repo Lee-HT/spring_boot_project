@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.CommentConverter;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -91,7 +93,7 @@ class CommentServiceTest {
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
-        when(commentConverter.toDto(any(Page.class))).thenReturn(
+        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
                 CommentPageDto.builder().build());
         CommentPageDto result = commentService.getCommentByPost(1L, pageable);
 
@@ -106,7 +108,7 @@ class CommentServiceTest {
         when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
-        when(commentConverter.toDto(any(Page.class))).thenReturn(
+        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
                 CommentPageDto.builder().build());
         CommentPageDto result = commentService.getCommentByUser(1L, pageable);
 
@@ -137,7 +139,7 @@ class CommentServiceTest {
         when(commentRepository.findByCid(any(Long.class))).thenReturn(Optional.of(comments.get(0)));
         when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
                 any(Boolean.class))).thenReturn(new ArrayList<>());
-        when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
         List<CommentLikeDto> result = commentService.getCommentLikeCid(1L, true);
 
         System.out.println(result);
@@ -151,7 +153,7 @@ class CommentServiceTest {
         when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),
                 any(Boolean.class))).thenReturn(new ArrayList<>());
-        when(commentLikeConverter.toDto(any(List.class))).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
         List<CommentLikeDto> result = commentService.getCommentLikeUid(1L, true);
 
         System.out.println(result);
