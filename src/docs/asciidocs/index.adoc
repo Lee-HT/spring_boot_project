@@ -13,3 +13,5 @@ include::Post-API.adoc[]
 include::User-API.adoc[]
 
 include::Comment-API.adoc[]
+
+include::Login-API.adoc[]

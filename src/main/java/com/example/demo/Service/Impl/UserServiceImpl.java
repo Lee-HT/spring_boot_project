@@ -50,8 +50,9 @@ public class UserServiceImpl implements UserService {
     public UserDto findByProvider() {
         try {
             String provider = getProvider();
-            Optional<UserEntity> userEntity = userRepository.findByProvider(provider);
-            return userConverter.toDto(userEntity.get());
+            UserEntity userEntity = userRepository.findByProvider(provider)
+                    .orElseGet(() -> UserEntity.builder().build());
+            return userConverter.toDto(userEntity);
         } catch (Exception e) {
             log.info(String.valueOf(e));
         }

@@ -5,6 +5,8 @@ import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping()
 public class LoginController {
+
     private final Oauth2CustomService oauth2CustomService;
     private final UserService userService;
 
@@ -28,8 +31,13 @@ public class LoginController {
     // user info
     @ResponseBody
     @GetMapping("/oauth2/userinfo")
-    public UserDto getUserInfo(){
-        return userService.findByProvider();
+    public ResponseEntity<UserDto> getUserInfo() {
+        UserDto userDto = userService.findByProvider();
+        HttpStatus status = HttpStatus.OK;
+        if (userDto.getUid() == null) {
+            status = HttpStatus.NO_CONTENT;
+        }
+        return new ResponseEntity<>(userDto, status);
     }
 
     // oauth2 test

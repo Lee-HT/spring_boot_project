@@ -3,4 +3,4 @@
 
 [[Home]]
 === 홈 화면
-operation::test[snippets="http-request,http-response"]
+operation::test-controller-test/home-test[snippets="http-request,http-response"]

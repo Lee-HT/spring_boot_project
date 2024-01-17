@@ -1,0 +1,6 @@
+[[Login-API]]
+== Login API
+
+[[Get-UserInfo]]
+=== 유저 정보 조회
+operation::login-controller-test/get-user-info[snippets="http-request,response-fields"]
