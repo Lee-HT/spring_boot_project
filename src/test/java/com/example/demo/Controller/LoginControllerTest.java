@@ -37,8 +37,8 @@ class LoginControllerTest extends RestDocsSetUp {
             OAuth2Service oAuth2Service,
             UserService userService, Oauth2CustomService oauth2CustomService) {
         super(restDocs, mockMvc);
-        this.oAuth2Service = oAuth2Service;
         this.userService = userService;
+        this.oAuth2Service = oAuth2Service;
         this.oauth2CustomService = oauth2CustomService;
     }
 
