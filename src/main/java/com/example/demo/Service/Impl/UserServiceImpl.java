@@ -68,10 +68,15 @@ public class UserServiceImpl implements UserService {
     @Override
     // save 삭제 필요
     public UserDto updateUser(UserDto userDto) {
-        UserEntity userEntity = userRepository.findByUid(userDto.getUid())
+        String provider = getProvider();
+        UserEntity userEntity = userRepository.findByProvider(provider)
                 .orElseGet(() -> UserEntity.builder().build());
-        userEntity.updateUser(userDto.getUsername(), userDto.getEmail(),
-                userEntity.getProfilePic());
+        String username =
+                userDto.getUsername() != null ? userDto.getUsername() : userEntity.getUsername();
+        String email = userDto.getEmail() != null ? userDto.getEmail() : userEntity.getEmail();
+        String profilePic = userDto.getProfilePic() != null ? userDto.getProfilePic()
+                : userEntity.getProfilePic();
+        userEntity.updateUser(username, email, profilePic);
 
         return userConverter.toDto(userEntity);
     }
