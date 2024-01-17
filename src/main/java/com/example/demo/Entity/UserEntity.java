@@ -35,13 +35,17 @@ public class UserEntity extends BaseTimeEntity {
     private String roles;
     private String profilePic;
 
-    public void updateUser(String username,String email,String profilePic){
+    public void updateUser(String username, String email, String profilePic) {
         this.username = username;
         this.email = email;
         this.profilePic = profilePic;
     }
 
-    public void updateUsername(String username){
+    public void updateUsername(String username) {
         this.username = username;
+    }
+
+    public void updateProfileImg(String img) {
+        this.profilePic = img;
     }
 }
