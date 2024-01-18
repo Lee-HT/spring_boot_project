@@ -26,11 +26,11 @@ public interface URLPattern {
             // CommentController
     };
 
-    // isAuthenticated
-    String[] authenticatedGetMethod = new String[]{
+    // hasRole User
+    String[] userGetMethod = new String[]{
 
     };
-    String[] authenticatedPostMethod = new String[]{
+    String[] userPostMethod = new String[]{
 
     };
 

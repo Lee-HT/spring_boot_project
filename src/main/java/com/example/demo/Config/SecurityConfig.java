@@ -92,10 +92,10 @@ public class SecurityConfig {
                 .requestMatchers(
                         requestMatchersConcatArray(
                                 requestMatchersAsArray(HttpMethod.GET,
-                                        URLPattern.authenticatedGetMethod),
+                                        URLPattern.userGetMethod),
                                 requestMatchersAsArray(HttpMethod.POST,
-                                        URLPattern.authenticatedPostMethod)))
-                .authenticated()
+                                        URLPattern.userPostMethod)))
+                .hasRole("USER")
 
                 .anyRequest().authenticated()
         );
