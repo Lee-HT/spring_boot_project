@@ -21,6 +21,6 @@ public class CommentPageDto {
     private int totalPages;
     private int size;
     private int numberOfElements;
-    private boolean sorted;
+    private Boolean sorted;
 
 }

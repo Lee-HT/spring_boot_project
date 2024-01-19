@@ -26,7 +26,7 @@ public class PostLikeConverter {
     }
 
     public PostLikeDto toDto(PostLikeEntity postLike) {
-        return PostLikeDto.builder().likes(postLike.isLikes()).uid(postLike.getUid().getUid())
+        return PostLikeDto.builder().likes(postLike.getLikes()).uid(postLike.getUid().getUid())
                 .pid(postLike.getPid().getPid()).build();
     }
 

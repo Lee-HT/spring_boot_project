@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
 
     PostPageDto findPostPage(Pageable pageable);
+
     PostDto findPost(Long pid);
 
     PostPageDto findPostByTitle(String title, Pageable pageable);
@@ -22,10 +23,10 @@ public interface PostService {
 
     int deletePosts(List<Long> pid);
 
-    LikeDto getLike(Long pid, Long uid);
+    LikeDto getLike(Long pid);
 
-    LikeDto likeState(PostLikeDto dto);
+    LikeDto setlikeState(PostLikeDto dto);
 
-    int deleteLike(Long pid, Long uid);
+    int deleteLike(Long pid);
 
 }

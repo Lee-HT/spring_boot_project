@@ -57,9 +57,9 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 // 정적 리소스 시큐리티 예외 처리
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                // 예외 처리 할 customURL
-                .requestMatchers(new AntPathRequestMatcher("/"));
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                // 예외 처리 할 customURL ( 권장하지 않음 )
+//                .requestMatchers(new AntPathRequestMatcher("/"));
     }
 
     @Bean
@@ -87,17 +87,22 @@ public class SecurityConfig {
                                 requestMatchersAsArray(HttpMethod.GET,
                                         URLPattern.permitAllGetMethod),
                                 requestMatchersAsArray(HttpMethod.POST,
-                                        URLPattern.permitAllPostMethod)))
+                                        URLPattern.permitAllPostMethod),
+                                requestMatchersAsArray(HttpMethod.PUT,
+                                        URLPattern.permitAllPutMethod))
+                )
                 .permitAll()
                 .requestMatchers(
                         requestMatchersConcatArray(
                                 requestMatchersAsArray(HttpMethod.GET,
                                         URLPattern.userGetMethod),
                                 requestMatchersAsArray(HttpMethod.POST,
-                                        URLPattern.userPostMethod)))
-                .hasRole("USER")
+                                        URLPattern.userPostMethod),
+                                requestMatchersAsArray(HttpMethod.DELETE,
+                                        URLPattern.userDeleteMethod)))
+                .hasAnyRole("USER")
 
-                .anyRequest().authenticated()
+                .anyRequest().hasAnyRole("USER")
         );
 
         // spring security 의 authorization uri 생성 uri

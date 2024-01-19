@@ -32,8 +32,8 @@ public class PostLikeEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "pid",nullable = false)
     private PostEntity pid;
-    private boolean likes;
-    public void updateLikes(boolean likes) {
+    private Boolean likes;
+    public void updateLikes(Boolean likes) {
         this.likes = likes;
     }
 
