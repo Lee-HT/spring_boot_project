@@ -55,9 +55,9 @@ class UserServiceTest {
         }
     }
 
-    private void setUserContextByUsername() {
+    private void SetUserContextByUsername() {
         SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
+                .setAuthentication(new UsernamePasswordAuthenticationToken("principal", null, null));
     }
 
     @Test
@@ -106,10 +106,11 @@ class UserServiceTest {
 
     @Test
     public void updateUser() {
+        SetUserContextByUsername();
         System.out.println("======== updateUser ========");
         UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();
-        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(userDto);
         UserDto user = userService.updateUser(userDto);
 
@@ -135,7 +136,7 @@ class UserServiceTest {
         System.out.println("======== deleteUser ========");
         Long uid = 1L;
 
-        setUserContextByUsername();
+        SetUserContextByUsername();
         when(userRepository.findByProvider(any(String.class))).thenReturn(
                 Optional.of(users.get(0)));
         // 메소드 동작 x

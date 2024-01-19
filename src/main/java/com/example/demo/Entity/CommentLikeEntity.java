@@ -32,9 +32,9 @@ public class CommentLikeEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "cid", nullable = false)
     private CommentEntity cid;
-    private boolean likes;
+    private Boolean likes;
 
-    public void updateLikes(boolean likes) {
+    public void updateLikes(Boolean likes) {
         this.likes = likes;
     }
 

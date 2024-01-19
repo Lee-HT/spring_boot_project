@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         this.userConverter = userConverter;
     }
 
-    private String getProvider() {
+    private String GetProvider() {
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
@@ -48,15 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findByProvider() {
-        try {
-            String provider = getProvider();
-            UserEntity userEntity = userRepository.findByProvider(provider)
-                    .orElseGet(() -> UserEntity.builder().build());
-            return userConverter.toDto(userEntity);
-        } catch (Exception e) {
-            log.info(String.valueOf(e));
-        }
-        return null;
+        UserEntity userEntity = GetUserProv().orElseGet(() -> UserEntity.builder().build());
+        return userConverter.toDto(userEntity);
+
     }
 
     @Override
@@ -68,8 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     // save 삭제 필요
     public UserDto updateUser(UserDto userDto) {
-        String provider = getProvider();
-        UserEntity userEntity = userRepository.findByProvider(provider)
+        UserEntity userEntity = GetUserProv()
                 .orElseGet(() -> UserEntity.builder().build());
         String username =
                 userDto.getUsername() != null ? userDto.getUsername() : userEntity.getUsername();
@@ -103,15 +96,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long deleteUser() {
-        String provider = getProvider();
-        Optional<UserEntity> user = userRepository.findByProvider(provider);
+        Optional<UserEntity> user = GetUserProv();
         if (user.isPresent()) {
             userRepository.delete(user.get());
             return user.get().getUid();
         } else {
             return 0L;
         }
+    }
 
-
+    private Optional<UserEntity> GetUserProv() {
+        return userRepository.findByProvider(GetProvider());
     }
 }

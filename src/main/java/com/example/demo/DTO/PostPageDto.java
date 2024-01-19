@@ -26,5 +26,5 @@ public class PostPageDto {
     // 현재 페이지 출력 개수
     private int numberOfElements;
     // 정렬 상태
-    private boolean sorted;
+    private Boolean sorted;
 }

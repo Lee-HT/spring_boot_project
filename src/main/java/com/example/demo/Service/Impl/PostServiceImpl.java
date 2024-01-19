@@ -15,6 +15,7 @@ import com.example.demo.Service.PostService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Service
+@Slf4j
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -41,7 +43,7 @@ public class PostServiceImpl implements PostService {
         this.postLikeRepository = postLikeRepository;
     }
 
-    private String getProvider() {
+    private String GetProvider() {
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
@@ -58,7 +60,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    // 테스트 코드 수정 필요
     public PostPageDto findPostByTitle(String title, Pageable pageable) {
         return postConverter.toDto(postRepository.findByTitleContaining(title, pageable));
     }
@@ -70,11 +71,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto savePost(PostDto postDto) {
-        String provider = getProvider();
-        Optional<UserEntity> user = userRepository.findByProvider(provider);
+        Optional<UserEntity> userEntity = GetUserProv();
 
-        if (user.isPresent()) {
-            PostEntity post = postConverter.toEntity(postDto, user.get());
+        if (userEntity.isPresent()) {
+            PostEntity post = postConverter.toEntity(postDto, userEntity.get());
             return postConverter.toDto(postRepository.save(post));
         } else {
             return PostDto.builder().build();
@@ -101,7 +101,7 @@ public class PostServiceImpl implements PostService {
         List<PostEntity> posts = new ArrayList<>();
         try {
             for (Long i : pid) {
-                posts.add(getPost(i));
+                posts.add(GetPost(i));
             }
             postRepository.deleteAll(posts);
             if (posts.size() == pid.size()) {
@@ -115,43 +115,62 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public LikeDto getLike(Long pid, Long uid) {
-        return LikeDto.builder().likes(getPostLike(pid, uid).isLikes()).build();
-    }
-
-
-    @Override
-    public LikeDto likeState(PostLikeDto dto) {
-        PostLikeEntity postLike = getPostLike(dto.getPid(), dto.getUid());
-        postLike.updateLikes(dto.getLikes());
-
-        return LikeDto.builder().likes(postLike.isLikes()).build();
-    }
-
-    @Override
-    public int deleteLike(Long pid, Long uid) {
-        try {
-            postLikeRepository.deleteByPidAndUid(getPost(pid), getUser(uid));
-            return 1;
-        } catch (Exception e) {
-            return 0;
+    public LikeDto getLike(Long pid) {
+        Optional<UserEntity> userEntity = GetUserProv();
+        if (userEntity.isPresent()) {
+            return LikeDto.builder().likes(GetPostLike(pid, userEntity.get().getUid()).getLikes())
+                    .build();
+        } else {
+            return LikeDto.builder().build();
         }
     }
 
-    // get PostLikeEntity
-    private PostLikeEntity getPostLike(Long pid, Long uid) {
-        return postLikeRepository.findByPidAndUid(getPost(pid),
-                getUser(uid)).orElseGet(() -> PostLikeEntity.builder().build());
+    @Override
+    public LikeDto setlikeState(PostLikeDto dto) {
+        Optional<UserEntity> userEntity = GetUserProv();
+        PostEntity postEntity = GetPost(dto.getPid());
+        if (userEntity.isEmpty() || postEntity.getPid() == null) {
+            return LikeDto.builder().build();
+        }
+        Optional<PostLikeEntity> postLike = postLikeRepository.findByPidAndUid(postEntity,
+                userEntity.get());
+        if (postLike.isEmpty()) {
+            postLikeRepository.save(
+                    PostLikeEntity.builder().pid(postEntity).uid(userEntity.get()).likes(dto.getLikes())
+                            .build());
+        } else {
+            postLike.get().updateLikes(dto.getLikes());
+        }
+        return LikeDto.builder().likes(dto.getLikes()).build();
+    }
+
+    @Override
+    public int deleteLike(Long pid) {
+        Optional<UserEntity> userEntity = GetUserProv();
+        if (userEntity.isPresent()) {
+            postLikeRepository.deleteByPidAndUid(GetPost(pid), userEntity.get());
+            return 1;
+        } else {
+            return 0;
+        }
 
     }
 
-    // get PostEntity
-    private PostEntity getPost(Long pid) {
+    // get PostLikeEntity
+    private PostLikeEntity GetPostLike(Long pid, Long uid) {
+        return postLikeRepository.findByPidAndUid(GetPost(pid),
+                GetUserUid(uid)).orElseGet(() -> PostLikeEntity.builder().build());
+    }
+
+    private PostEntity GetPost(Long pid) {
         return postRepository.findByPid(pid).orElseGet(() -> PostEntity.builder().build());
     }
 
-    // get UserEntity
-    private UserEntity getUser(Long uid) {
+    private UserEntity GetUserUid(Long uid) {
         return userRepository.findByUid(uid).orElseGet(() -> UserEntity.builder().build());
+    }
+
+    private Optional<UserEntity> GetUserProv() {
+        return userRepository.findByProvider(GetProvider());
     }
 }

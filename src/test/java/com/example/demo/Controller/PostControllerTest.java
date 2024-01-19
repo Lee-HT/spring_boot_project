@@ -2,7 +2,10 @@ package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
@@ -13,7 +16,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -218,14 +220,13 @@ class PostControllerTest extends RestDocsSetUp {
 
     @Test
     void getPostLike() throws Exception {
-        when(postService.getLike(any(Long.class), any(Long.class))).thenReturn(
+        when(postService.getLike(any(Long.class))).thenReturn(
                 LikeDto.builder().likes(true).build());
 
-        mvc.perform(get("/post/{pid}/username/{uid}/likes", "1", "1").with(oauth2Login()))
+        mvc.perform(get("/post/{pid}/likes", "1", "1").with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("pid").optional().description("게시글 PK"),
-                                parameterWithName("uid").optional().description("유저 FK")
+                                parameterWithName("pid").optional().description("게시글 PK")
                         ),
                         responseFields(
                                 fieldWithPath("likes").description("좋아요 상태")
@@ -236,31 +237,31 @@ class PostControllerTest extends RestDocsSetUp {
 
     @Test
     void savePostLike() throws Exception {
-        PostLikeDto dto = PostLikeDto.builder().pid(1L).uid(1L).likes(false).build();
-        when(postService.likeState(any(PostLikeDto.class))).thenReturn(
+        PostLikeDto dto = PostLikeDto.builder().pid(1L).likes(false).build();
+        when(postService.setlikeState(any(PostLikeDto.class))).thenReturn(
                 LikeDto.builder().likes(false).build());
 
-        mvc.perform(post("/post/likes").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/post/likes").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("pid").optional().description("게시글 PK"),
-                                fieldWithPath("uid").optional().description("유저 FK"),
+                                fieldWithPath("uid").ignored(),
                                 fieldWithPath("likes").optional().description("좋아요 상태")
                         ),
                         responseFields(
                                 fieldWithPath("likes").description("좋아요 상태")
                         )
                 ))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
     void deletePostLike() throws Exception {
-        when(postService.deleteLike(any(Long.class), any(Long.class))).thenReturn(1);
+        when(postService.deleteLike(any(Long.class))).thenReturn(1);
 
         mvc.perform(
-                        delete("/post/{pid}/username/{uid}/likes", "1", "1").with(oauth2Login())
+                        delete("/post/{pid}/likes", "1", "1").with(oauth2Login())
                 )
                 .andDo(restDocs.document(
                         pathParameters(
@@ -269,8 +270,7 @@ class PostControllerTest extends RestDocsSetUp {
                         ),
                         responseBody()
                 ))
-                .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(status().isNoContent());
     }
 
 

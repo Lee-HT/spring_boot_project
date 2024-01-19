@@ -109,7 +109,7 @@ class CommentLikeRepositoryTest {
     @DisplayName("CID COUNT SELECT")
     public void countByCidAndLikes() {
         System.out.println("======== countByCid ========");
-        boolean likes = true;
+        Boolean likes = true;
         int countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0), likes);
 
         System.out.println(countLikes);
