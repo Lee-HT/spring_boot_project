@@ -219,6 +219,18 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
+    void deletePost() throws Exception {
+        when(postService.deletePost(any(Long.class))).thenReturn(1L);
+
+        mvc.perform(delete("/post/{pid}", 1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("pid").description("게시글 PK")
+                        )
+                )).andExpect(status().isNoContent());
+    }
+
+    @Test
     void getPostLike() throws Exception {
         when(postService.getLike(any(Long.class))).thenReturn(
                 LikeDto.builder().likes(true).build());

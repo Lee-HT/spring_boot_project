@@ -21,6 +21,8 @@ public interface PostService {
 
     PostDto updatePost(PostDto postDto);
 
+    Long deletePost(Long pid);
+
     int deletePosts(List<Long> pid);
 
     LikeDto getLike(Long pid);

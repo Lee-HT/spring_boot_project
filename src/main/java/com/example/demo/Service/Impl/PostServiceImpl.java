@@ -14,6 +14,7 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.PostService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,23 +86,38 @@ public class PostServiceImpl implements PostService {
     public PostDto updatePost(PostDto postDto) {
         Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
-        if (postEntity.isPresent()) {
+        if (postEntity.isPresent() && EqualPidUid(postEntity.get())) {
             postEntity.get()
                     .updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
-
             return postConverter.toDto(postEntity.get());
         } else {
             return PostDto.builder().build();
         }
+    }
 
+    @Override
+    public Long deletePost(Long pid) {
+        Optional<PostEntity> postEntity = postRepository.findByPid(pid);
+        if (postEntity.isPresent() && EqualPidUid(postEntity.get())) {
+            postRepository.delete(postEntity.get());
+            return pid;
+        } else {
+            return 0L;
+        }
     }
 
     @Override
     public int deletePosts(List<Long> pid) {
+        Optional<UserEntity> userEntity = GetUserProv();
         List<PostEntity> posts = new ArrayList<>();
         try {
             for (Long i : pid) {
-                posts.add(GetPost(i));
+                PostEntity postEntity = GetPost(i);
+                posts.add(postEntity);
+                if (userEntity.isPresent() && Objects.equals(postEntity.getUid(),
+                        userEntity.get())) {
+                    return 0;
+                }
             }
             postRepository.deleteAll(posts);
             if (posts.size() == pid.size()) {
@@ -136,7 +152,8 @@ public class PostServiceImpl implements PostService {
                 userEntity.get());
         if (postLike.isEmpty()) {
             postLikeRepository.save(
-                    PostLikeEntity.builder().pid(postEntity).uid(userEntity.get()).likes(dto.getLikes())
+                    PostLikeEntity.builder().pid(postEntity).uid(userEntity.get())
+                            .likes(dto.getLikes())
                             .build());
         } else {
             postLike.get().updateLikes(dto.getLikes());
@@ -153,7 +170,6 @@ public class PostServiceImpl implements PostService {
         } else {
             return 0;
         }
-
     }
 
     // get PostLikeEntity
@@ -172,5 +188,11 @@ public class PostServiceImpl implements PostService {
 
     private Optional<UserEntity> GetUserProv() {
         return userRepository.findByProvider(GetProvider());
+    }
+
+    private Boolean EqualPidUid(PostEntity postEntity) {
+        Optional<UserEntity> userEntity = GetUserProv();
+        return userEntity.isPresent() && Objects.equals(userEntity.get(),
+                postEntity.getUid());
     }
 }

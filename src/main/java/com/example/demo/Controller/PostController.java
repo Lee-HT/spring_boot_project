@@ -62,6 +62,16 @@ public class PostController {
         return postService.findPostByUsername(username, pageable);
     }
 
+    @DeleteMapping("/{pid}")
+    public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid){
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        Long result = postService.deletePost(pid);
+        if (result == 0){
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
+    }
+
     // 현재 좋아요 상태
     @GetMapping("/{pid}/likes")
     public ResponseEntity<LikeDto> getLike(@PathVariable Long pid) {

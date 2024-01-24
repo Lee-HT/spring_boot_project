@@ -4,6 +4,9 @@ package com.example.demo.Service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
@@ -105,7 +108,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("PID 기준 SELECT")
+    @DisplayName("PID 기준 SELECT POST")
     public void findPost() {
         System.out.println("======== findByPid ========");
 
@@ -119,7 +122,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("TITLE 기준 SELECT")
+    @DisplayName("TITLE 기준 SELECT POST")
     public void findPostByTitle() {
         System.out.println("======== findByTitleContaining ========");
         when(postRepository.findByTitleContaining(anyString(), eq(this.pageable))).thenReturn(
@@ -134,7 +137,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("USERNAME 기준 SELECT")
+    @DisplayName("USERNAME 기준 SELECT POST")
     public void findPostByUsername() {
         System.out.println("======== findPostByUsername ========");
 
@@ -151,7 +154,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("INSERT")
+    @DisplayName("INSERT POST")
     public void savePost() {
         System.out.println("======== savePost ========");
         setUserContextByUsername();
@@ -170,7 +173,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("UPDATE")
+    @DisplayName("UPDATE POST")
     public void updatePost() {
         System.out.println("======== updatePost ========");
         PostDto postDto = PostDto.builder().pid(1L).title("title3").contents("contents3").build();
@@ -186,9 +189,9 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("DELETE")
-    public void deletePost() {
-        System.out.println("======== deletePost ========");
+    @DisplayName("DELETE POSTS")
+    public void deletePosts() {
+        System.out.println("======== deletePosts ========");
 
         List<Long> pid = Arrays.asList(1L, 2L);
         when(postRepository.findByPid(1L)).thenReturn(Optional.of(posts.get(0)));
@@ -198,6 +201,21 @@ class PostServiceTest {
         Assertions.assertThat(count).isEqualTo(2);
 
         System.out.println(count);
+    }
+
+    @Test
+    @DisplayName("DELETE POST")
+    public void deletePost() {
+        System.out.println("======== deletePost ========");
+        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
+        doNothing().when(postRepository).delete(any(PostEntity.class));
+
+        Long result = postService.deletePost(1L);
+
+        Assertions.assertThat(result).isEqualTo(1L);
+        verify(postRepository,times(1)).delete(any(PostEntity.class));
+
+        System.out.println(result);
     }
 
     @Test
