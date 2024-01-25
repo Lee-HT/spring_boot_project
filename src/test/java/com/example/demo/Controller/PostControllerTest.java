@@ -56,7 +56,7 @@ class PostControllerTest extends RestDocsSetUp {
     @Test
     void getPostPage() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
-                .size(3).numberOfElements(3).sorted(true).build();
+                .size(3).totalElements(6L).sorted(true).build();
         when(postService.findPostPage(any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post?page=0&size=10&sort=pid")
@@ -71,16 +71,12 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
-                                fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
+                                fieldWithPath("totalElements").description("전체 게시글 수"),
                                 fieldWithPath("sorted").description("정렬 상태")
                         )
                 ))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.size").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.sorted").exists());
+                .andExpect(jsonPath("$.contents").isArray());
     }
 
     @Test
@@ -153,7 +149,7 @@ class PostControllerTest extends RestDocsSetUp {
     @Test
     void getPostByTitle() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
-                .size(3).numberOfElements(3).sorted(true).build();
+                .size(3).totalElements(6L).sorted(true).build();
         when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 
@@ -171,22 +167,18 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
-                                fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
+                                fieldWithPath("totalElements").description("전체 게시글 수"),
                                 fieldWithPath("sorted").description("정렬 상태")
                         )
                 ))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.size").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.sorted").exists());
+                .andExpect(jsonPath("$.contents").isArray());
     }
 
     @Test
     void getPostByUsername() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(new ArrayList<>()).totalPages(2)
-                .size(3).numberOfElements(3).sorted(true).build();
+                .size(3).totalElements(6L).sorted(true).build();
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 
@@ -206,16 +198,12 @@ class PostControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").description("게시글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
-                                fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
+                                fieldWithPath("totalElements").description("전체 게시글 수"),
                                 fieldWithPath("sorted").description("정렬 상태")
                         )
                 ))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.size").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.sorted").exists());
+                .andExpect(jsonPath("$.contents").isArray());
     }
 
     @Test

@@ -42,7 +42,7 @@ public class UserConverter {
     public UserPageDto toDto(Page<UserEntity> pages) {
         return UserPageDto.builder().contents(toDto(pages.getContent()))
                 .totalPages(pages.getTotalPages()).size(pages.getSize())
-                .numberOfElements(pages.getNumberOfElements()).sorted(pages.getSort()).build();
+                .totalElements(pages.getTotalElements()).sorted(pages.getSort()).build();
     }
 
 }

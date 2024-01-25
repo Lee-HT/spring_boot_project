@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -51,7 +52,7 @@ class CommentControllerTest extends RestDocsSetUp {
     @Test
     void getCommentsByPost() throws Exception {
         CommentPageDto commentPageDto = CommentPageDto.builder().contents(new ArrayList<>())
-                .totalPages(2).size(3).numberOfElements(3).sorted(true)
+                .totalPages(2).size(3).totalElements(6L).sorted(true)
                 .build();
         when(commentService.getCommentByPost(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);
@@ -70,22 +71,18 @@ class CommentControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").description("댓글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
-                                fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
+                                fieldWithPath("totalElements").description("전체 게시글 수"),
                                 fieldWithPath("sorted").description("정렬 상태")
                         )
                 ))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.size").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.sorted").exists());
+                .andExpect(jsonPath("$.contents").isArray());
     }
 
     @Test
     void getCommentsByUser() throws Exception {
         CommentPageDto commentPageDto = CommentPageDto.builder().contents(new ArrayList<>())
-                .totalPages(2).size(3).numberOfElements(3).sorted(true)
+                .totalPages(2).size(3).totalElements(6L).sorted(true)
                 .build();
         when(commentService.getCommentByUser(any(Long.class), any(Pageable.class))).thenReturn(
                 commentPageDto);
@@ -104,21 +101,17 @@ class CommentControllerTest extends RestDocsSetUp {
                                 fieldWithPath("contents").description("댓글 리스트"),
                                 fieldWithPath("totalPages").description("총 페이지 수"),
                                 fieldWithPath("size").description("페이지 게시글 수"),
-                                fieldWithPath("numberOfElements").description("현재 페이지 게시글 수"),
+                                fieldWithPath("totalElements").description("전체 게시글 수"),
                                 fieldWithPath("sorted").description("정렬 상태")
                         )
                 ))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.size").exists())
-                .andExpect(jsonPath("$.numberOfElements").exists())
-                .andExpect(jsonPath("$.sorted").exists());
+                .andExpect(jsonPath("$.contents").isArray());
     }
 
     @Test
     void saveComment() throws Exception {
-        CommentDto commentDto = CommentDto.builder().pid(1L).uid(1L).username("user")
+        CommentDto commentDto = CommentDto.builder().pid(1L).uid(1L).cid(1L).username("user")
                 .contents("contents").build();
         when(commentService.saveComment(any(CommentDto.class))).thenReturn(commentDto);
         mvc.perform(post("/comment").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
@@ -131,18 +124,42 @@ class CommentControllerTest extends RestDocsSetUp {
                                 fieldWithPath("username").optional().description("현재 유저명"),
                                 fieldWithPath("contents").optional().description("내용"),
                                 fieldWithPath("updatedAt").ignored()
-                        ),
-                        responseFields(
+                        )
+                ))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void updatePost() throws Exception {
+        CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).uid(1L).username("username")
+                .contents("contents")
+                .build();
+        when(commentService.updateComment(any(CommentDto.class))).thenReturn(1L);
+        mvc.perform(put("/comment").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andDo(restDocs.document(
+                        requestFields(
                                 fieldWithPath("cid").description("댓글 PK"),
                                 fieldWithPath("pid").description("게시글 FK"),
                                 fieldWithPath("uid").description("유저 FK"),
-                                fieldWithPath("username").description("현재 유저명"),
+                                fieldWithPath("username").description("유저명"),
                                 fieldWithPath("contents").description("내용"),
-                                fieldWithPath("updatedAt").description("수정 시간")
+                                fieldWithPath("updatedAt").ignored()
                         )
                 ))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.pid").exists());
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deletePost() throws Exception {
+        when(commentService.deleteComment(anyLong())).thenReturn(1L);
+        mvc.perform(delete("/comment/{cid}",1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("cid").description("댓글 PK")
+                        )
+                ))
+                .andExpect(status().isNoContent());
     }
 
     @Test

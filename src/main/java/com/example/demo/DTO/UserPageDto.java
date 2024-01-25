@@ -21,6 +21,6 @@ public class UserPageDto {
     private List<UserDto> contents;
     private int totalPages;
     private int size;
-    private int numberOfElements;
+    private Long totalElements;
     private Sort sorted;
 }

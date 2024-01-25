@@ -80,7 +80,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(new AntPathRequestMatcher("/", "GET")).permitAll()
 
-                .requestMatchers(requestMatchersAsArray(null, URLPattern.loginUrls)).permitAll()
+                .requestMatchers(requestMatchersAsArray(null, URLPattern.permitAllUrls)).permitAll()
 
                 .requestMatchers(
                         requestMatchersConcatArray(

@@ -3,6 +3,8 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.UserDto;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +24,13 @@ public class UserController {
     }
 
     @PatchMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
+        HttpStatus status = HttpStatus.OK;
+        UserDto updateUser = userService.updateUser(userDto);
+        if (updateUser.getUid() == 0) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(userDto,status);
     }
 
     @DeleteMapping

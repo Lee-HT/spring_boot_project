@@ -2,6 +2,7 @@ package com.example.demo.Service;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -82,24 +83,23 @@ class PostServiceTest {
         this.maxIdx = posts.size();
     }
 
-    private void setUserContextByUsername() {
+    private void SetUserContextByUsername() {
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
+    }
+
+    private void SetUserProv() {
+        SetUserContextByUsername();
+        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
     }
 
     @Test
     @DisplayName("POST PAGE SELECT")
     public void findPostPage() {
         System.out.println("======== findPostPage ========");
-        Page<PostEntity> pages = new PageImpl<>(
-                new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable, maxIdx);
-        PostPageDto pageDto = PostPageDto.builder()
-                .contents(new ArrayList<>(this.postDtos.subList(maxIdx - 3, maxIdx)))
-                .totalPages(pages.getTotalPages())
-                .numberOfElements(pages.getNumberOfElements()).size(pages.getSize())
-                .sorted(pages.getSort().isSorted()).build();
-        when(postRepository.findAll(this.pageable)).thenReturn(pages);
-        when(postConverter.toDto(pages)).thenReturn(pageDto);
+        PostPageDto pageDto = PostPageDto.builder().build();
+        when(postRepository.findAll(this.pageable)).thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(pageDto);
         PostPageDto result = postService.findPostPage(this.pageable);
 
         Assertions.assertThat(result).isEqualTo(pageDto);
@@ -154,12 +154,10 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("INSERT POST")
+    @DisplayName("SAVE POST")
     public void savePost() {
         System.out.println("======== savePost ========");
-        setUserContextByUsername();
-        when(userRepository.findByProvider(any(String.class))).thenReturn(
-                Optional.of(users.get(0)));
+        SetUserProv();
         when(postConverter.toEntity(any(PostDto.class), any(UserEntity.class))).thenReturn(
                 this.posts.get(1));
         when(postRepository.save(any(PostEntity.class))).thenReturn(this.posts.get(1));
@@ -176,10 +174,12 @@ class PostServiceTest {
     @DisplayName("UPDATE POST")
     public void updatePost() {
         System.out.println("======== updatePost ========");
+        SetUserProv();
         PostDto postDto = PostDto.builder().pid(1L).title("title3").contents("contents3").build();
-        PostEntity postEntity = PostEntity.builder().pid(1L).title("title1").contents("contents1")
+        PostEntity postEntity = PostEntity.builder().pid(1L).uid(users.get(0)).title("title1")
+                .contents("contents1")
                 .build();
-        when(postRepository.findByPid(1L)).thenReturn(Optional.of(postEntity));
+        when(postRepository.findByPid(anyLong())).thenReturn(Optional.of(postEntity));
         when(postConverter.toDto(any(PostEntity.class))).thenReturn(postDto);
         PostDto result = postService.updatePost(postDto);
 
@@ -189,9 +189,26 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("DELETE POST")
+    public void deletePost() {
+        System.out.println("======== deletePost ========");
+        SetUserProv();
+        when(postRepository.findByPid(anyLong())).thenReturn(Optional.of(posts.get(0)));
+        doNothing().when(postRepository).delete(any(PostEntity.class));
+
+        Long result = postService.deletePost(1L);
+
+        Assertions.assertThat(result).isEqualTo(1L);
+        verify(postRepository, times(1)).delete(any(PostEntity.class));
+
+        System.out.println(result);
+    }
+
+    @Test
     @DisplayName("DELETE POSTS")
     public void deletePosts() {
         System.out.println("======== deletePosts ========");
+        SetUserProv();
 
         List<Long> pid = Arrays.asList(1L, 2L);
         when(postRepository.findByPid(1L)).thenReturn(Optional.of(posts.get(0)));
@@ -204,28 +221,13 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("DELETE POST")
-    public void deletePost() {
-        System.out.println("======== deletePost ========");
-        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
-        doNothing().when(postRepository).delete(any(PostEntity.class));
-
-        Long result = postService.deletePost(1L);
-
-        Assertions.assertThat(result).isEqualTo(1L);
-        verify(postRepository,times(1)).delete(any(PostEntity.class));
-
-        System.out.println(result);
-    }
-
-    @Test
     @DisplayName("POST 좋아요")
     public void likesPost() {
         System.out.println("======== likesPost ========");
+        SetUserProv();
         PostLikeDto dto = PostLikeDto.builder().pid(posts.get(0).getPid())
                 .uid(users.get(0).getUid()).likes(false).build();
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
-        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
         when(postLikeRepository.findByPidAndUid(posts.get(0), users.get(0))).thenReturn(
                 Optional.of(this.postLikes.get(0)));
         LikeDto result = postService.setlikeState(dto);

@@ -1,5 +1,12 @@
 package com.example.demo.Service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.example.demo.Converter.UserConverter;
 import com.example.demo.DTO.UserDto;
 import com.example.demo.DTO.UserPageDto;
@@ -7,10 +14,14 @@ import com.example.demo.Entity.UserEntity;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.UserServiceImpl;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,13 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -57,7 +61,13 @@ class UserServiceTest {
 
     private void SetUserContextByUsername() {
         SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken("principal", null, null));
+                .setAuthentication(
+                        new UsernamePasswordAuthenticationToken("principal", null, null));
+    }
+
+    private void SetUserProv(){
+        SetUserContextByUsername();
+        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
     }
 
     @Test
@@ -76,14 +86,10 @@ class UserServiceTest {
     public void findByUsernameContaining() {
         System.out.println("======== findByUsernameContaining ========");
         String username = "user";
-        Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
-        UserPageDto pageDto = UserPageDto.builder()
-                .contents(new ArrayList<>(userDtos.subList(0, 3)))
-                .totalPages(pages.getTotalPages()).numberOfElements(pages.getNumberOfElements())
-                .sorted(pages.getSort()).size(pages.getSize()).build();
+        UserPageDto pageDto = UserPageDto.builder().build();
         when(userRepository.findByUsernameContaining(username, this.pageable)).thenReturn(
-                pages);
-        when(userConverter.toDto(pages)).thenReturn(pageDto);
+                new PageImpl<>(new ArrayList<>()));
+        when(userConverter.toDto(ArgumentMatchers.<Page<UserEntity>>any())).thenReturn(pageDto);
         UserPageDto result = userService.findByUsernameContaining(username, this.pageable);
 
         Assertions.assertThat(result).isEqualTo(pageDto);
@@ -106,11 +112,11 @@ class UserServiceTest {
 
     @Test
     public void updateUser() {
-        SetUserContextByUsername();
         System.out.println("======== updateUser ========");
+
+        SetUserProv();
         UserDto userDto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
                 .build();
-        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
         when(userConverter.toDto(any(UserEntity.class))).thenReturn(userDto);
         UserDto user = userService.updateUser(userDto);
 
@@ -136,9 +142,7 @@ class UserServiceTest {
         System.out.println("======== deleteUser ========");
         Long uid = 1L;
 
-        SetUserContextByUsername();
-        when(userRepository.findByProvider(any(String.class))).thenReturn(
-                Optional.of(users.get(0)));
+        SetUserProv();
         // 메소드 동작 x
         doNothing().when(userRepository).delete(any(UserEntity.class));
 

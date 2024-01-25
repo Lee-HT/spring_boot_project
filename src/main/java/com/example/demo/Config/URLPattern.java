@@ -3,14 +3,13 @@ package com.example.demo.Config;
 public interface URLPattern {
 
     // permitAll
-    String[] loginUrls = new String[]{
+    String[] permitAllUrls = new String[]{
             "/",
             "/oauth2/userinfo", "/login",
-            "/login/oauth2/test/*", "/oauth2/authorization/*"
+            "/login/oauth2/test/*", "/oauth2/authorization/*",
+            "/error"
     };
     String[] permitAllGetMethod = new String[]{
-            "/error",
-
             // PostController
             "/post",
             "/post/*",

@@ -60,16 +60,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    // save 삭제 필요
     public UserDto updateUser(UserDto userDto) {
         UserEntity userEntity = GetUserProv()
                 .orElseGet(() -> UserEntity.builder().build());
-        String username =
-                userDto.getUsername() != null ? userDto.getUsername() : userEntity.getUsername();
-        String email = userDto.getEmail() != null ? userDto.getEmail() : userEntity.getEmail();
-        String profilePic = userDto.getProfilePic() != null ? userDto.getProfilePic()
-                : userEntity.getProfilePic();
-        userEntity.updateUser(username, email, profilePic);
+        if (EqualUid(userEntity)) {
+            String username =
+                    userDto.getUsername() != null ? userDto.getUsername() : userEntity.getUsername();
+            String email = userDto.getEmail() != null ? userDto.getEmail() : userEntity.getEmail();
+            String profilePic = userDto.getProfilePic() != null ? userDto.getProfilePic()
+                    : userEntity.getProfilePic();
+            userEntity.updateUser(username, email, profilePic);
+        }
 
         return userConverter.toDto(userEntity);
     }
@@ -107,5 +108,10 @@ public class UserServiceImpl implements UserService {
 
     private Optional<UserEntity> GetUserProv() {
         return userRepository.findByProvider(GetProvider());
+    }
+
+    private Boolean EqualUid(UserEntity userEntity) {
+        Optional<UserEntity> authUser = GetUserProv();
+        return authUser.isPresent() && authUser.get() == userEntity;
     }
 }

@@ -63,10 +63,9 @@ public class PostController {
     }
 
     @DeleteMapping("/{pid}")
-    public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid){
+    public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        Long result = postService.deletePost(pid);
-        if (result == 0){
+        if (postService.deletePost(pid) == 0) {
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);

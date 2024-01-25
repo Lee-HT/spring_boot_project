@@ -2,6 +2,8 @@ package com.example.demo.Service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.CommentConverter;
@@ -82,13 +84,18 @@ class CommentServiceTest {
     }
 
     // SecurityContext 지정
-    private void setUserContextByUsername() {
+    private void SetUserContextByUsername() {
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
     }
 
+    private void SetUserProv() {
+        SetUserContextByUsername();
+        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
+    }
+
     @Test
-    public void getPostCommentPage() {
+    void getPostCommentPage() {
         System.out.println("======== getPostCommentPage ========");
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
@@ -103,7 +110,7 @@ class CommentServiceTest {
     }
 
     @Test
-    public void getUserCommentPage() {
+    void getUserCommentPage() {
         System.out.println("======== getUserCommentPage ========");
         when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
@@ -118,8 +125,9 @@ class CommentServiceTest {
     }
 
     @Test
-    public void saveComment() {
+    void saveComment() {
         System.out.println("======== saveComment ========");
+        SetUserProv();
         when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
         when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
@@ -134,7 +142,17 @@ class CommentServiceTest {
     }
 
     @Test
-    public void getCommentLikeCid() {
+    void updateComment() {
+        System.out.println("======== updateComment ========");
+        SetUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(comments.get(0)));
+        Long result = commentService.deleteComment(1L);
+
+        Assertions.assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void getCommentLikeCid() {
         System.out.println("======== getCommentLikeCid ========");
         when(commentRepository.findByCid(any(Long.class))).thenReturn(Optional.of(comments.get(0)));
         when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
@@ -148,7 +166,7 @@ class CommentServiceTest {
     }
 
     @Test
-    public void getCommentLikeUid() {
+    void getCommentLikeUid() {
         System.out.println("======== getCommentLikeUid ========");
         when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
         when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),

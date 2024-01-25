@@ -11,7 +11,7 @@ operation::comment-controller-test/get-comments-by-user[snippets="http-request,p
 
 [[Save-User]]
 === 댓글 저장
-operation::comment-controller-test/get-comments-by-user[snippets="http-request,path-parameters,query-parameters,response-fields"]
+operation::comment-controller-test/save-comment[snippets="http-request,response-body"]
 
 [[Get-Comment-Like-By-User]]
 === 댓글 좋아요 조회 ( 유저 )

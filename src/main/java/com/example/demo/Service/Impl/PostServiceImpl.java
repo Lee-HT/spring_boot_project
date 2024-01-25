@@ -86,7 +86,7 @@ public class PostServiceImpl implements PostService {
     public PostDto updatePost(PostDto postDto) {
         Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
-        if (postEntity.isPresent() && EqualPidUid(postEntity.get())) {
+        if (postEntity.isPresent() && EqualUid(postEntity.get())) {
             postEntity.get()
                     .updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
             return postConverter.toDto(postEntity.get());
@@ -98,12 +98,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
-        if (postEntity.isPresent() && EqualPidUid(postEntity.get())) {
+        if (postEntity.isPresent() && EqualUid(postEntity.get())) {
             postRepository.delete(postEntity.get());
             return pid;
-        } else {
-            return 0L;
         }
+        return 0L;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class PostServiceImpl implements PostService {
             for (Long i : pid) {
                 PostEntity postEntity = GetPost(i);
                 posts.add(postEntity);
-                if (userEntity.isPresent() && Objects.equals(postEntity.getUid(),
+                if (userEntity.isEmpty() || !Objects.equals(postEntity.getUid(),
                         userEntity.get())) {
                     return 0;
                 }
@@ -124,10 +123,10 @@ public class PostServiceImpl implements PostService {
                 return pid.size();
             }
             return 0;
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            throw e;
+        } catch (Exception e) {
+            log.info(e.toString());
         }
+        return 0;
     }
 
     @Override
@@ -190,7 +189,7 @@ public class PostServiceImpl implements PostService {
         return userRepository.findByProvider(GetProvider());
     }
 
-    private Boolean EqualPidUid(PostEntity postEntity) {
+    private Boolean EqualUid(PostEntity postEntity) {
         Optional<UserEntity> userEntity = GetUserProv();
         return userEntity.isPresent() && Objects.equals(userEntity.get(),
                 postEntity.getUid());

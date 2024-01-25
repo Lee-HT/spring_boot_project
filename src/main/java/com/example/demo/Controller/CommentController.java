@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,17 +46,43 @@ public class CommentController {
     }
 
     @PostMapping("")
-    public CommentDto saveComment(@RequestBody CommentDto commentDto) {
-        return commentService.saveComment(commentDto);
+    public ResponseEntity<Long> saveComment(@RequestBody CommentDto commentDto) {
+        HttpStatus status = HttpStatus.CREATED;
+        Long cid = commentService.saveComment(commentDto).getCid();
+        if (cid == 0) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(cid,status);
+    }
+
+    @PutMapping
+    public ResponseEntity<Long> updateComment(@RequestBody CommentDto commentDto) {
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        if (commentService.updateComment(commentDto) == 0) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
+    }
+
+    @DeleteMapping("/{cid}")
+    public ResponseEntity<Long> deleteComment(@PathVariable Long cid) {
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        if (commentService.deleteComment(cid) == 0) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/user/{uid}/likes/{likes}")
-    public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid, @PathVariable boolean likes) {
-        return commentService.getCommentLikeUid(uid,likes);
+    public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid,
+            @PathVariable boolean likes) {
+        return commentService.getCommentLikeUid(uid, likes);
     }
 
     @GetMapping("/{cid}/likes/{likes}")
-    public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid, @PathVariable boolean likes) {
-        return commentService.getCommentLikeCid(cid,likes);
+    public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid,
+            @PathVariable boolean likes) {
+        return commentService.getCommentLikeCid(cid, likes);
     }
 }

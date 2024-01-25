@@ -24,7 +24,7 @@ public class PostPageDto {
     // 한 페이지의 출력 개수
     private int size;
     // 현재 페이지 출력 개수
-    private int numberOfElements;
+    private Long totalElements;
     // 정렬 상태
     private Boolean sorted;
 }

@@ -20,7 +20,7 @@ public class CommentPageDto {
     private List<CommentDto> contents;
     private int totalPages;
     private int size;
-    private int numberOfElements;
+    private Long totalElements;
     private Boolean sorted;
 
 }
