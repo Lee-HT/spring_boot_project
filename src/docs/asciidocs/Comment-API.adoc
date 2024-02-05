@@ -9,10 +9,6 @@ operation::comment-controller-test/get-comments-by-post[snippets="http-request,p
 === 댓글 조회 ( 유저 )
 operation::comment-controller-test/get-comments-by-user[snippets="http-request,path-parameters,query-parameters,response-fields"]
 
-[[Save-User]]
-=== 댓글 저장
-operation::comment-controller-test/get-comments-by-user[snippets="http-request,path-parameters,query-parameters,response-fields"]
-
 [[Get-Comment-Like-By-User]]
 === 댓글 좋아요 조회 ( 유저 )
 operation::comment-controller-test/get-comment-like-by-user[snippets="http-request,path-parameters,response-fields"]
@@ -20,3 +16,15 @@ operation::comment-controller-test/get-comment-like-by-user[snippets="http-reque
 [[Get-Comment-Like-By-Comment]]
 === 댓글 좋아요 조회 ( 댓글 )
 operation::comment-controller-test/get-comment-like-by-comment[snippets="http-request,path-parameters,response-fields"]
+
+[[Save-Comment]]
+=== 댓글 저장
+operation::comment-controller-test/save-comment[snippets="http-request,request-fields,http-response"]
+
+[[Update-Comment]]
+=== 댓글 수정
+operation::comment-controller-test/update-post[snippets="http-request,request-fields,http-response"]
+
+[[Delete-Comment]]
+=== 댓글 삭제
+operation::comment-controller-test/delete-post[snippets="http-request,path-parameters,http-response"]

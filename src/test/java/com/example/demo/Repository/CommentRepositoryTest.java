@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -48,7 +47,7 @@ class CommentRepositoryTest {
     void setComments() {
         for (int i = 1; i < 4; i++) {
             users.add(UserEntity.builder().username("user" + i)
-                    .email("email" + i + "@gmail.com").provider("google_"+i).build());
+                    .email("email" + i + "@gmail.com").provider("google_" + i).build());
             posts.add(PostEntity.builder().uid(users.get(i - 1)).title("title" + i)
                     .contents("contents" + i).category("category1").build());
         }
@@ -66,48 +65,32 @@ class CommentRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 SELECT")
-    public void findAll() {
-        System.out.println("======== findAll ========");
+    void findAll() {
         List<CommentEntity> comments = commentRepository.findAll();
-
-        System.out.println(comments);
-        System.out.println(this.comments);
 
         Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(this.comments);
     }
 
     @Test
-    @DisplayName("PID 기준 SELECT")
-    public void findByPid() {
-        System.out.println("======== findByPid ========");
-        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(maxIdx-3,maxIdx)),
-                pageable, maxIdx);
+    void findByPid() {
+        Page<CommentEntity> pages = new PageImpl<>(
+                new ArrayList<>(comments.subList(maxIdx - 3, maxIdx)), pageable, maxIdx);
         Page<CommentEntity> result = commentRepository.findByPid(pk.get(0), pageable);
-
-        System.out.println(result);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
-    @DisplayName("UID 기준 SELECT")
-    public void findByUid() {
-        System.out.println("======== findByUid ========");
-        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(0,2)),
+    void findByUid() {
+        Page<CommentEntity> pages = new PageImpl<>(new ArrayList<>(comments.subList(0, 2)),
                 pageable, maxIdx);
-        Page<CommentEntity> comments = commentRepository.findByUid(users.get(0),pageable);
+        Page<CommentEntity> comments = commentRepository.findByUid(users.get(0), pageable);
 
-        System.out.println(comments);
-
-        Assertions.assertThat(comments).usingRecursiveComparison()
-                .isEqualTo(pages);
+        Assertions.assertThat(comments).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
-    @DisplayName("INSERT")
-    public void saveAll() {
-        System.out.println("======== saveAll ========");
+    void saveAll() {
         List<CommentEntity> comments = new ArrayList<>();
         for (int i = 1; i < 3; i++) {
             comments.add(CommentEntity.builder().uid(users.get(2)).contents("contents" + i)
@@ -115,7 +98,6 @@ class CommentRepositoryTest {
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);
 
-        System.out.println(result);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);
     }

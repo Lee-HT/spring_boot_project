@@ -12,5 +12,5 @@ public interface PostLikeRepository extends JpaRepository<PostLikeEntity, UidPid
     Optional<PostLikeEntity> findByPidAndUid(PostEntity pid,UserEntity uid);
     void deleteByPidAndUid(PostEntity pid, UserEntity uid);
     List<PostLikeEntity> findByUid(UserEntity uid);
-    int countByPidAndLikes(PostEntity pid,Boolean likes);
+    Long countByPidAndLikes(PostEntity pid,Boolean likes);
 }

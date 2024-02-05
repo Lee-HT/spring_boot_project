@@ -1,6 +1,0 @@
-[[Test-API]]
-== Test API
-
-[[Home]]
-=== 홈 화면
-operation::test-controller-test/home-test[snippets="http-request,http-response"]

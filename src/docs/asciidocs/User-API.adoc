@@ -1,14 +1,14 @@
 [[User-API]]
 == User API
 
-[[Update-User]]
-=== 유저 수정
-operation::user-controller-test/update-user[snippets="http-request,request-fields,response-fields"]
-
 [[Get-User]]
 === 유저 조회
-operation::user-controller-test/get-user[snippets="http-request,response-fields"]
+operation::user-controller-test/get-user[snippets="http-request,path-parameters,response-fields"]
+
+[[Patch-User]]
+=== 유저 수정
+operation::user-controller-test/update-user[snippets="http-request,request-fields,http-response"]
 
 [[Delete-User]]
 === 유저 삭제
-operation::user-controller-test/delete-user[snippets="http-request,response-fields"]
+operation::user-controller-test/delete-user[snippets="http-request,http-response"]

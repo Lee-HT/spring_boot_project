@@ -1,9 +1,12 @@
 package com.example.demo.Config;
 
+import com.example.demo.Config.Exception.CustomAccessDeniedHandler;
+import com.example.demo.Config.Exception.CustomHttpStatusEntryPoint;
 import com.example.demo.Config.Jwt.JwtAuthenticationFilter;
+import com.example.demo.Config.Jwt.JwtProperties;
 import com.example.demo.Config.Jwt.TokenProvider;
 import com.example.demo.Config.Oauth2.OAuth2FailureHandler;
-import com.example.demo.Config.Oauth2.OAuth2LogoutHandler;
+import com.example.demo.Config.Oauth2.OAuth2LogoutSuccessHandler;
 import com.example.demo.Config.Oauth2.OAuth2Service;
 import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
 import java.util.ArrayList;
@@ -28,7 +31,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -38,19 +40,24 @@ public class SecurityConfig {
     private final OAuth2Service oAuth2Service;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
-    private final OAuth2LogoutHandler oAuth2LogoutHandler;
+    private final OAuth2LogoutSuccessHandler oAuth2LogoutSuccessHandler;
     private final TokenProvider tokenProvider;
+    private final CustomHttpStatusEntryPoint httpStatusEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     public SecurityConfig(Environment env, OAuth2Service oAuth2Service,
-            OAuth2SuccessHandler oAuth2SuccessHandler,
-            OAuth2FailureHandler oAuth2FailureHandler, OAuth2LogoutHandler oAuth2LogoutHandler,
-            TokenProvider tokenProvider) {
+            OAuth2SuccessHandler oAuth2SuccessHandler, OAuth2FailureHandler oAuth2FailureHandler,
+            OAuth2LogoutSuccessHandler oAuth2LogoutSuccessHandler,
+            TokenProvider tokenProvider, CustomHttpStatusEntryPoint httpStatusEntryPoint,
+            CustomAccessDeniedHandler accessDeniedHandler) {
         this.env = env;
         this.oAuth2Service = oAuth2Service;
         this.oAuth2FailureHandler = oAuth2FailureHandler;
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
-        this.oAuth2LogoutHandler = oAuth2LogoutHandler;
+        this.oAuth2LogoutSuccessHandler = oAuth2LogoutSuccessHandler;
         this.tokenProvider = tokenProvider;
+        this.httpStatusEntryPoint = httpStatusEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -58,13 +65,12 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 // 정적 리소스 시큐리티 예외 처리
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-                // 예외 처리 할 customURL ( 권장하지 않음 )
+        // 예외 처리 할 customURL ( 권장하지 않음 )
 //                .requestMatchers(new AntPathRequestMatcher("/"));
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-            HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // SpringSecurity 6.1.2
         // https://docs.spring.io/spring-security/reference/migration-7/configuration.html
         http.csrf(AbstractHttpConfigurer::disable);
@@ -80,27 +86,24 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(new AntPathRequestMatcher("/", "GET")).permitAll()
 
-                .requestMatchers(requestMatchersAsArray(null, URLPattern.loginUrls)).permitAll()
+                .requestMatchers(requestMatchersAsArray(null, URLPattern.permitAllUrls)).permitAll()
 
-                .requestMatchers(
-                        requestMatchersConcatArray(
-                                requestMatchersAsArray(HttpMethod.GET,
-                                        URLPattern.permitAllGetMethod),
-                                requestMatchersAsArray(HttpMethod.POST,
-                                        URLPattern.permitAllPostMethod),
-                                requestMatchersAsArray(HttpMethod.PUT,
-                                        URLPattern.permitAllPutMethod))
-                )
-                .permitAll()
-                .requestMatchers(
-                        requestMatchersConcatArray(
-                                requestMatchersAsArray(HttpMethod.GET,
-                                        URLPattern.userGetMethod),
-                                requestMatchersAsArray(HttpMethod.POST,
-                                        URLPattern.userPostMethod),
-                                requestMatchersAsArray(HttpMethod.DELETE,
-                                        URLPattern.userDeleteMethod)))
-                .hasAnyRole("USER")
+                .requestMatchers(requestMatchersConcatArray(
+                        requestMatchersAsArray(HttpMethod.GET,
+                                URLPattern.permitAllGetMethod),
+                        requestMatchersAsArray(HttpMethod.POST,
+                                URLPattern.permitAllPostMethod),
+                        requestMatchersAsArray(HttpMethod.PUT,
+                                URLPattern.permitAllPutMethod))
+                ).permitAll()
+                .requestMatchers(requestMatchersConcatArray(
+                        requestMatchersAsArray(HttpMethod.GET,
+                                URLPattern.userGetMethod),
+                        requestMatchersAsArray(HttpMethod.POST,
+                                URLPattern.userPostMethod),
+                        requestMatchersAsArray(HttpMethod.DELETE,
+                                URLPattern.userDeleteMethod))
+                ).hasAnyRole("USER")
 
                 .anyRequest().hasAnyRole("USER")
         );
@@ -120,8 +123,20 @@ public class SecurityConfig {
                 .failureHandler(oAuth2FailureHandler)
                 .userInfoEndpoint(userIEP -> userIEP.userService(oAuth2Service)));
 
+        // 인증, 인가 실패 처리
+        http.exceptionHandling(exceptionConfig -> exceptionConfig
+                .authenticationEntryPoint(httpStatusEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler));
+
         http.logout(logout -> logout
-                .logoutSuccessHandler(oAuth2LogoutHandler));
+                .logoutUrl("/oauth2/logout")
+                .logoutSuccessHandler(oAuth2LogoutSuccessHandler)
+                .deleteCookies("JSESSIONID", JwtProperties.refreshTokenName)
+                // 권한 정보 제거
+                .clearAuthentication(true)
+                // 세션 제거
+                .invalidateHttpSession(true)
+        );
 
         http.addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
                 UsernamePasswordAuthenticationFilter.class);
@@ -140,6 +155,7 @@ public class SecurityConfig {
                 Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Collections.singletonList(JwtProperties.headerName));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

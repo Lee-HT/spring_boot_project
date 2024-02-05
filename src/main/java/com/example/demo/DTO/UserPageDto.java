@@ -19,8 +19,9 @@ import org.springframework.data.domain.Sort;
 public class UserPageDto {
 
     private List<UserDto> contents;
-    private int totalPages;
-    private int size;
-    private int numberOfElements;
+    private Integer totalPages;
+    private Integer size;
+    private Integer numberOfElements;
+    private Long totalElements;
     private Sort sorted;
 }

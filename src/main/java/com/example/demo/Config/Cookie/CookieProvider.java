@@ -1,21 +1,26 @@
 package com.example.demo.Config.Cookie;
 
-import com.example.demo.Config.Jwt.JwtProperties;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class CookieProvider {
     private Cookie cookie;
+    private final Environment env;
+
+    public CookieProvider(Environment env) {
+        this.env = env;
+    }
 
     public void setCookie(String name){
         this.cookie = new Cookie(name,null);
         this.cookie.setHttpOnly(true);
         this.cookie.setSecure(true);
-        this.cookie.setDomain(JwtProperties.domain);
-        this.cookie.setPath("/");
+        this.cookie.setDomain(env.getProperty("domain"));
+        this.cookie.setPath("/api");
     }
 
     public Cookie getCookie(String name, String value, int expire){

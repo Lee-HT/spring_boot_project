@@ -18,9 +18,10 @@ import lombok.ToString;
 public class CommentPageDto {
 
     private List<CommentDto> contents;
-    private int totalPages;
-    private int size;
-    private int numberOfElements;
+    private Integer totalPages;
+    private Integer size;
+    private Integer numberOfElements;
+    private Long totalElements;
     private Boolean sorted;
 
 }

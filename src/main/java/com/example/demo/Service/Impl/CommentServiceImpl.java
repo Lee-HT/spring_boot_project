@@ -15,10 +15,11 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.CommentService;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,6 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentLikeConverter commentLikeConverter;
 
-    @Autowired
     public CommentServiceImpl(CommentRepository commentRepository,
             CommentConverter commentConverter,
             PostRepository postRepository,
@@ -69,23 +69,6 @@ public class CommentServiceImpl implements CommentService {
         } else {
             return CommentPageDto.builder().build();
         }
-
-
-    }
-
-
-    @Override
-    public CommentDto saveComment(CommentDto commentDto) {
-        Optional<UserEntity> user = userRepository.findByUid(commentDto.getUid());
-        Optional<PostEntity> post = postRepository.findByPid(commentDto.getPid());
-
-        if (user.isPresent() && post.isPresent()) {
-            CommentEntity comment = commentRepository.save(
-                    commentConverter.toEntity(commentDto, user.get(), post.get()));
-            return commentConverter.toDto(comment);
-        } else {
-            return CommentDto.builder().build();
-        }
     }
 
     @Override
@@ -109,7 +92,52 @@ public class CommentServiceImpl implements CommentService {
         } else {
             return Collections.emptyList();
         }
-
     }
 
+    @Override
+    public Long saveComment(CommentDto commentDto) {
+        Optional<UserEntity> auth = getUserProv();
+        Optional<PostEntity> post = postRepository.findByPid(commentDto.getPid());
+
+        if (auth.isPresent() && post.isPresent()) {
+            CommentEntity commentEntity = commentRepository.save(
+                    commentConverter.toEntity(commentDto, auth.get(), post.get()));
+            return commentEntity.getCid();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
+    public Long updateComment(CommentDto commentDto) {
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(commentDto.getCid());
+        if (commentEntity.isPresent() && equalUid(commentEntity.get())) {
+            commentEntity.get().updateComment(commentDto.getContents());
+            return commentDto.getCid();
+        }
+        return 0L;
+    }
+
+    @Override
+    public Long deleteComment(Long cid) {
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
+        if (commentEntity.isPresent() && equalUid(commentEntity.get())) {
+            commentRepository.delete(commentEntity.get());
+            return cid;
+        }
+        return 0L;
+    }
+
+    private String getProvider() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    }
+
+    private Optional<UserEntity> getUserProv() {
+        return userRepository.findByProvider(getProvider());
+    }
+
+    private Boolean equalUid(CommentEntity commentEntity) {
+        Optional<UserEntity> userEntity = getUserProv();
+        return userEntity.isPresent() && Objects.equals(commentEntity.getUid(), userEntity.get());
+    }
 }

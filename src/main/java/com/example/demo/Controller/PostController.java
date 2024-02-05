@@ -5,8 +5,8 @@ import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
 import com.example.demo.Service.PostService;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -28,69 +28,107 @@ public class PostController {
 
     private final PostService postService;
 
-    @Autowired
     public PostController(PostService postService) {
         this.postService = postService;
     }
 
     @GetMapping("")
-    public PostPageDto getPostPage(
-            @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        return postService.findPostPage(pageable);
-    }
-
-    @PostMapping("")
-    public PostDto savePost(@RequestBody PostDto postDto) {
-        return postService.savePost(postDto);
+    public ResponseEntity<PostPageDto> getPostPage(
+            @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        PostPageDto response = postService.findPostPage(pageable);
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(response,status);
     }
 
     @GetMapping("/{pid}")
-    public PostDto searchPid(@PathVariable("pid") Long pid) {
-        log.info(pid.toString());
-        return postService.findPost(pid);
+    public ResponseEntity<PostDto> getPostPid(@PathVariable("pid") Long pid) {
+        HttpStatus status = HttpStatus.OK;
+        PostDto response = postService.findPost(pid);
+        if (response.getPid() == null) {
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            return new ResponseEntity<>(response, status);
+        }
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/title/{title}")
-    public PostPageDto searchTitle(@PathVariable("title") String title,
-            @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        return postService.findPostByTitle(title, pageable);
+    public ResponseEntity<PostPageDto> getPostByTitle(@PathVariable("title") String title,
+            @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        PostPageDto response = postService.findPostByTitle(title, pageable);
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+        } else if (!response.getContents().isEmpty()) {
+            return new ResponseEntity<>(response, status);
+        }
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/username/{username}")
-    public PostPageDto searchUsername(@PathVariable("username") String username,
-            @PageableDefault(page = 0, size = 10, sort = "pid", direction = Direction.DESC) Pageable pageable) {
-        return postService.findPostByUsername(username, pageable);
+    public ResponseEntity<PostPageDto> getPostByUsername(@PathVariable("username") String username,
+            @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        PostPageDto response = postService.findPostByUsername(username, pageable);
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            return new ResponseEntity<>(response, status);
+        }
+        return new ResponseEntity<>(status);
     }
 
-    // 현재 좋아요 상태
     @GetMapping("/{pid}/likes")
-    public ResponseEntity<LikeDto> getLike(@PathVariable Long pid) {
-        LikeDto likeDto = postService.getLike(pid);
+    public ResponseEntity<LikeDto> getPostLike(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.OK;
-        if (likeDto.getLikes() == null) {
-            status = HttpStatus.NO_CONTENT;
+        Map<String,Object> response = postService.getLike(pid);
+        if ((Boolean) response.get("permit")) {
+            return new ResponseEntity<>((LikeDto) response.get("contents"), status);
         }
-        return new ResponseEntity<>(likeDto, status);
+        status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(status);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<PostDto> savePost(@RequestBody PostDto postDto) {
+        HttpStatus status = HttpStatus.CREATED;
+        PostDto response = postService.savePost(postDto);
+        if (response.getUid() == null) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
     }
 
     // 좋아요 or 싫어요 추가
     @PutMapping("/likes")
-    public ResponseEntity<LikeDto> likeState(@RequestBody PostLikeDto dto) {
-        LikeDto likeDto = postService.setlikeState(dto);
+    public ResponseEntity<LikeDto> savePostLike(@RequestBody PostLikeDto dto) {
+        Map<String,Object> response = postService.savelikeState(dto);
         HttpStatus status = HttpStatus.CREATED;
-        if (likeDto.getLikes() == null) {
+        if (!((Boolean) response.get("permit"))) {
             status = HttpStatus.BAD_REQUEST;
+        } else if (response.containsKey("contents")) {
+            status = HttpStatus.NO_CONTENT;
         }
-        return new ResponseEntity<>(likeDto, status);
+        return new ResponseEntity<>(status);
     }
 
-    // 성공시 true
-    @DeleteMapping("/{pid}/likes")
-    public ResponseEntity<Integer> deleteLike(@PathVariable Long pid) {
-        int result = postService.deleteLike(pid);
+    @DeleteMapping("/{pid}")
+    public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        if (result == 0) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (postService.deletePost(pid) == 0) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
+    }
+
+    @DeleteMapping("/{pid}/likes")
+    public ResponseEntity<Integer> deletePostLike(@PathVariable Long pid) {
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        if (postService.deleteLike(pid) == 0) {
+            status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);
     }

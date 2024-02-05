@@ -13,5 +13,5 @@ public interface CommentLikeRepository extends JpaRepository<CommentLikeEntity, 
 
     List<CommentLikeEntity> findByCidAndLikes(CommentEntity cid, Boolean likes);
 
-    int countByCidAndLikes(CommentEntity cid, Boolean likes);
+    Long countByCidAndLikes(CommentEntity cid, Boolean likes);
 }

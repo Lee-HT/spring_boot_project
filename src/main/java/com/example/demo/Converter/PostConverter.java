@@ -46,8 +46,9 @@ public class PostConverter {
     // 페이징
     public PostPageDto toDto(Page<PostEntity> pages) {
         return PostPageDto.builder().contents(toDto(pages.getContent()))
-                .totalPages(pages.getTotalPages()).numberOfElements(pages.getNumberOfElements())
-                .size(pages.getSize()).sorted(pages.getSort().isSorted()).build();
+                .totalPages(pages.getTotalPages()).size(pages.getSize())
+                .numberOfElements(pages.getNumberOfElements())
+                .totalElements(pages.getTotalElements()).sorted(pages.getSort().isSorted()).build();
     }
 
 }
