@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -53,8 +52,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 SELECT")
-    public void findAll() {
+    void findAll() {
         System.out.println("======== findAll ========");
         List<UserEntity> users = userRepository.findAll();
 
@@ -64,8 +62,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("UID 기준 SELECT")
-    public void FindByUid() {
+    void FindByUid() {
         System.out.println("======== findByUsername ========");
         Optional<UserEntity> user = userRepository.findByUid(pk.get(0));
 
@@ -76,8 +73,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("PROVIDER 기준 SELECT")
-    public void findByProvider() {
+    void findByProvider() {
         System.out.println("======== findByProvider ========");
         String provider = "google_1";
         Optional<UserEntity> user = userRepository.findByProvider(provider);
@@ -88,8 +84,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("LIKE USERNAME SELECT")
-    public void findByUsernameContaining() {
+    void findByUsernameContaining() {
         System.out.println("======== findByUsername ========");
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
@@ -101,8 +96,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("INSERT")
-    public void saveAll() {
+    void saveAll() {
         System.out.println("======== saveAll ========");
         List<UserEntity> newUsers = new ArrayList<>();
         for (int i = 3; i < 5; i++) {

@@ -6,7 +6,6 @@ import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Service.CommentService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -14,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,38 +27,67 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @Autowired
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
 
     @GetMapping("/post/{pid}")
-    public CommentPageDto getCommentsByPost(@PathVariable Long pid,
-            @PageableDefault(page = 0, size = 15, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
-        return commentService.getCommentByPost(pid, pageable);
+    public ResponseEntity<CommentPageDto> getCommentsByPost(@PathVariable Long pid,
+            @PageableDefault(size = 15, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        CommentPageDto response = commentService.getCommentByPost(pid, pageable);
+        log.info(response.toString());
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response, status);
     }
 
     @GetMapping("/user/{uid}")
-    public CommentPageDto getCommentsByUser(@PathVariable Long uid,
-            @PageableDefault(page = 0, size = 15, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-        return commentService.getCommentByUser(uid, pageable);
+    public ResponseEntity<CommentPageDto> getCommentsByUser(@PathVariable Long uid,
+            @PageableDefault(size = 15, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        CommentPageDto response = commentService.getCommentByUser(uid, pageable);
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response, status);
+    }
+
+    @GetMapping("/user/{uid}/likes/{likes}")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByUser(@PathVariable Long uid,
+            @PathVariable boolean likes) {
+        HttpStatus status = HttpStatus.OK;
+        List<CommentLikeDto> response = commentService.getCommentLikeUid(uid, likes);
+        return new ResponseEntity<>(response,status);
+    }
+
+    @GetMapping("/{cid}/likes/{likes}")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByComment(@PathVariable Long cid,
+            @PathVariable boolean likes) {
+        HttpStatus status = HttpStatus.OK;
+        List<CommentLikeDto> response = commentService.getCommentLikeCid(cid, likes);
+        return new ResponseEntity<>(response,status);
     }
 
     @PostMapping("")
     public ResponseEntity<Long> saveComment(@RequestBody CommentDto commentDto) {
         HttpStatus status = HttpStatus.CREATED;
-        Long cid = commentService.saveComment(commentDto).getCid();
-        if (cid == 0) {
+        Long response = commentService.saveComment(commentDto);
+        if (response == 0) {
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
         }
-        return new ResponseEntity<>(cid,status);
+        return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<Long> updateComment(@RequestBody CommentDto commentDto) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        if (commentService.updateComment(commentDto) == 0) {
+        Long response = commentService.updateComment(commentDto);
+        if (response == 0) {
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);
@@ -68,21 +96,10 @@ public class CommentController {
     @DeleteMapping("/{cid}")
     public ResponseEntity<Long> deleteComment(@PathVariable Long cid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        if (commentService.deleteComment(cid) == 0) {
+        Long response = commentService.deleteComment(cid);
+        if (response == 0) {
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);
-    }
-
-    @GetMapping("/user/{uid}/likes/{likes}")
-    public List<CommentLikeDto> getCommentLikeByUser(@PathVariable Long uid,
-            @PathVariable boolean likes) {
-        return commentService.getCommentLikeUid(uid, likes);
-    }
-
-    @GetMapping("/{cid}/likes/{likes}")
-    public List<CommentLikeDto> getCommentLikeByComment(@PathVariable Long cid,
-            @PathVariable boolean likes) {
-        return commentService.getCommentLikeCid(cid, likes);
     }
 }

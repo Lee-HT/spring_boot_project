@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public final class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
 
@@ -23,27 +23,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         try {
-            System.out.println("JwtAuthenticationFilter");
+            System.out.println("Jwt Authentication Filter");
             String accessToken = tokenProvider.resolveToken(request.getHeader("Authorization"));
             // AccessToken 유효 시 SecurityContext 에 Authentication 저장
             if (!accessToken.isBlank() && tokenProvider.validationToken(accessToken)) {
                 Authentication authentication = tokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                String refreshToken = tokenProvider.resolveCookie(request.getCookies(),
-                        JwtProperties.refreshTokenName);
-                // RefreshToken 유효 시 accessToken 재발급 후 Authentication 저장
-                if (!refreshToken.isBlank() && tokenProvider.validationToken(refreshToken)) {
-                    String newAccessToken = tokenProvider.getAccessToken(
-                            tokenProvider.getUsername(refreshToken),
-                            tokenProvider.getProvider(refreshToken));
-                    response.addHeader("Authorization", newAccessToken);
-
-                    Authentication authentication = tokenProvider.getAuthentication(
-                            refreshToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {

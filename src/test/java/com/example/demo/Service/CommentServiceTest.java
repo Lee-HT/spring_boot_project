@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,7 +30,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -55,128 +55,102 @@ class CommentServiceTest {
     private UserRepository userRepository;
     @InjectMocks
     private CommentServiceImpl commentService;
-    private Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
-    private List<CommentEntity> comments = new ArrayList<>();
-    private List<CommentDto> commentDtos = new ArrayList<>();
-    private List<UserEntity> users = new ArrayList<>();
-    private List<PostEntity> posts = new ArrayList<>();
-    private int MaxIdx;
-
-    @Autowired
-    public CommentServiceTest() {
-        for (int i = 1; i < 5; i++) {
-            users.add(UserEntity.builder().uid((long) i).username("user" + i).email("email" + i)
-                    .build());
-            posts.add(
-                    PostEntity.builder().pid((long) i).uid(users.get(i - 1)).title("title" + i)
-                            .contents("contents" + i).category("category1").build());
-        }
-        for (int i = 1; i < 7; i++) {
-            comments.add(CommentEntity.builder().cid((long) i).pid(posts.get((i - 1) / 2))
-                    .uid(users.get(i / 2)).contents("content" + i).build());
-            commentDtos.add(
-                    CommentDto.builder().cid((long) i).pid((long) i).uid((long) i)
-                            .username("user" + i)
-                            .contents("content" + i)
-                            .build());
-        }
-        MaxIdx = comments.size();
-    }
-
-    // SecurityContext 지정
-    private void SetUserContextByUsername() {
-        SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
-    }
-
-    private void SetUserProv() {
-        SetUserContextByUsername();
-        when(userRepository.findByProvider(anyString())).thenReturn(Optional.of(users.get(0)));
-    }
+    private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
+    private final UserEntity userEntity = UserEntity.builder().uid(1L).build();
 
     @Test
     void getPostCommentPage() {
-        System.out.println("======== getPostCommentPage ========");
-        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
+        when(postRepository.findByPid(anyLong())).thenReturn(
+                Optional.of(PostEntity.builder().build()));
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
                 CommentPageDto.builder().build());
+
         CommentPageDto result = commentService.getCommentByPost(1L, pageable);
-
-        System.out.println(result);
-
         Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
     }
 
     @Test
     void getUserCommentPage() {
-        System.out.println("======== getUserCommentPage ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.findByUid(anyLong())).thenReturn(
+                Optional.of(userEntity));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
                 CommentPageDto.builder().build());
+
         CommentPageDto result = commentService.getCommentByUser(1L, pageable);
-
-        System.out.println(result);
-
         Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
     }
 
     @Test
-    void saveComment() {
-        System.out.println("======== saveComment ========");
-        SetUserProv();
-        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
-        when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(posts.get(0)));
-        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
-                any(PostEntity.class))).thenReturn(comments.get(0));
-        when(commentRepository.save(any(CommentEntity.class))).thenReturn(comments.get(0));
-        when(commentConverter.toDto(any(CommentEntity.class))).thenReturn(commentDtos.get(0));
-        CommentDto result = commentService.saveComment(commentDtos.get(0));
-
-        CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).uid(1L).username("user1")
-                .contents("content1").build();
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentDto);
-    }
-
-    @Test
-    void updateComment() {
-        System.out.println("======== updateComment ========");
-        SetUserProv();
-        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(comments.get(0)));
-        Long result = commentService.deleteComment(1L);
-
-        Assertions.assertThat(result).isEqualTo(1L);
-    }
-
-    @Test
     void getCommentLikeCid() {
-        System.out.println("======== getCommentLikeCid ========");
-        when(commentRepository.findByCid(any(Long.class))).thenReturn(Optional.of(comments.get(0)));
+        when(commentRepository.findByCid(anyLong())).thenReturn(
+                Optional.of(CommentEntity.builder().build()));
         when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
-                any(Boolean.class))).thenReturn(new ArrayList<>());
+                anyBoolean())).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
+
         List<CommentLikeDto> result = commentService.getCommentLikeCid(1L, true);
-
-        System.out.println(result);
-
         Assertions.assertThat(result).isInstanceOf(List.class);
     }
 
     @Test
     void getCommentLikeUid() {
-        System.out.println("======== getCommentLikeUid ========");
-        when(userRepository.findByUid(any(Long.class))).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.findByUid(anyLong())).thenReturn(
+                Optional.of(userEntity));
         when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),
-                any(Boolean.class))).thenReturn(new ArrayList<>());
+                anyBoolean())).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
+
         List<CommentLikeDto> result = commentService.getCommentLikeUid(1L, true);
-
-        System.out.println(result);
-
         Assertions.assertThat(result).isInstanceOf(List.class);
+    }
+
+    @Test
+    void saveComment() {
+        setUserProv();
+        when(postRepository.findByPid(any(Long.class))).thenReturn(
+                Optional.of(PostEntity.builder().uid(userEntity).build()));
+        when(commentConverter.toEntity(any(CommentDto.class), any(UserEntity.class),
+                any(PostEntity.class))).thenReturn(CommentEntity.builder().build());
+        when(commentRepository.save(any(CommentEntity.class))).thenReturn(
+                CommentEntity.builder().cid(1L).build());
+
+        Long result = commentService.saveComment(CommentDto.builder().pid(1L).build());
+        Assertions.assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void updateComment() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(
+                Optional.of(CommentEntity.builder().uid(userEntity).build()));
+
+        Long result = commentService.updateComment(CommentDto.builder().cid(1L).build());
+        Assertions.assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void deleteComment() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(
+                Optional.of(CommentEntity.builder().uid(userEntity).build()));
+
+        Long result = commentService.deleteComment(1L);
+        Assertions.assertThat(result).isEqualTo(1L);
+    }
+
+    private void setUserContextByUsername() {
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken("user", null, null));
+    }
+
+    private void setUserProv() {
+        setUserContextByUsername();
+        when(userRepository.findByProvider(anyString())).thenReturn(
+                Optional.of(userEntity));
     }
 
 }

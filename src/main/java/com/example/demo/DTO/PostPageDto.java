@@ -20,10 +20,12 @@ public class PostPageDto {
     // 내용
     private List<PostDto> contents;
     // 총 페이지 수
-    private int totalPages;
+    private Integer totalPages;
     // 한 페이지의 출력 개수
-    private int size;
-    // 현재 페이지 출력 개수
+    private Integer size;
+    // 현재 페이지 엘리먼트 출력 개수
+    private Integer numberOfElements;
+    // 총 엘리먼트 개수
     private Long totalElements;
     // 정렬 상태
     private Boolean sorted;

@@ -46,6 +46,7 @@ public class CommentConverter {
     public CommentPageDto toDto(Page<CommentEntity> pages) {
         return CommentPageDto.builder().contents(toDto(pages.getContent()))
                 .totalPages(pages.getTotalPages()).size(pages.getSize())
+                .numberOfElements(pages.getNumberOfElements())
                 .totalElements(pages.getTotalElements()).sorted(pages.getSort().isSorted()).build();
     }
 

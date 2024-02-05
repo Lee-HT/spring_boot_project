@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -61,8 +60,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("POST PAGE SELECT")
-    public void findAll() {
+    void findAll() {
         System.out.println("======== findAll ========");
         List<PostEntity> posts = postRepository.findAll();
 
@@ -72,8 +70,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("PID 기준 SELECT")
-    public void findByPid() {
+    void findByPid() {
         System.out.println("======== findByPid ========");
         Optional<PostEntity> result = postRepository.findByPid(pk.get(0));
 
@@ -84,8 +81,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("USERNAME 기준 SELECT")
-    public void findByUsernamePaging() {
+    void findByUsernamePaging() {
         System.out.println("======== findByUsernamePaging ========");
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable,
@@ -99,8 +95,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("TITLE 기준 SELECT")
-    public void findByTitlePaging() {
+    void findByTitlePaging() {
         System.out.println("======== findByTitlePaging ========");
         Page<PostEntity> result = postRepository.findByTitleContaining("title", this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
@@ -113,8 +108,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 SELECT PAGING")
-    public void findAllPaging() {
+    void findAllPaging() {
         System.out.println("======== findAllPaging ========");
         Page<PostEntity> result = postRepository.findAll(this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
@@ -127,8 +121,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("INSERT")
-    public void saveAll() {
+    void saveAll() {
         System.out.println("======== saveAll ========");
         List<PostEntity> Posts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {

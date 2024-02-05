@@ -16,13 +16,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
-public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public final class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final CookieProvider cookieProvider;
     private final TokenProvider tokenProvider;
@@ -45,26 +43,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("SuccessHandler attribute : " + attributes.toString());
         String username = (String) attributes.get("username");
         String provider = (String) attributes.get("provider");
-        String accessToken = tokenProvider.getAccessToken(username, provider);
         String refreshToken = tokenProvider.getRefreshToken(username, provider);
-
-        MultiValueMap<String, String> tokens = new LinkedMultiValueMap<>();
-        tokens.add("authorization", accessToken);
 
         Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, refreshToken,
                 REFRESH_TOKEN_EXPIRE);
         response.addCookie(refresh);
 
-        setDefaultTargetUrl(getTargetUrl(tokens));
+        setDefaultTargetUrl(getTargetUrl());
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);
     }
 
-    private String getTargetUrl(MultiValueMap<String, String> tokens) {
+    private String getTargetUrl() {
         String path = "/codelia_react/oauth2/redirect";
         String host = env.getProperty("front");
-        return UriComponentsBuilder.fromUriString(host + path)
-                .queryParams(tokens)
-                .build().toString();
+        return UriComponentsBuilder.fromUriString(host + path).build().toString();
     }
 }

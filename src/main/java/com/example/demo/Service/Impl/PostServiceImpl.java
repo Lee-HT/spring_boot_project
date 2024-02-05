@@ -13,11 +13,12 @@ import com.example.demo.Repository.PostRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.PostService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,6 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
 
-    @Autowired
     public PostServiceImpl(PostRepository postRepository,
             PostConverter postConverter,
             UserRepository userRepository,
@@ -42,10 +42,6 @@ public class PostServiceImpl implements PostService {
         this.postConverter = postConverter;
         this.userRepository = userRepository;
         this.postLikeRepository = postLikeRepository;
-    }
-
-    private String GetProvider() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
     @Override
@@ -71,8 +67,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Map<String, Object> getLike(Long pid) {
+        Optional<UserEntity> userEntity = getUserProv();
+        Map<String, Object> response = new HashMap<>();
+        if (userEntity.isPresent()) {
+            response.put("permit", true);
+            Optional<PostLikeEntity> postLikeEntity = postLikeRepository.findByPidAndUid(
+                    getPost(pid),
+                    userEntity.get());
+            postLikeEntity.ifPresent(likeEntity -> response.put("contents",
+                    LikeDto.builder().likes(likeEntity.getLikes()).build()));
+        } else {
+            response.put("permit", false);
+        }
+        return response;
+    }
+
+    @Override
     public PostDto savePost(PostDto postDto) {
-        Optional<UserEntity> userEntity = GetUserProv();
+        Optional<UserEntity> userEntity = getUserProv();
 
         if (userEntity.isPresent()) {
             PostEntity post = postConverter.toEntity(postDto, userEntity.get());
@@ -83,10 +96,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Map<String, Object> savelikeState(PostLikeDto dto) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<UserEntity> userEntity = getUserProv();
+        Optional<PostEntity> postEntity = postRepository.findByPid(dto.getPid());
+        if (userEntity.isPresent() && postEntity.isPresent()) {
+            response.put("permit", true);
+            Optional<PostLikeEntity> postLike = postLikeRepository.findByPidAndUid(postEntity.get(),
+                    userEntity.get());
+            if (postLike.isPresent()) {
+                postLike.get().updateLikes(dto.getLikes());
+                response.put("contents", LikeDto.builder().likes(dto.getLikes()).build());
+            } else {
+                postLikeRepository.save(
+                        PostLikeEntity.builder().pid(postEntity.get()).uid(userEntity.get())
+                                .likes(dto.getLikes()).build());
+            }
+        } else {
+            response.put("permit", false);
+        }
+        return response;
+
+    }
+
+    @Override
     public PostDto updatePost(PostDto postDto) {
         Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
-        if (postEntity.isPresent() && EqualUid(postEntity.get())) {
+        if (postEntity.isPresent() && equalUid(postEntity.get())) {
             postEntity.get()
                     .updatePost(postDto.getTitle(), postDto.getContents(), postDto.getCategory());
             return postConverter.toDto(postEntity.get());
@@ -98,7 +135,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
-        if (postEntity.isPresent() && EqualUid(postEntity.get())) {
+        if (postEntity.isPresent() && equalUid(postEntity.get())) {
             postRepository.delete(postEntity.get());
             return pid;
         }
@@ -107,22 +144,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public int deletePosts(List<Long> pid) {
-        Optional<UserEntity> userEntity = GetUserProv();
+        Optional<UserEntity> userEntity = getUserProv();
         List<PostEntity> posts = new ArrayList<>();
         try {
-            for (Long i : pid) {
-                PostEntity postEntity = GetPost(i);
-                posts.add(postEntity);
-                if (userEntity.isEmpty() || !Objects.equals(postEntity.getUid(),
-                        userEntity.get())) {
-                    return 0;
+            if (userEntity.isPresent()) {
+                for (Long i : pid) {
+                    PostEntity postEntity = getPost(i);
+                    posts.add(postEntity);
+                    if (!Objects.equals(postEntity.getUid(), userEntity.get())) {
+                        return 0;
+                    }
                 }
+                postRepository.deleteAll(posts);
             }
-            postRepository.deleteAll(posts);
-            if (posts.size() == pid.size()) {
-                return pid.size();
-            }
-            return 0;
+            return posts.size();
         } catch (Exception e) {
             log.info(e.toString());
         }
@@ -130,67 +165,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public LikeDto getLike(Long pid) {
-        Optional<UserEntity> userEntity = GetUserProv();
-        if (userEntity.isPresent()) {
-            return LikeDto.builder().likes(GetPostLike(pid, userEntity.get().getUid()).getLikes())
-                    .build();
-        } else {
-            return LikeDto.builder().build();
-        }
-    }
-
-    @Override
-    public LikeDto setlikeState(PostLikeDto dto) {
-        Optional<UserEntity> userEntity = GetUserProv();
-        PostEntity postEntity = GetPost(dto.getPid());
-        if (userEntity.isEmpty() || postEntity.getPid() == null) {
-            return LikeDto.builder().build();
-        }
-        Optional<PostLikeEntity> postLike = postLikeRepository.findByPidAndUid(postEntity,
-                userEntity.get());
-        if (postLike.isEmpty()) {
-            postLikeRepository.save(
-                    PostLikeEntity.builder().pid(postEntity).uid(userEntity.get())
-                            .likes(dto.getLikes())
-                            .build());
-        } else {
-            postLike.get().updateLikes(dto.getLikes());
-        }
-        return LikeDto.builder().likes(dto.getLikes()).build();
-    }
-
-    @Override
     public int deleteLike(Long pid) {
-        Optional<UserEntity> userEntity = GetUserProv();
+        Optional<UserEntity> userEntity = getUserProv();
         if (userEntity.isPresent()) {
-            postLikeRepository.deleteByPidAndUid(GetPost(pid), userEntity.get());
+            postLikeRepository.deleteByPidAndUid(getPost(pid), userEntity.get());
             return 1;
         } else {
             return 0;
         }
     }
 
-    // get PostLikeEntity
-    private PostLikeEntity GetPostLike(Long pid, Long uid) {
-        return postLikeRepository.findByPidAndUid(GetPost(pid),
-                GetUserUid(uid)).orElseGet(() -> PostLikeEntity.builder().build());
+    private String getProvider() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
-    private PostEntity GetPost(Long pid) {
+    private PostEntity getPost(Long pid) {
         return postRepository.findByPid(pid).orElseGet(() -> PostEntity.builder().build());
     }
 
-    private UserEntity GetUserUid(Long uid) {
-        return userRepository.findByUid(uid).orElseGet(() -> UserEntity.builder().build());
+    private Optional<UserEntity> getUserProv() {
+        return userRepository.findByProvider(getProvider());
     }
 
-    private Optional<UserEntity> GetUserProv() {
-        return userRepository.findByProvider(GetProvider());
-    }
-
-    private Boolean EqualUid(PostEntity postEntity) {
-        Optional<UserEntity> userEntity = GetUserProv();
+    private Boolean equalUid(PostEntity postEntity) {
+        Optional<UserEntity> userEntity = getUserProv();
         return userEntity.isPresent() && Objects.equals(userEntity.get(),
                 postEntity.getUid());
     }

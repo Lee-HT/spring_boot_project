@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
 @Builder
 @Getter
-public class Oauth2Attributes {
+public final class Oauth2Attributes {
 
     private String registrationId;
     private String attributeKey;

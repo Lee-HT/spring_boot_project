@@ -4,3 +4,7 @@
 [[Get-UserInfo]]
 === 유저 정보 조회
 operation::login-controller-test/get-user-info[snippets="http-request,response-fields"]
+
+[[Get-AccessToken]]
+=== AccessToken 재발급
+operation::login-controller-test/get-access-token[snippets="http-request,http-response"]

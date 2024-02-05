@@ -1,9 +1,8 @@
 package com.example.demo.Config.Oauth2;
 
-import com.example.demo.Config.Jwt.JwtProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -13,12 +12,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Slf4j
-public class Oauth2CustomService {
+public final class Oauth2CustomService {
 
     private final Environment env;
 
     //    private final RestTemplate restTemplate = new RestTemplate();
-    @Autowired
     public Oauth2CustomService(Environment env) {
         this.env = env;
     }
@@ -44,7 +42,7 @@ public class Oauth2CustomService {
                 "spring.security.oauth2.client.registration." + registrationId + ".client-id");
         String clientSecret = env.getProperty(
                 "spring.security.oauth2.client.registration." + registrationId + ".client-secret");
-        String redirectUri = String.format("http://%s:6550/login/oauth2/test/google", JwtProperties.domain);
+        String redirectUri = String.format("http://%s:6550/api/login/oauth2/test/google", env.getProperty("domain"));
         String tokenUri = env.getProperty(
                 "spring.security.oauth2.client.provider." + registrationId + ".token-uri");
         String grant_type = env.getProperty(
@@ -58,6 +56,8 @@ public class Oauth2CustomService {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", grant_type);
 
+        log.info(params.toString());
+
         // restTemplate will be deprecated
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -66,6 +66,7 @@ public class Oauth2CustomService {
 //        JsonNode accessTokenNode = responseNode.getBody();
 
         // Flux = 0~N개 Mono = 0~1개 subscribe 비동기 toStream 동기
+        Assert.notNull(tokenUri);
         WebClient webClient = WebClient.builder().baseUrl(tokenUri).build();
         JsonNode accessTokenNode = webClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED).bodyValue(params).retrieve()
@@ -73,6 +74,7 @@ public class Oauth2CustomService {
 
         log.info("webClient : " + accessTokenNode);
 
+        Assert.notNull(accessTokenNode);
         return accessTokenNode.get("access_token").asText();
     }
 
@@ -80,8 +82,9 @@ public class Oauth2CustomService {
         String resourceUri = env.getProperty(
                 "spring.security.oauth2.client.provider." + registrationId + ".user-info-uri");
 
+        Assert.notNull(resourceUri);
         WebClient webclient = WebClient.builder().baseUrl(resourceUri).build();
-        JsonNode userResource = webclient.get().header("Authorization", "Bearer" + accessToken)
+        return webclient.get().header("Authorization", "Bearer" + accessToken)
                 .retrieve().bodyToMono(JsonNode.class).flux().toStream().findFirst().orElse(null);
 
 //        HttpHeaders headers = new HttpHeaders();
@@ -89,8 +92,6 @@ public class Oauth2CustomService {
 //        HttpEntity entity = new HttpEntity(headers);
 //        JsonNode userResource = restTemplate.exchange(resourceUri, HttpMethod.GET, entity,
 //                JsonNode.class).getBody();
-
-        return userResource;
     }
 
 }

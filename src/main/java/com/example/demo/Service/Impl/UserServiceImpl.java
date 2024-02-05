@@ -8,9 +8,9 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.UserService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,15 +24,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
 
-    @Autowired
     public UserServiceImpl(UserRepository userRepository,
             UserConverter userConverter) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
-    }
-
-    private String GetProvider() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
     @Override
@@ -48,9 +43,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findByProvider() {
-        UserEntity userEntity = GetUserProv().orElseGet(() -> UserEntity.builder().build());
+        UserEntity userEntity = getUserProv().orElseGet(() -> UserEntity.builder().build());
         return userConverter.toDto(userEntity);
-
     }
 
     @Override
@@ -61,17 +55,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        UserEntity userEntity = GetUserProv()
+        UserEntity userEntity = getUserProv()
                 .orElseGet(() -> UserEntity.builder().build());
-        if (EqualUid(userEntity)) {
-            String username =
-                    userDto.getUsername() != null ? userDto.getUsername() : userEntity.getUsername();
+        if (Objects.equals(userEntity.getUid(), userDto.getUid())) {
+            String username = userDto.getUsername() != null ? userDto.getUsername()
+                    : userEntity.getUsername();
             String email = userDto.getEmail() != null ? userDto.getEmail() : userEntity.getEmail();
             String profilePic = userDto.getProfilePic() != null ? userDto.getProfilePic()
                     : userEntity.getProfilePic();
             userEntity.updateUser(username, email, profilePic);
         }
-
         return userConverter.toDto(userEntity);
     }
 
@@ -97,7 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long deleteUser() {
-        Optional<UserEntity> user = GetUserProv();
+        Optional<UserEntity> user = getUserProv();
         if (user.isPresent()) {
             userRepository.delete(user.get());
             return user.get().getUid();
@@ -106,12 +99,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private Optional<UserEntity> GetUserProv() {
-        return userRepository.findByProvider(GetProvider());
+    private String getProvider() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
-    private Boolean EqualUid(UserEntity userEntity) {
-        Optional<UserEntity> authUser = GetUserProv();
-        return authUser.isPresent() && authUser.get() == userEntity;
+    private Optional<UserEntity> getUserProv() {
+        return userRepository.findByProvider(getProvider());
     }
 }

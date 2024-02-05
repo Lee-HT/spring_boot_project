@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -59,8 +58,7 @@ class PostLikeRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 SELECT")
-    public void findAll() {
+    void findAll() {
         System.out.println("======== findAll ========");
         List<PostLikeEntity> postLikes = postLikeRepository.findAll();
 
@@ -70,8 +68,7 @@ class PostLikeRepositoryTest {
     }
 
     @Test
-    @DisplayName("UID 기준 SELECT")
-    public void findByUid() {
+    void findByUid() {
         System.out.println("======== findByUid ========");
         List<PostLikeEntity> postLikes = postLikeRepository.findByUid(users.get(0));
 
@@ -82,8 +79,7 @@ class PostLikeRepositoryTest {
     }
 
     @Test
-    @DisplayName("PID,UID 기준 SELECT")
-    public void findByPidAndUid() {
+    void findByPidAndUid() {
         System.out.println("======== findByPidAndUid ========");
         Optional<PostLikeEntity> result = postLikeRepository.findByPidAndUid(posts.get(0), users.get(0));
 
@@ -93,8 +89,7 @@ class PostLikeRepositoryTest {
     }
 
     @Test
-    @DisplayName("INSERT")
-    public void saveAll() {
+    void saveAll() {
         System.out.println("======== saveAll ========");
         List<PostLikeEntity> postLikes = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
@@ -111,13 +106,12 @@ class PostLikeRepositoryTest {
     }
 
     @Test
-    @DisplayName("PID COUNT SELECT")
-    public void countByPid() {
+    void countByPid() {
         System.out.println("======== countByPid ========");
-        int countLikes = postLikeRepository.countByPidAndLikes(posts.get(0), true);
+        Long countLikes = postLikeRepository.countByPidAndLikes(posts.get(0), true);
 
         System.out.println(countLikes);
 
-        Assertions.assertThat(countLikes).isEqualTo(1);
+        Assertions.assertThat(countLikes).isEqualTo(1L);
     }
 }

@@ -6,11 +6,9 @@ spring-boot 3.1.2
 :toclevels: 2
 :source-highlighter: highlightjs
 
-include::Test-API.adoc[]
+include::User-API.adoc[]
 
 include::Post-API.adoc[]
-
-include::User-API.adoc[]
 
 include::Comment-API.adoc[]
 

@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Slf4j
-public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public final class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final UserRepository userRepository;
 
     @Autowired
@@ -88,7 +88,6 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
 
     // DB에 유저 정보 삽입
     private UserEntity saveUser(Oauth2Attributes oauth2Attributes) {
-        // naver email 은 고유하지 않음
         Optional<UserEntity> user = userRepository.findByProvider(oauth2Attributes.getProvider());
         if (user.isPresent()) {
             user.get().updateProfileImg(oauth2Attributes.getProfileImg());

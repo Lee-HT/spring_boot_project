@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class TokenProvider {
+public final class TokenProvider {
 
     private final Key key = JwtProperties.secretKey;
 
@@ -87,7 +87,7 @@ public class TokenProvider {
     }
 
     // token 유효성 검증
-    public boolean validationToken(String token) {
+    public Boolean validationToken(String token) {
         try {
             if (!token.isBlank()) {
                 Claims claims = getClaims(token);
@@ -103,15 +103,9 @@ public class TokenProvider {
     }
 
     // Cookie 에서 token get
-    public String resolveCookie(Cookie[] cookies, String tokenType) {
+    public String resolveCookie(Cookie cookie) {
         try {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals(tokenType)) {
-                    return cookie.getValue().substring(7);
-                }
-            }
-            return "";
+            return cookie.getValue().substring(7);
         } catch (Exception e) {
             log.info("resolve error");
         }
