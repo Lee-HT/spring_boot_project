@@ -1,10 +1,8 @@
 package com.example.demo.Config.Oauth2;
 
 import com.example.demo.Entity.UserEntity;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -26,7 +24,7 @@ public final class Oauth2Attributes {
         if (registrationId.equals("google")) {
             return ofGoogle(registrationId, usernameAttributeName, attributes);
         } else if (registrationId.equals("naver")) {
-            return ofNaver(registrationId, attributes);
+            return ofNaver(registrationId, (Map<String, Object>) attributes.get("response"));
         } else {
             throw new OAuth2AuthenticationException("허용 불가 인증");
         }
@@ -43,13 +41,12 @@ public final class Oauth2Attributes {
     }
 
     public static Oauth2Attributes ofNaver(String registrationId, Map<String, Object> attributes) {
-        Map<String, Object> attribute = (Map<String, Object>) attributes.get("response");
         return Oauth2Attributes.builder().registrationId(registrationId)
-                .username(attributes.get("name").toString())
+                .username(attributes.get("nickname").toString())
                 .email(attributes.get("email").toString())
-                .profileImg(attributes.get("picture").toString())
-                .attributeKey(attribute.get("id").toString())
-                .provider(registrationId + "_" + attribute.get("id")).build();
+                .profileImg(attributes.get("profile_image").toString())
+                .attributeKey(attributes.get("id").toString())
+                .provider(registrationId + "_" + attributes.get("id")).build();
     }
 
     public UserEntity toEntity() {
@@ -66,7 +63,7 @@ public final class Oauth2Attributes {
         hashMap.put("registrationId", registrationId);
         hashMap.put("username", username);
         hashMap.put("email", email);
-        hashMap.put("profilePic",profileImg);
+        hashMap.put("profilePic", profileImg);
         hashMap.put("attributeKey", attributeKey);
         hashMap.put("provider", provider);
         return hashMap;
