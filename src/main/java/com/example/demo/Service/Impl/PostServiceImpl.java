@@ -143,35 +143,31 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public int deletePosts(List<Long> pid) {
+    public Integer deletePosts(List<Long> pid) {
         Optional<UserEntity> userEntity = getUserProv();
         List<PostEntity> posts = new ArrayList<>();
-        try {
-            if (userEntity.isPresent()) {
-                for (Long i : pid) {
-                    PostEntity postEntity = getPost(i);
-                    posts.add(postEntity);
-                    if (!Objects.equals(postEntity.getUid(), userEntity.get())) {
-                        return 0;
-                    }
+        if (userEntity.isPresent()) {
+            for (Long i : pid) {
+                PostEntity postEntity = getPost(i);
+                posts.add(postEntity);
+                if (!Objects.equals(postEntity.getUid(), userEntity.get())) {
+                    return 0;
                 }
-                postRepository.deleteAll(posts);
             }
+            postRepository.deleteAll(posts);
             return posts.size();
-        } catch (Exception e) {
-            log.info(e.toString());
         }
         return 0;
     }
 
     @Override
-    public int deleteLike(Long pid) {
+    public Long deletePostLike(Long pid) {
         Optional<UserEntity> userEntity = getUserProv();
         if (userEntity.isPresent()) {
             postLikeRepository.deleteByPidAndUid(getPost(pid), userEntity.get());
-            return 1;
+            return pid;
         } else {
-            return 0;
+            return 0L;
         }
     }
 

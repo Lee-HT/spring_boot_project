@@ -6,6 +6,7 @@ import com.example.demo.DTO.CommentDto;
 import com.example.demo.DTO.CommentLikeDto;
 import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Entity.CommentEntity;
+import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.CommentLikeRepository;
@@ -119,10 +120,43 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Integer saveCommentLike(CommentLikeDto dto) {
+        Optional<UserEntity> userEntity = getUserProv();
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(dto.getCid());
+        if (userEntity.isPresent() && commentEntity.isPresent()) {
+            Optional<CommentLikeEntity> commentLikeEntity = commentLikeRepository.findByCidAndUid(commentEntity.get(),
+                    userEntity.get());
+            if (commentLikeEntity.isEmpty()) {
+                commentLikeRepository.save(
+                        CommentLikeEntity.builder().cid(commentEntity.get()).uid(userEntity.get()).likes(dto.getLikes())
+                                .build());
+                return 201;
+            } else {
+                commentLikeEntity.get().updateLikes(dto.getLikes());
+                return 204;
+            }
+        }
+        return 400;
+    }
+
+    @Override
     public Long deleteComment(Long cid) {
         Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
         if (commentEntity.isPresent() && equalUid(commentEntity.get())) {
             commentRepository.delete(commentEntity.get());
+            return cid;
+        }
+        return 0L;
+    }
+
+    @Override
+    public Long deleteCommentLike(Long cid) {
+        Optional<UserEntity> userEntity = getUserProv();
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
+        if (commentEntity.isPresent() && userEntity.isPresent()) {
+            Optional<CommentLikeEntity> commentLikeEntity = commentLikeRepository.findByCidAndUid(commentEntity.get(),
+                    userEntity.get());
+            commentLikeEntity.ifPresent(commentLikeRepository::delete);
             return cid;
         }
         return 0L;

@@ -7,6 +7,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -94,7 +95,7 @@ class CommentControllerTest extends RestDocsSetUp {
                         pathParameters(
                                 parameterWithName("uid").description("유저 FK"),
                                 parameterWithName("likes").description("좋아요 or 싫어요")),
-                        getCommentLikeSnippet()
+                        getCommentLikeResponseSnippet()
                 ))
                 .andExpect(status().isOk());
     }
@@ -111,7 +112,7 @@ class CommentControllerTest extends RestDocsSetUp {
                         pathParameters(
                                 parameterWithName("cid").description("댓글 FK"),
                                 parameterWithName("likes").description("좋아요 or 싫어요")),
-                        getCommentLikeSnippet()
+                        getCommentLikeResponseSnippet()
                 ))
                 .andExpect(status().isOk());
     }
@@ -130,7 +131,7 @@ class CommentControllerTest extends RestDocsSetUp {
     }
 
     @Test
-    void updatePost() throws Exception {
+    void updateComment() throws Exception {
         CommentDto commentDto = CommentDto.builder().cid(1L).pid(1L).uid(1L).username("username")
                 .contents("contents").build();
         when(commentService.updateComment(any(CommentDto.class))).thenReturn(1L);
@@ -143,9 +144,31 @@ class CommentControllerTest extends RestDocsSetUp {
     }
 
     @Test
-    void deletePost() throws Exception {
+    void putCommentLike() throws Exception {
+        CommentLikeDto commentLikeDto = CommentLikeDto.builder().uid(1L).cid(1L).likes(true).build();
+        when(commentService.saveCommentLike(any(CommentLikeDto.class))).thenReturn(201);
+        mvc.perform(put("/comment/likes").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentLikeDto)))
+                .andDo(restDocs.document(
+                        getCommentLikeRequestSnippet()
+                ))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void deleteComment() throws Exception {
         when(commentService.deleteComment(anyLong())).thenReturn(1L);
         mvc.perform(delete("/comment/{cid}", 1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(parameterWithName("cid").description("댓글 PK"))
+                ))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteCommentLike() throws Exception {
+        when(commentService.deleteCommentLike(anyLong())).thenReturn(1L);
+        mvc.perform(delete("/comment/{cid}/likes", 1L).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(parameterWithName("cid").description("댓글 PK"))
                 ))
@@ -186,10 +209,17 @@ class CommentControllerTest extends RestDocsSetUp {
                 fieldWithPath("updatedAt").ignored());
     }
 
-    private Snippet getCommentLikeSnippet() {
+    private Snippet getCommentLikeResponseSnippet() {
         return responseFields(
                 fieldWithPath("[].cid").description("댓글 PK"),
                 fieldWithPath("[].uid").description("유저 FK"),
                 fieldWithPath("[].likes").description("좋아요 상태"));
+    }
+
+    private Snippet getCommentLikeRequestSnippet() {
+        return requestFields(
+                fieldWithPath("cid").description("댓글 PK"),
+                fieldWithPath("uid").description("유저 FK"),
+                fieldWithPath("likes").description("좋아요 상태"));
     }
 }

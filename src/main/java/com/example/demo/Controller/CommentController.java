@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -93,11 +94,33 @@ public class CommentController {
         return new ResponseEntity<>(status);
     }
 
+    @PutMapping("/likes")
+    public ResponseEntity<Long> putCommentLike(@RequestBody CommentLikeDto commentLikeDto){
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        Integer response = commentService.saveCommentLike(commentLikeDto);
+        if (response == 201){
+            status = HttpStatus.CREATED;
+        } else if (response == 204) {
+            status = HttpStatus.NO_CONTENT;
+        }
+        return new ResponseEntity<>(status);
+    }
+
     @DeleteMapping("/{cid}")
     public ResponseEntity<Long> deleteComment(@PathVariable Long cid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         Long response = commentService.deleteComment(cid);
         if (response == 0) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(status);
+    }
+
+    @DeleteMapping("/{cid}/likes")
+    public ResponseEntity<Long> deleteCommentLike(@PathVariable Long cid){
+        HttpStatus status= HttpStatus.NO_CONTENT;
+        Long response = commentService.deleteCommentLike(cid);
+        if (response == 0){
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);

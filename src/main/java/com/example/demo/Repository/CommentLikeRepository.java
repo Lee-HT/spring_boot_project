@@ -5,6 +5,7 @@ import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Identifier.UidCid;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLikeEntity, UidCid> {
@@ -12,6 +13,8 @@ public interface CommentLikeRepository extends JpaRepository<CommentLikeEntity, 
     List<CommentLikeEntity> findByUidAndLikes(UserEntity uid, Boolean likes);
 
     List<CommentLikeEntity> findByCidAndLikes(CommentEntity cid, Boolean likes);
+
+    Optional<CommentLikeEntity> findByCidAndUid(CommentEntity cid, UserEntity uid);
 
     Long countByCidAndLikes(CommentEntity cid, Boolean likes);
 }

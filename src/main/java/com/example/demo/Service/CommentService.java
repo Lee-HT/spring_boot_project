@@ -14,7 +14,9 @@ public interface CommentService {
     List<CommentLikeDto> getCommentLikeUid(Long uid,Boolean likes);
     Long saveComment(CommentDto commentDto);
     Long updateComment(CommentDto commentDto);
+    Integer saveCommentLike(CommentLikeDto commentLikeDto);
     Long deleteComment(Long cid);
+    Long deleteCommentLike(Long cid);
 
 
 

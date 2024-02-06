@@ -201,7 +201,7 @@ class PostControllerTest extends RestDocsSetUp {
 
     @Test
     void deletePostLike() throws Exception {
-        when(postService.deleteLike(any(Long.class))).thenReturn(1);
+        when(postService.deletePostLike(any(Long.class))).thenReturn(1L);
 
         mvc.perform(delete("/post/{pid}/likes", "1").with(oauth2Login()))
                 .andDo(restDocs.document(

@@ -70,22 +70,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int deleteUsers(List<Long> uid) {
-        try {
-            List<UserEntity> userEntities = new ArrayList<>();
-            for (Long i : uid
-            ) {
-                Optional<UserEntity> userEntity = userRepository.findByUid(i);
-                userEntity.ifPresent(userEntities::add);
-            }
-            userRepository.deleteAll(userEntities);
-            if (userEntities.size() == uid.size()) {
-                return uid.size();
-            }
-            return 0;
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            throw e;
+        List<UserEntity> userEntities = new ArrayList<>();
+        for (Long i : uid
+        ) {
+            Optional<UserEntity> userEntity = userRepository.findByUid(i);
+            userEntity.ifPresent(userEntities::add);
         }
+        userRepository.deleteAll(userEntities);
+        if (userEntities.size() == uid.size()) {
+            return uid.size();
+        }
+        return 0;
     }
 
     @Override
