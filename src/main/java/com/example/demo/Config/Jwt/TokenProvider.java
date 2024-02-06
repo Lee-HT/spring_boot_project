@@ -104,10 +104,8 @@ public final class TokenProvider {
 
     // Cookie 에서 token get
     public String resolveCookie(Cookie cookie) {
-        try {
+        if (!cookie.getValue().isBlank()) {
             return cookie.getValue().substring(7);
-        } catch (Exception e) {
-            log.info("resolve error");
         }
         return "";
     }

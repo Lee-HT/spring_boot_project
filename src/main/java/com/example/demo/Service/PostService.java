@@ -27,8 +27,8 @@ public interface PostService {
 
     Long deletePost(Long pid);
 
-    int deletePosts(List<Long> pid);
+    Integer deletePosts(List<Long> pid);
 
-    int deleteLike(Long pid);
+    Long deletePostLike(Long pid);
 
 }

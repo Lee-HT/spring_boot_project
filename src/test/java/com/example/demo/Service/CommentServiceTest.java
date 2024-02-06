@@ -5,6 +5,9 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.CommentConverter;
@@ -13,6 +16,7 @@ import com.example.demo.DTO.CommentDto;
 import com.example.demo.DTO.CommentLikeDto;
 import com.example.demo.DTO.CommentPageDto;
 import com.example.demo.Entity.CommentEntity;
+import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
 import com.example.demo.Repository.CommentLikeRepository;
@@ -133,6 +137,19 @@ class CommentServiceTest {
     }
 
     @Test
+    void saveCommentLikes() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
+                Optional.empty());
+        when(commentLikeRepository.save(any(CommentLikeEntity.class))).thenReturn(null);
+
+        Integer result = commentService.saveCommentLike(CommentLikeDto.builder().cid(1L).build());
+        Assertions.assertThat(result).isEqualTo(201);
+        verify(commentLikeRepository, times(1)).save(any(CommentLikeEntity.class));
+    }
+
+    @Test
     void deleteComment() {
         setUserProv();
         when(commentRepository.findByCid(anyLong())).thenReturn(
@@ -140,6 +157,19 @@ class CommentServiceTest {
 
         Long result = commentService.deleteComment(1L);
         Assertions.assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void deleteCommentLike() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
+                Optional.of(CommentLikeEntity.builder().build()));
+        doNothing().when(commentLikeRepository).delete(any(CommentLikeEntity.class));
+
+        Long result = commentService.deleteCommentLike(1L);
+        Assertions.assertThat(result).isEqualTo(1L);
+        verify(commentLikeRepository,times(1)).delete(any(CommentLikeEntity.class));
     }
 
     private void setUserContextByUsername() {

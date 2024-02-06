@@ -23,8 +23,16 @@ operation::comment-controller-test/save-comment[snippets="http-request,request-f
 
 [[Update-Comment]]
 === 댓글 수정
-operation::comment-controller-test/update-post[snippets="http-request,request-fields,http-response"]
+operation::comment-controller-test/update-comment[snippets="http-request,request-fields,http-response"]
+
+[[Put-Comment]]
+=== 댓글 저장 or 수정
+operation::comment-controller-test/put-comment-like[snippets="http-request,request-fields,http-response"]
 
 [[Delete-Comment]]
 === 댓글 삭제
-operation::comment-controller-test/delete-post[snippets="http-request,path-parameters,http-response"]
+operation::comment-controller-test/delete-comment[snippets="http-request,path-parameters,http-response"]
+
+[[Delete-Comment-Like]]
+=== 댓글 좋아요 삭제
+operation::comment-controller-test/delete-comment-like[snippets="http-request,path-parameters,http-response"]

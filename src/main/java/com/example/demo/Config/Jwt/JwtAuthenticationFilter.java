@@ -22,19 +22,14 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        try {
-            System.out.println("Jwt Authentication Filter");
-            String accessToken = tokenProvider.resolveToken(request.getHeader("Authorization"));
-            // AccessToken 유효 시 SecurityContext 에 Authentication 저장
-            if (!accessToken.isBlank() && tokenProvider.validationToken(accessToken)) {
-                Authentication authentication = tokenProvider.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.info(String.valueOf(e));
-            filterChain.doFilter(request, response);
+        System.out.println("Jwt Authentication Filter");
+        String accessToken = tokenProvider.resolveToken(request.getHeader("Authorization"));
+        // AccessToken 유효 시 SecurityContext 에 Authentication 저장
+        if (!accessToken.isBlank() && tokenProvider.validationToken(accessToken)) {
+            Authentication authentication = tokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+        filterChain.doFilter(request, response);
 
     }
 }

@@ -127,7 +127,7 @@ public class PostController {
     @DeleteMapping("/{pid}/likes")
     public ResponseEntity<Integer> deletePostLike(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        if (postService.deleteLike(pid) == 0) {
+        if (postService.deletePostLike(pid) == 0) {
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(status);
