@@ -128,7 +128,7 @@ class PostServiceTest {
     }
 
     @Test
-    void savelikesPost() {
+    void savePostLike() {
         setUserProv();
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(postEntity));
         when(postLikeRepository.findByPidAndUid(any(PostEntity.class),
