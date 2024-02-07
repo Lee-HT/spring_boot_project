@@ -110,6 +110,15 @@ class CommentServiceTest {
     }
 
     @Test
+    void getCountCommentLike() {
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.countByCid(any(CommentEntity.class))).thenReturn(2L);
+
+        Long result = commentService.getCountCommentLike(1L);
+        Assertions.assertThat(result).isEqualTo(2L);
+    }
+
+    @Test
     void saveComment() {
         setUserProv();
         when(postRepository.findByPid(any(Long.class))).thenReturn(
@@ -139,6 +148,8 @@ class CommentServiceTest {
         when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
         when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
                 Optional.empty());
+        when(commentLikeConverter.toEntity(any(CommentLikeDto.class), any(UserEntity.class),
+                any(CommentEntity.class))).thenReturn(CommentLikeEntity.builder().build());
         when(commentLikeRepository.save(any(CommentLikeEntity.class))).thenReturn(null);
 
         Integer result = commentService.saveCommentLike(CommentLikeDto.builder().cid(1L).build());

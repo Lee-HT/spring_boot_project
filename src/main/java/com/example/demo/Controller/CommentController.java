@@ -71,6 +71,13 @@ public class CommentController {
         return new ResponseEntity<>(response,status);
     }
 
+    @GetMapping("/{cid}/likes/count")
+    public ResponseEntity<Long> getCountCommentLike(@PathVariable Long cid){
+        HttpStatus status = HttpStatus.OK;
+        Long response = commentService.getCountCommentLike(cid);
+        return new ResponseEntity<>(response,status);
+    }
+
     @PostMapping("")
     public ResponseEntity<Long> saveComment(@RequestBody CommentDto commentDto) {
         HttpStatus status = HttpStatus.CREATED;

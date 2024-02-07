@@ -115,6 +115,17 @@ class CommentControllerTest extends RestDocsSetUp {
     }
 
     @Test
+    void getCountCommentLike() throws Exception {
+        when(commentService.getCountCommentLike(anyLong())).thenReturn(2L);
+        mvc.perform(get("/comment/{cid}/likes/count",1).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("cid").description("댓글 FK"))
+                ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void saveComment() throws Exception {
         CommentDto commentDto = CommentDto.builder().pid(1L).uid(1L).cid(1L).username("user")
                 .contents("contents").build();

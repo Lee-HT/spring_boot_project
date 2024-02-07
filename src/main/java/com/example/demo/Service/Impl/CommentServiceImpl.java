@@ -96,13 +96,25 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Long saveComment(CommentDto commentDto) {
-        Optional<UserEntity> auth = getUserProv();
-        Optional<PostEntity> post = postRepository.findByPid(commentDto.getPid());
+    public Long getCountCommentLike(Long cid) {
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
 
-        if (auth.isPresent() && post.isPresent()) {
+        if (commentEntity.isPresent()) {
+            return commentLikeRepository.countByCid(commentEntity.get());
+        } else {
+            return 0L;
+        }
+
+    }
+
+    @Override
+    public Long saveComment(CommentDto commentDto) {
+        Optional<UserEntity> userEntity = getUserProv();
+        Optional<PostEntity> postEntity = postRepository.findByPid(commentDto.getPid());
+
+        if (userEntity.isPresent() && postEntity.isPresent()) {
             CommentEntity commentEntity = commentRepository.save(
-                    commentConverter.toEntity(commentDto, auth.get(), post.get()));
+                    commentConverter.toEntity(commentDto, userEntity.get(), postEntity.get()));
             return commentEntity.getCid();
         } else {
             return 0L;
@@ -128,8 +140,7 @@ public class CommentServiceImpl implements CommentService {
                     userEntity.get());
             if (commentLikeEntity.isEmpty()) {
                 commentLikeRepository.save(
-                        CommentLikeEntity.builder().cid(commentEntity.get()).uid(userEntity.get()).likes(dto.getLikes())
-                                .build());
+                        commentLikeConverter.toEntity(dto, userEntity.get(), commentEntity.get()));
                 return 201;
             } else {
                 commentLikeEntity.get().updateLikes(dto.getLikes());

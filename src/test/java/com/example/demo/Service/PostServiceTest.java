@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
+import com.example.demo.Converter.PostLikeConverter;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
@@ -52,6 +53,8 @@ class PostServiceTest {
     private UserRepository userRepository;
     @Mock
     private PostConverter postConverter;
+    @Mock
+    private PostLikeConverter postLikeConverter;
     @InjectMocks
     private PostServiceImpl postService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
@@ -125,16 +128,18 @@ class PostServiceTest {
     }
 
     @Test
-    void likesPost() {
+    void savelikesPost() {
         setUserProv();
         when(postRepository.findByPid(any(Long.class))).thenReturn(Optional.of(postEntity));
         when(postLikeRepository.findByPidAndUid(any(PostEntity.class),
                 any(UserEntity.class))).thenReturn(Optional.empty());
+        when(postLikeConverter.toEntity(any(PostLikeDto.class), any(UserEntity.class),
+                any(PostEntity.class))).thenReturn(PostLikeEntity.builder().build());
         when(postLikeRepository.save(any(PostLikeEntity.class))).thenReturn(null);
 
-        Map<String,Object> result = postService.savelikeState(PostLikeDto.builder().pid(1L).likes(false).build());
+        Map<String, Object> result = postService.savelikeState(PostLikeDto.builder().pid(1L).likes(false).build());
         Assertions.assertThat(result.get("permit")).isEqualTo(true);
-        verify(postLikeRepository,times(1)).save(any(PostLikeEntity.class));
+        verify(postLikeRepository, times(1)).save(any(PostLikeEntity.class));
     }
 
     @Test
@@ -156,7 +161,7 @@ class PostServiceTest {
 
         int count = postService.deletePosts(Arrays.asList(1L, 2L));
         Assertions.assertThat(count).isEqualTo(2);
-        verify(postRepository,times(1)).deleteAll(anyList());
+        verify(postRepository, times(1)).deleteAll(anyList());
     }
 
     private void setUserContextByUsername() {

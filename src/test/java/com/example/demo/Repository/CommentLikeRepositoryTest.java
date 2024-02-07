@@ -96,8 +96,8 @@ class CommentLikeRepositoryTest {
     }
 
     @Test
-    void countByCidAndLikes() {
-        Long countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0), true);
+    void countByCid() {
+        Long countLikes = commentLikeRepository.countByCid(comments.get(0));
 
         Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1L);
     }
