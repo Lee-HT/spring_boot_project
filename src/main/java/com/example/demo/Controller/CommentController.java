@@ -57,19 +57,17 @@ public class CommentController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping("/user/{uid}/likes/{likes}")
-    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByUser(@PathVariable Long uid,
-            @PathVariable boolean likes) {
+    @GetMapping("/user/{uid}/likes")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByUser(@PathVariable Long uid) {
         HttpStatus status = HttpStatus.OK;
-        List<CommentLikeDto> response = commentService.getCommentLikeUid(uid, likes);
+        List<CommentLikeDto> response = commentService.getCommentLikeUid(uid);
         return new ResponseEntity<>(response,status);
     }
 
-    @GetMapping("/{cid}/likes/{likes}")
-    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByComment(@PathVariable Long cid,
-            @PathVariable boolean likes) {
+    @GetMapping("/{cid}/likes")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByComment(@PathVariable Long cid) {
         HttpStatus status = HttpStatus.OK;
-        List<CommentLikeDto> response = commentService.getCommentLikeCid(cid, likes);
+        List<CommentLikeDto> response = commentService.getCommentLikeCid(cid);
         return new ResponseEntity<>(response,status);
     }
 

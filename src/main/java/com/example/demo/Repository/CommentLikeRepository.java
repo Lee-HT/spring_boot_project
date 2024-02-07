@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLikeEntity, UidCid> {
 
-    List<CommentLikeEntity> findByUidAndLikes(UserEntity uid, Boolean likes);
+    List<CommentLikeEntity> findByUid(UserEntity uid);
 
-    List<CommentLikeEntity> findByCidAndLikes(CommentEntity cid, Boolean likes);
+    List<CommentLikeEntity> findByCid(CommentEntity cid);
 
     Optional<CommentLikeEntity> findByCidAndUid(CommentEntity cid, UserEntity uid);
 

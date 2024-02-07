@@ -73,23 +73,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentLikeDto> getCommentLikeCid(Long cid, Boolean likes) {
+    public List<CommentLikeDto> getCommentLikeCid(Long cid) {
         Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
         if (commentEntity.isPresent()) {
             return commentLikeConverter.toDto(
-                    commentLikeRepository.findByCidAndLikes(commentEntity.get(), likes));
+                    commentLikeRepository.findByCid(commentEntity.get()));
         } else {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public List<CommentLikeDto> getCommentLikeUid(Long uid, Boolean likes) {
+    public List<CommentLikeDto> getCommentLikeUid(Long uid) {
         Optional<UserEntity> userEntity = userRepository.findByUid(uid);
 
         if (userEntity.isPresent()) {
             return commentLikeConverter.toDto(
-                    commentLikeRepository.findByUidAndLikes(userEntity.get(), likes));
+                    commentLikeRepository.findByUid(userEntity.get()));
         } else {
             return Collections.emptyList();
         }

@@ -88,13 +88,11 @@ class CommentControllerTest extends RestDocsSetUp {
         List<CommentLikeDto> result = Arrays.asList(
                 CommentLikeDto.builder().cid(1L).uid(1L).likes(true).build(),
                 CommentLikeDto.builder().cid(2L).uid(1L).likes(true).build());
-        when(commentService.getCommentLikeUid(any(Long.class), any(boolean.class))).thenReturn(
-                result);
-        mvc.perform(get("/comment/user/{uid}/likes/{likes}", 1, true).with(oauth2Login()))
+        when(commentService.getCommentLikeUid(any(Long.class))).thenReturn(result);
+        mvc.perform(get("/comment/user/{uid}/likes", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("uid").description("유저 FK"),
-                                parameterWithName("likes").description("좋아요 or 싫어요")),
+                                parameterWithName("uid").description("유저 FK")),
                         getCommentLikeResponseSnippet()
                 ))
                 .andExpect(status().isOk());
@@ -105,13 +103,12 @@ class CommentControllerTest extends RestDocsSetUp {
         List<CommentLikeDto> result = Arrays.asList(
                 CommentLikeDto.builder().cid(1L).uid(1L).likes(true).build(),
                 CommentLikeDto.builder().cid(1L).uid(2L).likes(true).build());
-        when(commentService.getCommentLikeCid(any(Long.class), any(boolean.class))).thenReturn(
+        when(commentService.getCommentLikeCid(any(Long.class))).thenReturn(
                 result);
-        mvc.perform(get("/comment/{cid}/likes/{likes}", 1, true).with(oauth2Login()))
+        mvc.perform(get("/comment/{cid}/likes", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("cid").description("댓글 FK"),
-                                parameterWithName("likes").description("좋아요 or 싫어요")),
+                                parameterWithName("cid").description("댓글 FK")),
                         getCommentLikeResponseSnippet()
                 ))
                 .andExpect(status().isOk());
