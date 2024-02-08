@@ -27,7 +27,8 @@ public class CommentLikeConverter {
     }
 
     public CommentLikeDto toDto(CommentLikeEntity commentLike) {
-        return CommentLikeDto.builder().likes(commentLike.getLikes()).build();
+        return CommentLikeDto.builder().cid(commentLike.getCid().getCid()).uid(commentLike.getUid().getUid())
+                .likes(commentLike.getLikes()).build();
     }
 
     public List<CommentLikeDto> toDto(List<CommentLikeEntity> commentLike) {

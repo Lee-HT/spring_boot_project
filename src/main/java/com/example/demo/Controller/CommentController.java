@@ -37,7 +37,6 @@ public class CommentController {
             @PageableDefault(size = 15, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
         HttpStatus status = HttpStatus.OK;
         CommentPageDto response = commentService.getCommentByPost(pid, pageable);
-        log.info(response.toString());
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
@@ -75,7 +74,7 @@ public class CommentController {
     public ResponseEntity<CommentLikeDto> getCommentLikeByUidCid(@PathVariable Long uid, @PathVariable Long cid){
         HttpStatus status = HttpStatus.OK;
         CommentLikeDto response = commentService.getCommentLikeByUidPid(uid,cid);
-        if (response.getCid() == null){
+        if (response.getLikes() == null){
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
         }

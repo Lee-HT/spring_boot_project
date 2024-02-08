@@ -105,6 +105,9 @@ public class CommentServiceImpl implements CommentService {
                     userEntity.get());
             if (commentLikeEntity.isPresent()) {
                 return commentLikeConverter.toDto(commentLikeEntity.get());
+            } else {
+                return CommentLikeDto.builder().uid(userEntity.get().getUid()).cid(commentEntity.get().getCid())
+                        .likes(false).build();
             }
         }
         return CommentLikeDto.builder().build();
