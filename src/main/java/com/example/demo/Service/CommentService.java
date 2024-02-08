@@ -12,6 +12,7 @@ public interface CommentService {
     CommentPageDto getCommentByUser(Long uid, Pageable pageable);
     List<CommentLikeDto> getCommentLikeCid(Long cid);
     List<CommentLikeDto> getCommentLikeUid(Long uid);
+    CommentLikeDto getCommentLikeByUidPid(Long uid, Long cid);
     Long getCountCommentLike(Long cid);
     Long saveComment(CommentDto commentDto);
     Long updateComment(CommentDto commentDto);

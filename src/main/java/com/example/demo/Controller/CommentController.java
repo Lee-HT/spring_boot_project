@@ -71,6 +71,17 @@ public class CommentController {
         return new ResponseEntity<>(response,status);
     }
 
+    @GetMapping("/{cid}/user/{uid}/likes")
+    public ResponseEntity<CommentLikeDto> getCommentLikeByUidCid(@PathVariable Long uid, @PathVariable Long cid){
+        HttpStatus status = HttpStatus.OK;
+        CommentLikeDto response = commentService.getCommentLikeByUidPid(uid,cid);
+        if (response.getCid() == null){
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response,status);
+    }
+
     @GetMapping("/{cid}/likes/count")
     public ResponseEntity<Long> getCountCommentLike(@PathVariable Long cid){
         HttpStatus status = HttpStatus.OK;

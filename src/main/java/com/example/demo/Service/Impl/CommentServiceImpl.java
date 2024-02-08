@@ -96,6 +96,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public CommentLikeDto getCommentLikeByUidPid(Long uid, Long cid) {
+        Optional<UserEntity> userEntity = getUserProv();
+        Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
+
+        if (userEntity.isPresent() && commentEntity.isPresent() && Objects.equals(userEntity.get().getUid(), uid)) {
+            Optional<CommentLikeEntity> commentLikeEntity = commentLikeRepository.findByCidAndUid(commentEntity.get(),
+                    userEntity.get());
+            if (commentLikeEntity.isPresent()) {
+                return commentLikeConverter.toDto(commentLikeEntity.get());
+            }
+        }
+        return CommentLikeDto.builder().build();
+    }
+
+    @Override
     public Long getCountCommentLike(Long cid) {
         Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
 
@@ -104,7 +119,6 @@ public class CommentServiceImpl implements CommentService {
         } else {
             return 0L;
         }
-
     }
 
     @Override

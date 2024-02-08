@@ -93,7 +93,7 @@ class CommentControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("uid").description("유저 FK")),
-                        getCommentLikeResponseSnippet()
+                        getCommentLikeResponseSnippet("[].")
                 ))
                 .andExpect(status().isOk());
     }
@@ -109,15 +109,28 @@ class CommentControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("cid").description("댓글 FK")),
-                        getCommentLikeResponseSnippet()
+                        getCommentLikeResponseSnippet("[].")
                 ))
                 .andExpect(status().isOk());
     }
 
     @Test
+    void getCommentLikeByUidCid() throws Exception {
+        when(commentService.getCommentLikeByUidPid(anyLong(), anyLong())).thenReturn(CommentLikeDto.builder().cid(1L).build());
+        mvc.perform(get("/comment/{cid}/user/{uid}/likes", 1L, 1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                                pathParameters(
+                                        parameterWithName("uid").description("유저 FK"),
+                                        parameterWithName("cid").description("댓글 FK")),
+                                getCommentLikeResponseSnippet("")
+                        ))
+                        .andExpect(status().isOk());
+    }
+
+    @Test
     void getCountCommentLike() throws Exception {
         when(commentService.getCountCommentLike(anyLong())).thenReturn(2L);
-        mvc.perform(get("/comment/{cid}/likes/count",1).with(oauth2Login()))
+        mvc.perform(get("/comment/{cid}/likes/count", 1).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("cid").description("댓글 FK"))
@@ -217,11 +230,11 @@ class CommentControllerTest extends RestDocsSetUp {
                 fieldWithPath("updatedAt").ignored());
     }
 
-    private Snippet getCommentLikeResponseSnippet() {
+    private Snippet getCommentLikeResponseSnippet(String prefix) {
         return responseFields(
-                fieldWithPath("[].cid").description("댓글 PK"),
-                fieldWithPath("[].uid").description("유저 FK"),
-                fieldWithPath("[].likes").description("좋아요 상태"));
+                fieldWithPath(prefix+"cid").description("댓글 PK"),
+                fieldWithPath(prefix+"uid").description("유저 FK"),
+                fieldWithPath(prefix+"likes").description("좋아요 상태"));
     }
 
     private Snippet getCommentLikeRequestSnippet() {

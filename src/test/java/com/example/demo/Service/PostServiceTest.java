@@ -88,11 +88,10 @@ class PostServiceTest {
     void findPostByTitle() {
         when(postRepository.findByTitleContaining(anyString(), eq(this.pageable))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
-        when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(
-                PostPageDto.builder().build());
+        when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(postPageDto);
 
         PostPageDto result = postService.findPostByTitle("title", pageable);
-        Assertions.assertThat(result).isInstanceOf(PostPageDto.class);
+        Assertions.assertThat(result).isEqualTo(postPageDto);
     }
 
     @Test

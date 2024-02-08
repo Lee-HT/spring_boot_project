@@ -60,6 +60,8 @@ class CommentServiceTest {
     private CommentServiceImpl commentService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
     private final UserEntity userEntity = UserEntity.builder().uid(1L).build();
+    private final CommentPageDto commentPageDto = CommentPageDto.builder().build();
+    private final CommentLikeDto commentLikeDto = CommentLikeDto.builder().build();
 
     @Test
     void getPostCommentPage() {
@@ -68,10 +70,10 @@ class CommentServiceTest {
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
-                CommentPageDto.builder().build());
+                commentPageDto);
 
         CommentPageDto result = commentService.getCommentByPost(1L, pageable);
-        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
+        Assertions.assertThat(result).isEqualTo(commentPageDto);
     }
 
     @Test
@@ -80,11 +82,10 @@ class CommentServiceTest {
                 Optional.of(userEntity));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
-        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
-                CommentPageDto.builder().build());
+        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(commentPageDto);
 
         CommentPageDto result = commentService.getCommentByUser(1L, pageable);
-        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
+        Assertions.assertThat(result).isEqualTo(commentPageDto);
     }
 
     @Test
@@ -107,6 +108,18 @@ class CommentServiceTest {
 
         List<CommentLikeDto> result = commentService.getCommentLikeUid(1L);
         Assertions.assertThat(result).isInstanceOf(List.class);
+    }
+
+    @Test
+    void getCommentLikeByUidPid() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
+                Optional.of(CommentLikeEntity.builder().build()));
+        when(commentLikeConverter.toDto(any(CommentLikeEntity.class))).thenReturn(commentLikeDto);
+
+        CommentLikeDto result = commentService.getCommentLikeByUidPid(1L,1L);
+        Assertions.assertThat(result).isEqualTo(commentLikeDto);
     }
 
     @Test
