@@ -5,6 +5,7 @@ import com.example.demo.Entity.CommentLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,10 +67,17 @@ class CommentLikeRepositoryTest {
 
     @Test
     void findByUid() {
-        List<CommentLikeEntity> result = commentLikeRepository.findByUidAndLikes(users.get(0),
-                true);
-        List<CommentLikeEntity> commentLikes = Arrays.asList(this.commentLikes.get(0),
+        List<CommentLikeEntity> result = commentLikeRepository.findByUid(users.get(0));
+        List<CommentLikeEntity> commentLikes = Arrays.asList(this.commentLikes.get(0), this.commentLikes.get(1),
                 this.commentLikes.get(2));
+
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentLikes);
+    }
+
+    @Test
+    void findByCid() {
+        List<CommentLikeEntity> result = commentLikeRepository.findByCid(comments.get(0));
+        List<CommentLikeEntity> commentLikes = Collections.singletonList(this.commentLikes.get(0));
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(commentLikes);
     }
@@ -88,8 +96,8 @@ class CommentLikeRepositoryTest {
     }
 
     @Test
-    void countByCidAndLikes() {
-        Long countLikes = commentLikeRepository.countByCidAndLikes(comments.get(0), true);
+    void countByCid() {
+        Long countLikes = commentLikeRepository.countByCid(comments.get(0));
 
         Assertions.assertThat(countLikes).usingRecursiveComparison().isEqualTo(1L);
     }

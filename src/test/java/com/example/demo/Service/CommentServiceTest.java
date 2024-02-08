@@ -1,7 +1,6 @@
 package com.example.demo.Service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,6 +60,8 @@ class CommentServiceTest {
     private CommentServiceImpl commentService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
     private final UserEntity userEntity = UserEntity.builder().uid(1L).build();
+    private final CommentPageDto commentPageDto = CommentPageDto.builder().build();
+    private final CommentLikeDto commentLikeDto = CommentLikeDto.builder().build();
 
     @Test
     void getPostCommentPage() {
@@ -69,10 +70,10 @@ class CommentServiceTest {
         when(commentRepository.findByPid(any(PostEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
-                CommentPageDto.builder().build());
+                commentPageDto);
 
         CommentPageDto result = commentService.getCommentByPost(1L, pageable);
-        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
+        Assertions.assertThat(result).isEqualTo(commentPageDto);
     }
 
     @Test
@@ -81,22 +82,20 @@ class CommentServiceTest {
                 Optional.of(userEntity));
         when(commentRepository.findByUid(any(UserEntity.class), any(Pageable.class))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
-        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(
-                CommentPageDto.builder().build());
+        when(commentConverter.toDto(ArgumentMatchers.<Page<CommentEntity>>any())).thenReturn(commentPageDto);
 
         CommentPageDto result = commentService.getCommentByUser(1L, pageable);
-        Assertions.assertThat(result).isInstanceOf(CommentPageDto.class);
+        Assertions.assertThat(result).isEqualTo(commentPageDto);
     }
 
     @Test
     void getCommentLikeCid() {
         when(commentRepository.findByCid(anyLong())).thenReturn(
                 Optional.of(CommentEntity.builder().build()));
-        when(commentLikeRepository.findByCidAndLikes(any(CommentEntity.class),
-                anyBoolean())).thenReturn(new ArrayList<>());
+        when(commentLikeRepository.findByCid(any(CommentEntity.class))).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
 
-        List<CommentLikeDto> result = commentService.getCommentLikeCid(1L, true);
+        List<CommentLikeDto> result = commentService.getCommentLikeCid(1L);
         Assertions.assertThat(result).isInstanceOf(List.class);
     }
 
@@ -104,12 +103,32 @@ class CommentServiceTest {
     void getCommentLikeUid() {
         when(userRepository.findByUid(anyLong())).thenReturn(
                 Optional.of(userEntity));
-        when(commentLikeRepository.findByUidAndLikes(any(UserEntity.class),
-                anyBoolean())).thenReturn(new ArrayList<>());
+        when(commentLikeRepository.findByUid(any(UserEntity.class))).thenReturn(new ArrayList<>());
         when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
 
-        List<CommentLikeDto> result = commentService.getCommentLikeUid(1L, true);
+        List<CommentLikeDto> result = commentService.getCommentLikeUid(1L);
         Assertions.assertThat(result).isInstanceOf(List.class);
+    }
+
+    @Test
+    void getCommentLikeByUidPid() {
+        setUserProv();
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
+                Optional.of(CommentLikeEntity.builder().build()));
+        when(commentLikeConverter.toDto(any(CommentLikeEntity.class))).thenReturn(commentLikeDto);
+
+        CommentLikeDto result = commentService.getCommentLikeByUidPid(1L,1L);
+        Assertions.assertThat(result).isEqualTo(commentLikeDto);
+    }
+
+    @Test
+    void getCountCommentLike() {
+        when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
+        when(commentLikeRepository.countByCid(any(CommentEntity.class))).thenReturn(2L);
+
+        Long result = commentService.getCountCommentLike(1L);
+        Assertions.assertThat(result).isEqualTo(2L);
     }
 
     @Test
@@ -142,6 +161,8 @@ class CommentServiceTest {
         when(commentRepository.findByCid(anyLong())).thenReturn(Optional.of(CommentEntity.builder().build()));
         when(commentLikeRepository.findByCidAndUid(any(CommentEntity.class), any(UserEntity.class))).thenReturn(
                 Optional.empty());
+        when(commentLikeConverter.toEntity(any(CommentLikeDto.class), any(UserEntity.class),
+                any(CommentEntity.class))).thenReturn(CommentLikeEntity.builder().build());
         when(commentLikeRepository.save(any(CommentLikeEntity.class))).thenReturn(null);
 
         Integer result = commentService.saveCommentLike(CommentLikeDto.builder().cid(1L).build());
@@ -169,7 +190,7 @@ class CommentServiceTest {
 
         Long result = commentService.deleteCommentLike(1L);
         Assertions.assertThat(result).isEqualTo(1L);
-        verify(commentLikeRepository,times(1)).delete(any(CommentLikeEntity.class));
+        verify(commentLikeRepository, times(1)).delete(any(CommentLikeEntity.class));
     }
 
     private void setUserContextByUsername() {

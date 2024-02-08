@@ -37,7 +37,6 @@ public class CommentController {
             @PageableDefault(size = 15, sort = "createdAt", direction = Direction.ASC) Pageable pageable) {
         HttpStatus status = HttpStatus.OK;
         CommentPageDto response = commentService.getCommentByPost(pid, pageable);
-        log.info(response.toString());
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
@@ -57,19 +56,35 @@ public class CommentController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping("/user/{uid}/likes/{likes}")
-    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByUser(@PathVariable Long uid,
-            @PathVariable boolean likes) {
+    @GetMapping("/user/{uid}/likes")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByUser(@PathVariable Long uid) {
         HttpStatus status = HttpStatus.OK;
-        List<CommentLikeDto> response = commentService.getCommentLikeUid(uid, likes);
+        List<CommentLikeDto> response = commentService.getCommentLikeUid(uid);
         return new ResponseEntity<>(response,status);
     }
 
-    @GetMapping("/{cid}/likes/{likes}")
-    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByComment(@PathVariable Long cid,
-            @PathVariable boolean likes) {
+    @GetMapping("/{cid}/likes")
+    public ResponseEntity<List<CommentLikeDto>> getCommentLikeByComment(@PathVariable Long cid) {
         HttpStatus status = HttpStatus.OK;
-        List<CommentLikeDto> response = commentService.getCommentLikeCid(cid, likes);
+        List<CommentLikeDto> response = commentService.getCommentLikeCid(cid);
+        return new ResponseEntity<>(response,status);
+    }
+
+    @GetMapping("/{cid}/user/{uid}/likes")
+    public ResponseEntity<CommentLikeDto> getCommentLikeByUidCid(@PathVariable Long uid, @PathVariable Long cid){
+        HttpStatus status = HttpStatus.OK;
+        CommentLikeDto response = commentService.getCommentLikeByUidPid(uid,cid);
+        if (response.getLikes() == null){
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response,status);
+    }
+
+    @GetMapping("/{cid}/likes/count")
+    public ResponseEntity<Long> getCountCommentLike(@PathVariable Long cid){
+        HttpStatus status = HttpStatus.OK;
+        Long response = commentService.getCountCommentLike(cid);
         return new ResponseEntity<>(response,status);
     }
 

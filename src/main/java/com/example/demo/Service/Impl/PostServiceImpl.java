@@ -1,6 +1,7 @@
 package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.PostConverter;
+import com.example.demo.Converter.PostLikeConverter;
 import com.example.demo.DTO.LikeDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
@@ -31,15 +32,17 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostConverter postConverter;
+    private final PostLikeConverter postLikeConverter;
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
 
     public PostServiceImpl(PostRepository postRepository,
             PostConverter postConverter,
-            UserRepository userRepository,
+            PostLikeConverter postLikeConverter, UserRepository userRepository,
             PostLikeRepository postLikeRepository) {
         this.postRepository = postRepository;
         this.postConverter = postConverter;
+        this.postLikeConverter = postLikeConverter;
         this.userRepository = userRepository;
         this.postLikeRepository = postLikeRepository;
     }
@@ -109,8 +112,7 @@ public class PostServiceImpl implements PostService {
                 response.put("contents", LikeDto.builder().likes(dto.getLikes()).build());
             } else {
                 postLikeRepository.save(
-                        PostLikeEntity.builder().pid(postEntity.get()).uid(userEntity.get())
-                                .likes(dto.getLikes()).build());
+                        postLikeConverter.toEntity(dto, userEntity.get(), postEntity.get()));
             }
         } else {
             response.put("permit", false);
