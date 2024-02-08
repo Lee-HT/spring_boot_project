@@ -116,7 +116,7 @@ class CommentControllerTest extends RestDocsSetUp {
 
     @Test
     void getCommentLikeByUidCid() throws Exception {
-        when(commentService.getCommentLikeByUidPid(anyLong(), anyLong())).thenReturn(CommentLikeDto.builder().cid(1L).build());
+        when(commentService.getCommentLikeByUidPid(anyLong(), anyLong())).thenReturn(CommentLikeDto.builder().likes(true).build());
         mvc.perform(get("/comment/{cid}/user/{uid}/likes", 1L, 1L).with(oauth2Login()))
                 .andDo(restDocs.document(
                                 pathParameters(
