@@ -45,8 +45,8 @@ public final class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String provider = (String) attributes.get("provider");
         String refreshToken = tokenProvider.getRefreshToken(username, provider);
 
-        Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, refreshToken,
-                REFRESH_TOKEN_EXPIRE);
+        Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, JwtProperties.refreshTokenPath,
+                refreshToken, REFRESH_TOKEN_EXPIRE);
         response.addCookie(refresh);
 
         setDefaultTargetUrl(getTargetUrl());

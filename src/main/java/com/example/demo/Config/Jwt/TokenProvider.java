@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.servlet.http.Cookie;
 import java.security.Key;
 import java.util.Collections;
@@ -104,6 +105,7 @@ public final class TokenProvider {
 
     // Cookie 에서 token get
     public String resolveCookie(Cookie cookie) {
+        Assert.notNull(cookie);
         if (!cookie.getValue().isBlank()) {
             return cookie.getValue().substring(7);
         }

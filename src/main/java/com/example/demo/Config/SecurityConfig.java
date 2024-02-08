@@ -1,5 +1,6 @@
 package com.example.demo.Config;
 
+import com.example.demo.Config.Cookie.CookieProvider;
 import com.example.demo.Config.Exception.CustomAccessDeniedHandler;
 import com.example.demo.Config.Exception.CustomHttpStatusEntryPoint;
 import com.example.demo.Config.Jwt.JwtAuthenticationFilter;
@@ -9,6 +10,7 @@ import com.example.demo.Config.Oauth2.OAuth2FailureHandler;
 import com.example.demo.Config.Oauth2.OAuth2LogoutSuccessHandler;
 import com.example.demo.Config.Oauth2.OAuth2Service;
 import com.example.demo.Config.Oauth2.OAuth2SuccessHandler;
+import jakarta.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,13 +45,14 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final OAuth2LogoutSuccessHandler oAuth2LogoutSuccessHandler;
     private final TokenProvider tokenProvider;
+    private final CookieProvider cookieProvider;
     private final CustomHttpStatusEntryPoint httpStatusEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     public SecurityConfig(Environment env, OAuth2Service oAuth2Service,
             OAuth2SuccessHandler oAuth2SuccessHandler, OAuth2FailureHandler oAuth2FailureHandler,
             OAuth2LogoutSuccessHandler oAuth2LogoutSuccessHandler,
-            TokenProvider tokenProvider, CustomHttpStatusEntryPoint httpStatusEntryPoint,
+            TokenProvider tokenProvider, CookieProvider cookieProvider, CustomHttpStatusEntryPoint httpStatusEntryPoint,
             CustomAccessDeniedHandler accessDeniedHandler) {
         this.env = env;
         this.oAuth2Service = oAuth2Service;
@@ -56,6 +60,7 @@ public class SecurityConfig {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.oAuth2LogoutSuccessHandler = oAuth2LogoutSuccessHandler;
         this.tokenProvider = tokenProvider;
+        this.cookieProvider = cookieProvider;
         this.httpStatusEntryPoint = httpStatusEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
     }
@@ -131,7 +136,8 @@ public class SecurityConfig {
         http.logout(logout -> logout
                 .logoutUrl("/oauth2/logout")
                 .logoutSuccessHandler(oAuth2LogoutSuccessHandler)
-                .deleteCookies("JSESSIONID", JwtProperties.refreshTokenName)
+                // 쿠키 제거 핸들러 추가
+                .addLogoutHandler(getLogoutHandler())
                 // 권한 정보 제거
                 .clearAuthentication(true)
                 // 세션 제거
@@ -145,6 +151,12 @@ public class SecurityConfig {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_THREADLOCAL);
 
         return http.build();
+    }
+
+    private CookieClearingLogoutHandler getLogoutHandler() {
+        Cookie session = cookieProvider.expireCookie("JSESSIONID","/api");
+        Cookie refresh = cookieProvider.expireCookie(JwtProperties.refreshTokenName, JwtProperties.refreshTokenPath);
+        return new CookieClearingLogoutHandler(session,refresh);
     }
 
     // CORS Configure

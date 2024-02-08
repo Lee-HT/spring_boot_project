@@ -15,24 +15,24 @@ public class CookieProvider {
         this.env = env;
     }
 
-    public void setCookie(String name){
+    public void setCookie(String name,String path){
         this.cookie = new Cookie(name,null);
         this.cookie.setHttpOnly(true);
         this.cookie.setSecure(true);
         this.cookie.setDomain(env.getProperty("domain"));
-        this.cookie.setPath("/api");
+        this.cookie.setPath(path);
     }
 
-    public Cookie getCookie(String name, String value, int expire){
-        setCookie(name);
+    public Cookie getCookie(String name,String path, String value, int expire){
+        setCookie(name,path);
         this.cookie.setValue(value);
         this.cookie.setMaxAge(expire);
 
         return this.cookie;
     }
 
-    public Cookie expireCookie(String name){
-        setCookie(name);
+    public Cookie expireCookie(String name,String path){
+        setCookie(name,path);
         this.cookie.setMaxAge(0);
 
         return this.cookie;
