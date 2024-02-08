@@ -4,7 +4,6 @@ import com.example.demo.Config.Cookie.CookieProvider;
 import com.example.demo.Config.Jwt.JwtProperties;
 import com.example.demo.Config.Jwt.TokenProvider;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,9 +44,9 @@ public final class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String provider = (String) attributes.get("provider");
         String refreshToken = tokenProvider.getRefreshToken(username, provider);
 
-        Cookie refresh = cookieProvider.getCookie(JwtProperties.refreshTokenName, JwtProperties.refreshTokenPath,
+        String refresh = cookieProvider.getResponseCookie(JwtProperties.refreshTokenName, JwtProperties.refreshTokenPath,
                 refreshToken, REFRESH_TOKEN_EXPIRE);
-        response.addCookie(refresh);
+        response.addHeader("Set-Cookie",refresh);
 
         setDefaultTargetUrl(getTargetUrl());
         handle(request, response, authentication);
