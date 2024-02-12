@@ -28,9 +28,23 @@ AWS CodeDeploy
 ### ERD
 
 ### 로그인
+
+#### 구글 oauth2 를 통한 로그인 과정
 ![oauth2](/Image/codelia_oauth2.png)
-#### 로그인 완료 후 refreshToken 을 http only, secure 쿠키에 저장
-#### accessToken 은 sessionStorage 에 저장
+
+#### refreshToken (7d)
+쿠키 (HttpOnly, Secure) 에 저장
+CSRF 에 취약 XSS 에 상대적으로 안전
+
+#### accessToken (24h)
+sessionStorage 에 저장 , Authorization Header 로 전송
+XSS 에 취약 CSRF 에 안전
 
 
 ### API
+
+#### Controller, Service, Repository 테스트 코드 작성
+
+![oauth2](/Image/codelia_testcode.png)
+
+#### API 문서화를 위해 RestDocs 사용
