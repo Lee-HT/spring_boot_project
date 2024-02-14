@@ -1,7 +1,6 @@
 package com.example.demo.Controller;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.Config.Doc.RestDocsSetUp;
@@ -12,20 +11,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(TestController.class)
+@WebMvcTest(ApiController.class)
 @AutoConfigureRestDocs
 //@WithMockUser(roles = "USER")
-class TestControllerTest extends RestDocsSetUp {
+class ApiControllerTest extends RestDocsSetUp {
 
     @Autowired
-    public TestControllerTest(RestDocumentationResultHandler restDocs, MockMvc mvc){
+    public ApiControllerTest(RestDocumentationResultHandler restDocs, MockMvc mvc){
         super(restDocs,mvc);
     }
 
     @Test
-    void HomeTest() throws Exception {
-        mvc.perform(get("").with(oauth2Login()))
-                .andExpect(status().isOk());
+    void apiDocsRedirect() throws Exception {
+        mvc.perform(get("/"))
+                .andExpect(status().is3xxRedirection());
     }
 
 }

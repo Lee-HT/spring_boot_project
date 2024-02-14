@@ -1,3 +1,8 @@
+:doctype: book
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
 [[User-API]]
 == User API
 

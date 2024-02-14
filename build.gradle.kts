@@ -12,10 +12,13 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+val asciidoctorExt: Configuration by configurations.creating
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    asciidoctorExt
 }
 
 repositories {
@@ -44,40 +47,43 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     // Spring rest Docs
-    testImplementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
-    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
+        testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
     // H2
     runtimeOnly("com.h2database:h2")
 }
 
 // Spring rest Docs
-val snippetsDir = file("build/generated-snippets")
-
 tasks.withType<Test> {
     useJUnitPlatform()
-    outputs.dir(snippetsDir)
 }
 
-tasks.asciidoctor {
-    inputs.dir(snippetsDir)
-    dependsOn(tasks.test)
-    doFirst {
-        delete("src/main/resources/static/docs")
+val snippetsDir by extra { file("build/generated-snippets") }
+tasks {
+    test {
+        outputs.dir(snippetsDir)
     }
-}
 
-tasks.register("copyDocuments", Copy::class) {
-    dependsOn(tasks.asciidoctor)
-    from(file("build/asciidoc/html5"))
-    into(file("src/main/resource/static/docs"))
-}
+    asciidoctor {
+        doFirst {
+            delete("src/main/resources/static/docs")
+        }
+        // asciidoctor configuration 으로 asciidoctorExt 사용 설정
+        configurations(asciidoctorExt.name)
+        // 소스 파일을 baseDir 에서 찾도록 설정 (include 경로)
+        baseDirFollowsSourceFile()
+        inputs.dir(snippetsDir)
+        dependsOn(test)
+        doLast {
+            copy {
+                from("build/docs/asciidoc")
+                into("src/main/resources/static/docs")
+            }
+        }
+    }
 
-tasks.build {
-    dependsOn("copyDocuments")
-}
-
-tasks.bootJar {
-    dependsOn(tasks.asciidoctor)
-    dependsOn(tasks.getByName("copyDocuments"))
+    build {
+        dependsOn(asciidoctor)
+    }
 }
