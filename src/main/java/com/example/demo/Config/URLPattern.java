@@ -5,6 +5,7 @@ public interface URLPattern {
     // permitAll
     String[] permitAllUrls = new String[]{
             "/",
+            "/docs/*",
             "/oauth2/userinfo", "/oauth2/token", "/oauth2/authorization/*",
             "/login", "/login/oauth2/test/*", "/login/test/*",
             "/error"

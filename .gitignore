@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 **/application**
 **/src/main/resources/static/docs/
-**/src/docs/asciidocs/index.html
 
 ### STS ###
 .apt_generated

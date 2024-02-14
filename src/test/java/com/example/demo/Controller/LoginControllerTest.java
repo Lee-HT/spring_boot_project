@@ -67,7 +67,6 @@ class LoginControllerTest extends RestDocsSetUp {
     void getAccessToken() throws Exception {
         when(loginService.getAccessToken(any(Cookie.class))).thenReturn("bearer-");
         mvc.perform(post("/oauth2/token").with(oauth2Login())
-                        .header(JwtProperties.headerName, "bearer-")
                         .cookie(new Cookie(JwtProperties.refreshTokenName, "token")))
                 .andDo(restDocs.document())
                 .andExpect(status().isCreated());
