@@ -27,12 +27,12 @@ class CommentRepositoryTest {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private List<CommentEntity> comments = new ArrayList<>();
-    private List<UserEntity> users = new ArrayList<>();
-    private List<PostEntity> posts = new ArrayList<>();
-    private Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
+    private final List<CommentEntity> comments = new ArrayList<>();
+    private final List<UserEntity> users = new ArrayList<>();
+    private final List<PostEntity> posts = new ArrayList<>();
+    private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
     private int maxIdx;
-    private List<PostEntity> pk = new ArrayList<>();
+    private final List<PostEntity> pk = new ArrayList<>();
 
 
     @Autowired
@@ -59,9 +59,7 @@ class CommentRepositoryTest {
         postRepository.saveAll(posts);
         commentRepository.saveAll(comments);
         maxIdx = comments.size();
-        for (PostEntity ett : postRepository.findAll()) {
-            pk.add(ett);
-        }
+        pk.addAll(postRepository.findAll());
     }
 
     @Test
@@ -97,7 +95,6 @@ class CommentRepositoryTest {
                     .build());
         }
         List<CommentEntity> result = commentRepository.saveAll(comments);
-
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(comments);
     }

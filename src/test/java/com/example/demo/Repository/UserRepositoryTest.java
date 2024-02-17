@@ -1,6 +1,7 @@
 package com.example.demo.Repository;
 
 import com.example.demo.Entity.UserEntity;
+import io.jsonwebtoken.lang.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +30,9 @@ import org.springframework.test.context.ActiveProfiles;
 class UserRepositoryTest {
 
     private final UserRepository userRepository;
-    private List<UserEntity> users = new ArrayList<>();
+    private final List<UserEntity> users = new ArrayList<>();
     private final Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
-    private List<Long> pk = new ArrayList<>();
+    private final List<Long> pk = new ArrayList<>();
 
     @Autowired
     public UserRepositoryTest(UserRepository userRepository) {
@@ -53,51 +54,39 @@ class UserRepositoryTest {
 
     @Test
     void findAll() {
-        System.out.println("======== findAll ========");
         List<UserEntity> users = userRepository.findAll();
-
-        System.out.println(users);
 
         Assertions.assertThat(users).usingRecursiveComparison().isEqualTo(this.users);
     }
 
     @Test
     void FindByUid() {
-        System.out.println("======== findByUsername ========");
-        Optional<UserEntity> user = userRepository.findByUid(pk.get(0));
+        Optional<UserEntity> result = userRepository.findByUid(pk.get(0));
 
-        System.out.println(user);
-
-        Assertions.assertThat(user).usingRecursiveComparison()
-                .isEqualTo(Optional.of(this.users.get(0)));
+        Assert.isTrue(result.isPresent());
+        Assertions.assertThat(result.get()).usingRecursiveComparison().isEqualTo(this.users.get(0));
     }
 
     @Test
     void findByProvider() {
-        System.out.println("======== findByProvider ========");
         String provider = "google_1";
-        Optional<UserEntity> user = userRepository.findByProvider(provider);
+        Optional<UserEntity> result = userRepository.findByProvider(provider);
 
-        System.out.println(user);
-
-        Assertions.assertThat(user).usingRecursiveComparison().isEqualTo(Optional.of(this.users.get(0)));
+        Assert.isTrue(result.isPresent());
+        Assertions.assertThat(result.get()).usingRecursiveComparison().isEqualTo(this.users.get(0));
     }
 
     @Test
     void findByUsernameContaining() {
-        System.out.println("======== findByUsername ========");
         String username = "user";
         Page<UserEntity> pages = new PageImpl<>(this.users, this.pageable, this.users.size());
         Page<UserEntity> result = userRepository.findByUsernameContaining(username, this.pageable);
-
-        System.out.println(result);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
     void saveAll() {
-        System.out.println("======== saveAll ========");
         List<UserEntity> newUsers = new ArrayList<>();
         for (int i = 3; i < 5; i++) {
             newUsers.add(UserEntity.builder().username("user" + i)
@@ -105,8 +94,6 @@ class UserRepositoryTest {
                     .roles("ROLE_USER").provider("google_" + i).build());
         }
         List<UserEntity> result = userRepository.saveAll(newUsers);
-
-        System.out.println(result);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(newUsers);
     }

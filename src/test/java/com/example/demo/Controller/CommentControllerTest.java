@@ -14,7 +14,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -144,7 +143,7 @@ class CommentControllerTest extends RestDocsSetUp {
                 .contents("contents").build();
         when(commentService.saveComment(any(CommentDto.class))).thenReturn(1L);
         mvc.perform(post("/comment").with(oauth2Login()).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentDto)).with(csrf()))
+                        .content(objectMapper.writeValueAsString(commentDto)))
                 .andDo(restDocs.document(
                         getCommentRequestSnippet()
                 ))

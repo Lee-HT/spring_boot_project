@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,9 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @Slf4j
 @RequestMapping("comment")
 public class CommentController {
@@ -126,7 +126,7 @@ public class CommentController {
         HttpStatus status = HttpStatus.NO_CONTENT;
         Long response = commentService.deleteComment(cid);
         if (response == 0) {
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         }
         return new ResponseEntity<>(status);
     }
@@ -136,7 +136,7 @@ public class CommentController {
         HttpStatus status= HttpStatus.NO_CONTENT;
         Long response = commentService.deleteCommentLike(cid);
         if (response == 0){
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         }
         return new ResponseEntity<>(status);
     }
