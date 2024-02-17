@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @Slf4j
 @RequestMapping("post")
 public class PostController {
@@ -40,7 +40,7 @@ public class PostController {
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
         }
-        return new ResponseEntity<>(response,status);
+        return new ResponseEntity<>(response, status);
     }
 
     @GetMapping("/{pid}")
@@ -84,7 +84,7 @@ public class PostController {
     @GetMapping("/{pid}/likes")
     public ResponseEntity<LikeDto> getPostLike(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.OK;
-        Map<String,Object> response = postService.getLike(pid);
+        Map<String, Object> response = postService.getLike(pid);
         if ((Boolean) response.get("permit")) {
             return new ResponseEntity<>((LikeDto) response.get("contents"), status);
         }
@@ -105,12 +105,13 @@ public class PostController {
     // 좋아요 or 싫어요 추가
     @PutMapping("/likes")
     public ResponseEntity<LikeDto> savePostLike(@RequestBody PostLikeDto dto) {
-        Map<String,Object> response = postService.savelikeState(dto);
-        HttpStatus status = HttpStatus.CREATED;
-        if (!((Boolean) response.get("permit"))) {
-            status = HttpStatus.BAD_REQUEST;
-        } else if (response.containsKey("contents")) {
-            status = HttpStatus.NO_CONTENT;
+        Map<String, Object> response = postService.savelikeState(dto);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (((Boolean) response.get("permit"))) {
+            status = HttpStatus.CREATED;
+            if (response.containsKey("contents")) {
+                status = HttpStatus.NO_CONTENT;
+            }
         }
         return new ResponseEntity<>(status);
     }
@@ -119,7 +120,7 @@ public class PostController {
     public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         if (postService.deletePost(pid) == 0) {
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         }
         return new ResponseEntity<>(status);
     }
@@ -128,7 +129,7 @@ public class PostController {
     public ResponseEntity<Integer> deletePostLike(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         if (postService.deletePostLike(pid) == 0) {
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         }
         return new ResponseEntity<>(status);
     }

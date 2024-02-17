@@ -2,6 +2,7 @@ package com.example.demo.Repository;
 
 import com.example.demo.Entity.PostEntity;
 import com.example.demo.Entity.UserEntity;
+import io.jsonwebtoken.lang.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +27,12 @@ class PostRepositoryTest {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private List<UserEntity> users = new ArrayList<>();
-    private List<PostEntity> posts = new ArrayList<>();
+    private final List<UserEntity> users = new ArrayList<>();
+    private final List<PostEntity> posts = new ArrayList<>();
     // 0 페이지, 페이지당 3개, 내림차순, 정렬기준 pid
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
     private int maxIdx;
-    private List<Long> pk = new ArrayList<>();
+    private final List<Long> pk = new ArrayList<>();
 
     @Autowired
     public PostRepositoryTest(PostRepository postRepository, UserRepository userRepository) {
@@ -61,76 +62,58 @@ class PostRepositoryTest {
 
     @Test
     void findAll() {
-        System.out.println("======== findAll ========");
         List<PostEntity> posts = postRepository.findAll();
-
-        System.out.println(posts);
 
         Assertions.assertThat(posts).usingRecursiveComparison().isEqualTo(this.posts);
     }
 
     @Test
     void findByPid() {
-        System.out.println("======== findByPid ========");
         Optional<PostEntity> result = postRepository.findByPid(pk.get(0));
 
-        System.out.println(result);
-
-        Assertions.assertThat(result).usingRecursiveComparison()
-                .isEqualTo(Optional.of(posts.get(0)));
+        Assert.isTrue(result.isPresent());
+        Assertions.assertThat(result.get()).usingRecursiveComparison().isEqualTo(posts.get(0));
     }
 
     @Test
     void findByUsernamePaging() {
-        System.out.println("======== findByUsernamePaging ========");
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)), this.pageable,
                 this.posts.size());
         Page<PostEntity> result = postRepository.findByUsernameContaining(
                 users.get(0).getUsername(), this.pageable);
 
-        System.out.println(result.getContent());
-
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
     void findByTitlePaging() {
-        System.out.println("======== findByTitlePaging ========");
         Page<PostEntity> result = postRepository.findByTitleContaining("title", this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
                 this.pageable, this.posts.size());
-
-        System.out.println(result.getContent());
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
     void findAllPaging() {
-        System.out.println("======== findAllPaging ========");
         Page<PostEntity> result = postRepository.findAll(this.pageable);
         Page<PostEntity> pages = new PageImpl<>(
                 new ArrayList<>(this.posts.subList(maxIdx - 3, maxIdx)),
                 this.pageable, this.posts.size());
-
-        System.out.println(result.getContent());
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(pages);
     }
 
     @Test
     void saveAll() {
-        System.out.println("======== saveAll ========");
         List<PostEntity> Posts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Posts.add(PostEntity.builder().title("title3").contents("contents3")
                     .uid(this.users.get(1)).category("category3").build());
         }
         List<PostEntity> result = postRepository.saveAll(Posts);
-
-        System.out.println(result);
 
         Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Posts);
     }

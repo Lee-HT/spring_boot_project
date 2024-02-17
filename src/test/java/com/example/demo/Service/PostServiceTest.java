@@ -44,7 +44,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
-
+    @InjectMocks
+    private PostServiceImpl postService;
     @Mock
     private PostRepository postRepository;
     @Mock
@@ -55,8 +56,6 @@ class PostServiceTest {
     private PostConverter postConverter;
     @Mock
     private PostLikeConverter postLikeConverter;
-    @InjectMocks
-    private PostServiceImpl postService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "pid");
     private final UserEntity userEntity = UserEntity.builder().uid(1L).provider("google_1").build();
     private final PostEntity postEntity = PostEntity.builder().pid(1L).uid(userEntity).build();

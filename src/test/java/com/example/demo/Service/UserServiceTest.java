@@ -35,13 +35,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-
+    @InjectMocks
+    private UserServiceImpl userService;
     @Mock
     private UserRepository userRepository;
     @Mock
     private UserConverter userConverter;
-    @InjectMocks
-    private UserServiceImpl userService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.ASC, "uid");
     private final UserEntity userEntity = UserEntity.builder().uid(1L).build();
     private final UserDto userDto = UserDto.builder().uid(1L).username("user").email("email")

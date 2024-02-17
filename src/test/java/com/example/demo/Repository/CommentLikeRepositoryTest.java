@@ -25,8 +25,8 @@ class CommentLikeRepositoryTest {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private List<CommentLikeEntity> commentLikes = new ArrayList<>();
-    private List<CommentEntity> comments = new ArrayList<>();
-    private List<UserEntity> users = new ArrayList<>();
+    private final List<CommentEntity> comments = new ArrayList<>();
+    private final List<UserEntity> users = new ArrayList<>();
 
     @Autowired
     public CommentLikeRepositoryTest(CommentLikeRepository commentLikeRepository,

@@ -89,7 +89,7 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(new AntPathRequestMatcher("/", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/**", "GET")).permitAll()
 
                 .requestMatchers(requestMatchersAsArray(null, URLPattern.permitAllUrls)).permitAll()
 
