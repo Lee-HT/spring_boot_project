@@ -24,6 +24,7 @@ import com.example.demo.Repository.PostRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.CommentServiceImpl;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -43,7 +44,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
-
+    @InjectMocks
+    private CommentServiceImpl commentService;
     @Mock
     private CommentRepository commentRepository;
     @Mock
@@ -56,8 +58,6 @@ class CommentServiceTest {
     private PostRepository postRepository;
     @Mock
     private UserRepository userRepository;
-    @InjectMocks
-    private CommentServiceImpl commentService;
     private final Pageable pageable = PageRequest.of(0, 3, Direction.DESC, "cid");
     private final UserEntity userEntity = UserEntity.builder().uid(1L).build();
     private final CommentPageDto commentPageDto = CommentPageDto.builder().build();
@@ -93,10 +93,10 @@ class CommentServiceTest {
         when(commentRepository.findByCid(anyLong())).thenReturn(
                 Optional.of(CommentEntity.builder().build()));
         when(commentLikeRepository.findByCid(any(CommentEntity.class))).thenReturn(new ArrayList<>());
-        when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(anyList())).thenReturn(Collections.singletonList(commentLikeDto));
 
         List<CommentLikeDto> result = commentService.getCommentLikeCid(1L);
-        Assertions.assertThat(result).isInstanceOf(List.class);
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Collections.singletonList(commentLikeDto));
     }
 
     @Test
@@ -104,10 +104,10 @@ class CommentServiceTest {
         when(userRepository.findByUid(anyLong())).thenReturn(
                 Optional.of(userEntity));
         when(commentLikeRepository.findByUid(any(UserEntity.class))).thenReturn(new ArrayList<>());
-        when(commentLikeConverter.toDto(anyList())).thenReturn(new ArrayList<>());
+        when(commentLikeConverter.toDto(anyList())).thenReturn(Collections.singletonList(commentLikeDto));
 
         List<CommentLikeDto> result = commentService.getCommentLikeUid(1L);
-        Assertions.assertThat(result).isInstanceOf(List.class);
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(Collections.singletonList(commentLikeDto));
     }
 
     @Test

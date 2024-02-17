@@ -17,10 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class LoginServiceTest {
-    @Mock
-    private TokenProvider tokenProvider;
     @InjectMocks
     private LoginServiceImpl loginService;
+    @Mock
+    private TokenProvider tokenProvider;
     @Test
     void getAccessToken() {
         when(tokenProvider.resolveCookie(any(Cookie.class))).thenReturn("refreshToken");

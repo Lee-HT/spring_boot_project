@@ -26,7 +26,6 @@ public interface URLPattern {
     };
 
     String[] permitAllPutMethod = new String[]{
-            "/post/likes"
     };
 
 
