@@ -23,9 +23,9 @@ import lombok.ToString;
 public class CategoryEntity extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
-    @Column(length = 64)
+    private Long id;
+    @Column(length = 64, nullable = false)
     private String parent;
-    @Column(length = 64)
+    @Column(length = 64, nullable = false, unique = true)
     private String name;
 }

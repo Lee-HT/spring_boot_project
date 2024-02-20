@@ -117,7 +117,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{pid}")
-    public ResponseEntity<Long> deleteByPid(@PathVariable("pid") Long pid) {
+    public ResponseEntity<?> deleteByPid(@PathVariable("pid") Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         if (postService.deletePost(pid) == 0) {
             status = HttpStatus.NOT_FOUND;
@@ -126,7 +126,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{pid}/likes")
-    public ResponseEntity<Integer> deletePostLike(@PathVariable Long pid) {
+    public ResponseEntity<?> deletePostLike(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         if (postService.deletePostLike(pid) == 0) {
             status = HttpStatus.NOT_FOUND;

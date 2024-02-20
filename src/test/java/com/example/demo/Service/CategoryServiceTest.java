@@ -11,14 +11,15 @@ import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.CategoryConverter;
 import com.example.demo.DTO.CategoryDto;
-import com.example.demo.DTO.CategoryGroupDto;
 import com.example.demo.Entity.CategoryEntity;
 import com.example.demo.Repository.CategoryRepository;
 import com.example.demo.Service.Impl.CategoryServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,14 +42,25 @@ class CategoryServiceTest {
 
     @Test
     void getCategory() {
-        List<CategoryGroupDto> arrays = new ArrayList<>();
-        arrays.add(CategoryGroupDto.builder().parent("parent").category(Arrays.asList("name1","name2")).build());
+        List<CategoryDto> response = List.of(CategoryDto.builder().parent("parent").name("name").build());
+        when(categoryRepository.findAll()).thenReturn(new ArrayList<>());
+        when(categoryConverter.toDto(anyList())).thenReturn(response);
+
+        List<CategoryDto> result = categoryService.getCategory();
+        Assertions.assertThat(result).usingRecursiveComparison()
+                .isEqualTo(List.of(CategoryDto.builder().parent("parent").name("name").build()));
+    }
+
+    @Test
+    void getCategoryGroup() {
+        Map<String, Map<String, ?>> response = new HashMap<>();
+        response.put("contents", Map.of("parent", List.of("name1", "name2")));
         when(categoryRepository.findAll()).thenReturn(Arrays.asList(
                 CategoryEntity.builder().parent("parent").name("name1").build(),
                 CategoryEntity.builder().parent("parent").name("name2").build()));
-        List<CategoryGroupDto> result = categoryService.getCategory();
-        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(arrays);
-        Assertions.assertThat(result.get(0).getCategory()).contains("name1").contains("name2");
+
+        Map<String, Map<String, ?>> result = categoryService.getCategoryGroup();
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(response);
     }
 
     @Test
