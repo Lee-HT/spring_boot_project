@@ -1,9 +1,9 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.CategoryDto;
-import com.example.demo.DTO.CategoryGroupDto;
 import com.example.demo.Service.CategoryService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,9 +25,16 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getCategory(){
+    public ResponseEntity<List<CategoryDto>> getCategory(){
         HttpStatus status = HttpStatus.OK;
-        List<CategoryGroupDto> response = categoryService.getCategory();
+        List<CategoryDto> response = categoryService.getCategory();
+        return new ResponseEntity<>(response,status);
+    }
+
+    @GetMapping("/parent")
+    public ResponseEntity<Map<String,Map<String,?>>> getCategoryGroup(){
+        HttpStatus status = HttpStatus.OK;
+        Map<String, Map<String,?>> response = categoryService.getCategoryGroup();
         return new ResponseEntity<>(response,status);
     }
 
@@ -39,7 +46,7 @@ public class CategoryController {
     }
 
     @PostMapping()
-    public ResponseEntity<Long> saveCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
         HttpStatus status = HttpStatus.CREATED;
         CategoryDto response = categoryService.saveCategory(categoryDto);
         if (response.getId() == null) {
@@ -49,7 +56,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         Long response = categoryService.deleteCategory(id);
         if (response == 0){

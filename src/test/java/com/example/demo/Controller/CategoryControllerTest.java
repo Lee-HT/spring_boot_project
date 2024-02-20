@@ -17,18 +17,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.demo.Config.Doc.RestDocsSetUp;
 import com.example.demo.DTO.CategoryDto;
-import com.example.demo.DTO.CategoryGroupDto;
 import com.example.demo.Service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
@@ -46,15 +47,25 @@ class CategoryControllerTest extends RestDocsSetUp {
 
     @Test
     void getCategory() throws Exception {
-        List<CategoryGroupDto> categoryGroups = new ArrayList<>();
-        categoryGroups.add(
-                CategoryGroupDto.builder().parent("parent").category(List.of("name1", "name2")).build());
-        when(categoryService.getCategory()).thenReturn(categoryGroups);
+        List<CategoryDto> response = List.of(CategoryDto.builder().id(1L).parent("parent").name("name").build());
+        when(categoryService.getCategory()).thenReturn(response);
         mvc.perform(get("/category").with(oauth2Login()))
                 .andDo(restDocs.document(
+                        getResponseCategoryList()
+                ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCategoryGroup() throws Exception {
+        Map<String, Map<String, ?>> response = new HashMap<>();
+        response.put("contents", Map.of("parent", List.of("name1", "name2")));
+        when(categoryService.getCategoryGroup()).thenReturn(response);
+        mvc.perform(get("/category/parent").with(oauth2Login()))
+                .andDo(restDocs.document(
                         responseFields(
-                                fieldWithPath("[].parent").description("상위 카테고리"),
-                                fieldWithPath("[].category").description("카테고리 리스트"))
+                                fieldWithPath("contents").description("Key 값: 상위 카테고리"),
+                                fieldWithPath("contents.*.[]").description("해당 분류의 카테고리"))
                 ))
                 .andExpect(status().isOk());
     }
@@ -67,11 +78,8 @@ class CategoryControllerTest extends RestDocsSetUp {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("parent").description("카테고리 분류")),
-                        responseFields(
-                                fieldWithPath("[].id").description("카테고리 PK"),
-                                fieldWithPath("[].parent").description("상위 카테고리"),
-                                fieldWithPath("[].name").description("카테고리 이름"))
-                ))
+                        getResponseCategoryList()
+                        ))
                 .andExpect(status().isOk());
     }
 
@@ -99,5 +107,12 @@ class CategoryControllerTest extends RestDocsSetUp {
                                 parameterWithName("id").description("카테고리 PK"))
                 ))
                 .andExpect(status().isNoContent());
+    }
+
+    private Snippet getResponseCategoryList() {
+        return responseFields(
+                fieldWithPath("[].id").description("카테고리 PK"),
+                fieldWithPath("[].parent").description("상위 카테고리"),
+                fieldWithPath("[].name").description("카테고리 이름"));
     }
 }

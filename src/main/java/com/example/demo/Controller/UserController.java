@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         UserDto updateUser = userService.updateUser(userDto);
         if (updateUser.getUid() == 0) {
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Long> deleteUser() {
+    public ResponseEntity<?> deleteUser() {
         HttpStatus status = HttpStatus.NO_CONTENT;
         if (userService.deleteUser() == 0){
             status = HttpStatus.NOT_FOUND;

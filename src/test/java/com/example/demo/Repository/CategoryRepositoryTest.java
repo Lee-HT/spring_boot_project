@@ -31,7 +31,7 @@ class CategoryRepositoryTest {
     @BeforeEach
     void setCategory() {
         for (int i = 1; i < 3; i++) {
-            categoryEntities.add(CategoryEntity.builder().name("category" + i).build());
+            categoryEntities.add(CategoryEntity.builder().parent("parent").name("category" + i).build());
         }
         categoryRepository.saveAll(categoryEntities);
         for (CategoryEntity ett : categoryRepository.findAll()) {
