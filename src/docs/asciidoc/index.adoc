@@ -13,3 +13,4 @@ spring-boot 3.1.2
 * link:Post-API.html[Post-API,window=blank]
 * link:Comment-API.html[Comment-API,window=blank]
 * link:Login-API.html[Login-API,window=blank]
+* link:Category-API.html[Category-API,window=blank]

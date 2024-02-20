@@ -1,0 +1,27 @@
+:doctype: book
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
+[[Category-API]]
+== Category API
+
+[[Get-Category]]
+=== 카테고리 전체 조회
+operation::category-controller-test/get-category[snippets="http-request,response-fields"]
+
+[[Get-Category-Group]]
+=== 카테고리 조회 (Parent 그룹화)
+operation::category-controller-test/get-category-group[snippets="http-request,response-fields,http-response"]
+
+[[Get-Category-By-Parent]]
+=== 카테고리 조회 (Parent)
+operation::category-controller-test/get-category-by-parent[snippets="http-request,response-fields"]
+
+[[Save-Category]]
+=== 카테고리 저장
+operation::category-controller-test/save-category[snippets="http-request,request-fields,http-response"]
+
+[[Delete-Category]]
+=== 카테고리 삭제
+operation::category-controller-test/delete-category[snippets="http-request,path-parameters,http-response"]
