@@ -2,7 +2,6 @@ package com.example.demo.Service.Impl;
 
 import com.example.demo.Converter.CategoryConverter;
 import com.example.demo.DTO.CategoryDto;
-import com.example.demo.DTO.CategoryGroupDto;
 import com.example.demo.Entity.CategoryEntity;
 import com.example.demo.Repository.CategoryRepository;
 import com.example.demo.Service.CategoryService;
@@ -27,10 +26,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryGroupDto> getCategory() {
+    public List<CategoryDto> getCategory() {
+        List<CategoryEntity> response = categoryRepository.findAll();
+        return categoryConverter.toDto(response);
+    }
+
+    @Override
+    public Map<String,Map<String,?>> getCategoryGroup() {
         List<CategoryEntity> categories = categoryRepository.findAll();
+        Map<String,Map<String,?>> response = new HashMap<>();
         Map<String, List<String>> groups = getParentGrouping(categories);
-        return group2List(groups);
+        response.put("contents",groups);
+        return response;
     }
 
     @Override
@@ -65,14 +72,6 @@ public class CategoryServiceImpl implements CategoryService {
             }
             cur.add(ett.getName());
             response.put(ett.getParent(), cur);
-        }
-        return response;
-    }
-
-    private List<CategoryGroupDto> group2List(Map<String, List<String>> categories) {
-        List<CategoryGroupDto> response = new ArrayList<>();
-        for (String parent : categories.keySet()) {
-            response.add(CategoryGroupDto.builder().parent(parent).category(categories.get(parent)).build());
         }
         return response;
     }

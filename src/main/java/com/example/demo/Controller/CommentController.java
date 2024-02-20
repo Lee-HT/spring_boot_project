@@ -89,7 +89,7 @@ public class CommentController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Long> saveComment(@RequestBody CommentDto commentDto) {
+    public ResponseEntity<?> saveComment(@RequestBody CommentDto commentDto) {
         HttpStatus status = HttpStatus.CREATED;
         Long response = commentService.saveComment(commentDto);
         if (response == 0) {
@@ -100,7 +100,7 @@ public class CommentController {
     }
 
     @PatchMapping
-    public ResponseEntity<Long> updateComment(@RequestBody CommentDto commentDto) {
+    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         Long response = commentService.updateComment(commentDto);
         if (response == 0) {
@@ -110,7 +110,7 @@ public class CommentController {
     }
 
     @PutMapping("/likes")
-    public ResponseEntity<Long> putCommentLike(@RequestBody CommentLikeDto commentLikeDto){
+    public ResponseEntity<?> putCommentLike(@RequestBody CommentLikeDto commentLikeDto){
         HttpStatus status = HttpStatus.BAD_REQUEST;
         Integer response = commentService.saveCommentLike(commentLikeDto);
         if (response == 201){
@@ -122,7 +122,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{cid}")
-    public ResponseEntity<Long> deleteComment(@PathVariable Long cid) {
+    public ResponseEntity<?> deleteComment(@PathVariable Long cid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
         Long response = commentService.deleteComment(cid);
         if (response == 0) {
@@ -132,7 +132,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{cid}/likes")
-    public ResponseEntity<Long> deleteCommentLike(@PathVariable Long cid){
+    public ResponseEntity<?> deleteCommentLike(@PathVariable Long cid){
         HttpStatus status= HttpStatus.NO_CONTENT;
         Long response = commentService.deleteCommentLike(cid);
         if (response == 0){

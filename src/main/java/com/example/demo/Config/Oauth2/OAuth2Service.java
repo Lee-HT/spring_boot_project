@@ -91,6 +91,7 @@ public final class OAuth2Service implements OAuth2UserService<OAuth2UserRequest,
         Optional<UserEntity> user = userRepository.findByProvider(oauth2Attributes.getProvider());
         if (user.isPresent()) {
             user.get().updateProfileImg(oauth2Attributes.getProfileImg());
+            userRepository.save(user.get());
         } else {
             return userRepository.save(oauth2Attributes.toEntity());
         }
