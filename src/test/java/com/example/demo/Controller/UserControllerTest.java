@@ -38,7 +38,7 @@ class UserControllerTest extends RestDocsSetUp {
 
     @Test
     public void getUser() throws Exception {
-        UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
+        UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1").profilePic("imgLink")
                 .build();
         when(userService.findByUid(any(Long.class))).thenReturn(dto);
 
@@ -54,7 +54,7 @@ class UserControllerTest extends RestDocsSetUp {
 
     @Test
     public void updateUser() throws Exception {
-        UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1")
+        UserDto dto = UserDto.builder().uid(1L).email("email1@gmail.com").username("user1").profilePic("imgLink")
                 .build();
         when(userService.updateUser(any(UserDto.class))).thenReturn(dto);
 
