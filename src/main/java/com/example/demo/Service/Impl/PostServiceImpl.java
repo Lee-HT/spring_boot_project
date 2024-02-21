@@ -91,6 +91,7 @@ public class PostServiceImpl implements PostService {
         Optional<UserEntity> userEntity = getUserProv();
 
         if (userEntity.isPresent()) {
+            postDto.setUsername(userEntity.get().getUsername());
             PostEntity post = postConverter.toEntity(postDto, userEntity.get());
             return postConverter.toDto(postRepository.save(post));
         } else {
