@@ -87,6 +87,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Long getLikeCount(Long pid) {
+        Optional<PostEntity> postEntity = postRepository.findByPid(pid);
+        return postEntity.map(entity -> postLikeRepository.countByPidAndLikes(entity, true)).orElse(null);
+    }
+
+    @Override
     public PostDto savePost(PostDto postDto) {
         Optional<UserEntity> userEntity = getUserProv();
 

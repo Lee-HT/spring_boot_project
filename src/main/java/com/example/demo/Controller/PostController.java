@@ -88,8 +88,16 @@ public class PostController {
         if ((Boolean) response.get("permit")) {
             return new ResponseEntity<>((LikeDto) response.get("contents"), status);
         }
-        status = HttpStatus.BAD_REQUEST;
+        status = HttpStatus.FORBIDDEN;
         return new ResponseEntity<>(status);
+    }
+
+    @GetMapping("/{pid}/likes/true/count")
+    public ResponseEntity<Long> getPostLikeTrueCount(@PathVariable Long pid) {
+        HttpStatus status = HttpStatus.OK;
+        Long response = postService.getLikeCount(pid);
+        return new ResponseEntity<>(response,status);
+
     }
 
     @PostMapping("")
