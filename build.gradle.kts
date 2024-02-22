@@ -59,10 +59,18 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+
+
 val snippetsDir by extra { file("build/generated-snippets") }
 tasks {
     test {
         outputs.dir(snippetsDir)
+    }
+
+    register("copyDocuments",Copy::class){
+        dependsOn(asciidoctor)
+        from("build/docs/asciidoc")
+        into("src/main/resources/static/docs")
     }
 
     asciidoctor {
@@ -75,15 +83,14 @@ tasks {
         baseDirFollowsSourceFile()
         inputs.dir(snippetsDir)
         dependsOn(test)
-        doLast {
-            copy {
-                from("build/docs/asciidoc")
-                into("src/main/resources/static/docs")
-            }
-        }
     }
 
     build {
         dependsOn(asciidoctor)
+    }
+
+    bootJar {
+        dependsOn(asciidoctor)
+        dependsOn("copyDocuments")
     }
 }
