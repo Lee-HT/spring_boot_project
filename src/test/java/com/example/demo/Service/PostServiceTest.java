@@ -2,6 +2,7 @@ package com.example.demo.Service;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import com.example.demo.Converter.PostConverter;
 import com.example.demo.Converter.PostLikeConverter;
+import com.example.demo.DTO.LikeDto;
 import com.example.demo.DTO.PostDto;
 import com.example.demo.DTO.PostLikeDto;
 import com.example.demo.DTO.PostPageDto;
@@ -25,6 +27,7 @@ import com.example.demo.Repository.UserRepository;
 import com.example.demo.Service.Impl.PostServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -44,6 +47,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
+
     @InjectMocks
     private PostServiceImpl postService;
     @Mock
@@ -101,6 +105,30 @@ class PostServiceTest {
 
         PostPageDto result = postService.findPostByUsername("user", this.pageable);
         Assertions.assertThat(result).isEqualTo(postPageDto);
+    }
+
+    @Test
+    void getLike() {
+        Map<String, Object> response = new HashMap<>() {{
+            put("permit", true);
+            put("contents", LikeDto.builder().likes(true).build());
+        }};
+        setUserProv();
+        when(postLikeRepository.findByPidAndUid(any(PostEntity.class), any(UserEntity.class))).thenReturn(Optional.of(
+                PostLikeEntity.builder().pid(postEntity).uid(userEntity).likes(true).build()));
+
+        Map<String, Object> result = postService.getLike(1L);
+        Assertions.assertThat(result).usingRecursiveComparison().isEqualTo(response);
+    }
+
+    @Test
+    void getLikeCount() {
+        when(postRepository.findByPid(anyLong())).thenReturn(Optional.of(postEntity));
+        when(postLikeRepository.countByPidAndLikes(any(PostEntity.class), anyBoolean())).thenReturn(2L);
+
+        Long result = postService.getLikeCount(1L);
+        Assertions.assertThat(result).isEqualTo(2L);
+
     }
 
     @Test

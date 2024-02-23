@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -130,13 +131,23 @@ class PostControllerTest extends RestDocsSetUp {
             put("permit", true);
             put("contents", LikeDto.builder().likes(true).build());
         }};
-        when(postService.getLike(any(Long.class))).thenReturn(
-                response);
+        when(postService.getLike(anyLong())).thenReturn(response);
 
         mvc.perform(get("/post/{pid}/likes", "1").with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(parameterWithName("pid").description("게시글 PK")),
                         responseFields(fieldWithPath("likes").description("좋아요 상태"))
+                ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getPostLikeTrueCount() throws Exception {
+        when(postService.getLikeCount(anyLong())).thenReturn(2L);
+
+        mvc.perform(get("/post/{pid}/likes/true/count",1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(parameterWithName("pid").description("게시글 PK"))
                 ))
                 .andExpect(status().isOk());
     }

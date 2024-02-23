@@ -105,11 +105,16 @@ public final class TokenProvider {
 
     // Cookie 에서 token get
     public String resolveCookie(Cookie cookie) {
-        Assert.notNull(cookie);
-        if (!cookie.getValue().isBlank()) {
-            return cookie.getValue().substring(7);
+        try{
+            Assert.notNull(cookie,"cookie is null");
+            if (!cookie.getValue().isBlank()) {
+                return cookie.getValue().substring(7);
+            }
+            return "";
+        }catch (Exception error){
+            log.info(String.valueOf(error));
+            return "";
         }
-        return "";
     }
 
     public String resolveToken(String token) {

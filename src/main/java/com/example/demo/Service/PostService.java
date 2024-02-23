@@ -19,6 +19,8 @@ public interface PostService {
 
     Map<String, Object> getLike(Long pid);
 
+    Long getLikeCount(Long pid);
+
     PostDto savePost(PostDto postDto);
 
     PostDto updatePost(PostDto postDto);
