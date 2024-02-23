@@ -121,7 +121,11 @@ class CommentControllerTest extends RestDocsSetUp {
                                 pathParameters(
                                         parameterWithName("uid").description("유저 FK"),
                                         parameterWithName("cid").description("댓글 FK")),
-                                getCommentLikeResponseSnippet("")
+                                responseFields(
+                                        fieldWithPath("uid").ignored(),
+                                        fieldWithPath("cid").ignored(),
+                                        fieldWithPath("likes").description("좋아요")
+                                )
                         ))
                         .andExpect(status().isOk());
     }

@@ -22,6 +22,10 @@ operation::comment-controller-test/get-comment-like-by-user[snippets="http-reque
 === 댓글 좋아요 조회 ( 댓글 )
 operation::comment-controller-test/get-comment-like-by-comment[snippets="http-request,path-parameters,response-fields"]
 
+[[Get-Comment-Like-By-Comment-And-User]]
+=== 댓글 좋아요 조회 ( 댓글, 작성자)
+operation::comment-controller-test/get-comment-like-by-uid-cid[snippets="http-request,path-parameters,response-fields"]
+
 [[Get-Count-Comment-Like]]
 === 댓글 좋아요 개수 조회
 operation::comment-controller-test/get-count-comment-like[snippets="http-request,path-parameters,http-response"]
