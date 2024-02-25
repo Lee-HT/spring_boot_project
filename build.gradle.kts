@@ -48,7 +48,7 @@ dependencies {
 
     // Spring rest Docs
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
-        testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
     // H2
     runtimeOnly("com.h2database:h2")
@@ -59,18 +59,12 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-
-
+val outputDir = "build/docs/asciidoc"
 val snippetsDir by extra { file("build/generated-snippets") }
+
 tasks {
     test {
         outputs.dir(snippetsDir)
-    }
-
-    register("copyDocuments",Copy::class){
-        dependsOn(asciidoctor)
-        from("build/docs/asciidoc")
-        into("src/main/resources/static/docs")
     }
 
     asciidoctor {
@@ -85,6 +79,12 @@ tasks {
         dependsOn(test)
     }
 
+    register("copyDocuments", Copy::class) {
+        dependsOn(asciidoctor)
+        from(outputDir)
+        into("src/main/resources/static/docs")
+    }
+
     build {
         dependsOn(asciidoctor)
     }
@@ -92,5 +92,8 @@ tasks {
     bootJar {
         dependsOn(asciidoctor)
         dependsOn("copyDocuments")
+        from(outputDir) {
+            into("static/docs")
+        }
     }
 }
