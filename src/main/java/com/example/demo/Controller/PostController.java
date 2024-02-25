@@ -39,6 +39,7 @@ public class PostController {
         PostPageDto response = postService.findPostPage(pageable);
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
         }
         return new ResponseEntity<>(response, status);
     }
@@ -55,30 +56,40 @@ public class PostController {
         return new ResponseEntity<>(status);
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<PostPageDto> getPostByCategory(@PathVariable String category,
+            @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        PostPageDto response = postService.findPostByCategory(category, pageable);
+        if (response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response, status);
+    }
+
     @GetMapping("/title/{title}")
-    public ResponseEntity<PostPageDto> getPostByTitle(@PathVariable("title") String title,
+    public ResponseEntity<PostPageDto> getPostByTitle(@PathVariable String title,
             @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
         HttpStatus status = HttpStatus.OK;
         PostPageDto response = postService.findPostByTitle(title, pageable);
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
-        } else if (!response.getContents().isEmpty()) {
-            return new ResponseEntity<>(response, status);
+            return new ResponseEntity<>(status);
         }
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(response, status);
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<PostPageDto> getPostByUsername(@PathVariable("username") String username,
+    public ResponseEntity<PostPageDto> getPostByUsername(@PathVariable String username,
             @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
         HttpStatus status = HttpStatus.OK;
         PostPageDto response = postService.findPostByUsername(username, pageable);
         if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
-        } else {
-            return new ResponseEntity<>(response, status);
+            return new ResponseEntity<>(status);
         }
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(response, status);
     }
 
     @GetMapping("/{pid}/likes")
@@ -96,7 +107,7 @@ public class PostController {
     public ResponseEntity<Long> getPostLikeTrueCount(@PathVariable Long pid) {
         HttpStatus status = HttpStatus.OK;
         Long response = postService.getLikeCount(pid);
-        return new ResponseEntity<>(response,status);
+        return new ResponseEntity<>(response, status);
 
     }
 

@@ -60,6 +60,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostPageDto findPostByCategory(String category, Pageable pageable) {
+        return postConverter.toDto(postRepository.findByCategory(category, pageable));
+    }
+
+    @Override
     public PostPageDto findPostByTitle(String title, Pageable pageable) {
         return postConverter.toDto(postRepository.findByTitleContaining(title, pageable));
     }

@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -87,12 +88,26 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
+    void getPostByCategory() throws Exception {
+        PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
+                .totalPages(2).size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
+        when(postService.findPostByCategory(anyString(), any(Pageable.class))).thenReturn(postPageDto);
+
+        mvc.perform(get("/post/category/{category}?page=0&size=10&sort=pid", "category").with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("category").description("카테고리")),
+                        getPageQuerySnippet(),
+                        getPostPageSnippet()
+                ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getPostByTitle() throws Exception {
-        PostPageDto postPageDto = PostPageDto.builder()
-                .contents(Collections.singletonList(PostDto.builder().build())).totalPages(2)
-                .size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
-        when(postService.findPostByTitle(any(String.class), any(Pageable.class))).thenReturn(
-                postPageDto);
+        PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
+                .totalPages(2).size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
+        when(postService.findPostByTitle(anyString(), any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post/title/{title}?page=0&size=10&sort=pid", "title").with(oauth2Login()))
                 .andDo(restDocs.document(
@@ -145,7 +160,7 @@ class PostControllerTest extends RestDocsSetUp {
     void getPostLikeTrueCount() throws Exception {
         when(postService.getLikeCount(anyLong())).thenReturn(2L);
 
-        mvc.perform(get("/post/{pid}/likes/true/count",1L).with(oauth2Login()))
+        mvc.perform(get("/post/{pid}/likes/true/count", 1L).with(oauth2Login()))
                 .andDo(restDocs.document(
                         pathParameters(parameterWithName("pid").description("게시글 PK"))
                 ))
