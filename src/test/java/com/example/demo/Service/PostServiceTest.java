@@ -84,7 +84,16 @@ class PostServiceTest {
 
         PostDto result = postService.findPost(1L);
         Assertions.assertThat(result).isEqualTo(postDto);
+    }
 
+    @Test
+    void findPostByCategory() {
+        when(postRepository.findByCategory(anyString(), eq(this.pageable))).thenReturn(
+                new PageImpl<>(new ArrayList<>()));
+        when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(postPageDto);
+
+        PostPageDto result = postService.findPostByCategory("category",pageable);
+        Assertions.assertThat(result).isEqualTo(postPageDto);
     }
 
     @Test
