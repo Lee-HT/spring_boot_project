@@ -74,9 +74,19 @@ class PostRepositoryTest {
     }
 
     @Test
+    void findByUid() {
+        Page<PostEntity> result = postRepository.findByUid(users.get(0), this.pageable);
+        Page<PostEntity> pages = new PageImpl<>(List.of(posts.get(4), posts.get(3), posts.get(2)), this.pageable,
+                this.posts.size());
+
+        Assertions.assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(pages.getContent());
+        Assertions.assertThat(result.getTotalElements()).usingRecursiveComparison().isEqualTo(pages.getTotalElements());
+    }
+
+    @Test
     void findAllPaging() {
         Page<PostEntity> result = postRepository.findAll(this.pageable);
-        Page<PostEntity> pages = new PageImpl<>(List.of(posts.get(4),posts.get(3),posts.get(2)), this.pageable,
+        Page<PostEntity> pages = new PageImpl<>(List.of(posts.get(4), posts.get(3), posts.get(2)), this.pageable,
                 this.posts.size());
 
         Assertions.assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(pages.getContent());
@@ -85,8 +95,8 @@ class PostRepositoryTest {
 
     @Test
     void findByCategoryPaging() {
-        Page<PostEntity> result = postRepository.findByCategory("category1",this.pageable);
-        Page<PostEntity> pages = new PageImpl<>(List.of(this.posts.get(0)),this.pageable,1);
+        Page<PostEntity> result = postRepository.findByCategory("category1", this.pageable);
+        Page<PostEntity> pages = new PageImpl<>(List.of(this.posts.get(0)), this.pageable, 1);
         Assertions.assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(pages.getContent());
         Assertions.assertThat(result.getTotalElements()).usingRecursiveComparison().isEqualTo(pages.getTotalElements());
     }
@@ -94,7 +104,8 @@ class PostRepositoryTest {
     @Test
     void findByUsernamePaging() {
         Page<PostEntity> result = postRepository.findByUsernameContaining("user", this.pageable);
-        Page<PostEntity> pages = new PageImpl<>(List.of(posts.get(4),posts.get(3),posts.get(2)), this.pageable, this.posts.size());
+        Page<PostEntity> pages = new PageImpl<>(List.of(posts.get(4), posts.get(3), posts.get(2)), this.pageable,
+                this.posts.size());
 
         Assertions.assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(pages.getContent());
         Assertions.assertThat(result.getTotalElements()).usingRecursiveComparison().isEqualTo(pages.getTotalElements());
