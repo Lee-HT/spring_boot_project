@@ -60,6 +60,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostPageDto findPostByUid(Long uid, Pageable pageable) {
+        Optional<UserEntity> userEntity = userRepository.findByUid(uid);
+        if (userEntity.isPresent()){
+            return postConverter.toDto(postRepository.findByUid(userEntity.get(),pageable));
+        }
+        return PostPageDto.builder().build();
+    }
+
+    @Override
     public PostPageDto findPostByCategory(String category, Pageable pageable) {
         return postConverter.toDto(postRepository.findByCategory(category, pageable));
     }

@@ -28,6 +28,7 @@ import com.example.demo.Service.Impl.PostServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -87,12 +88,22 @@ class PostServiceTest {
     }
 
     @Test
+    void findPostByUid() {
+        when(userRepository.findByUid(anyLong())).thenReturn(Optional.ofNullable(userEntity));
+        when(postRepository.findByUid(any(UserEntity.class), eq(this.pageable))).thenReturn(new PageImpl<>(List.of()));
+        when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(postPageDto);
+
+        PostPageDto result = postService.findPostByUid(1L, pageable);
+        Assertions.assertThat(result).isEqualTo(postPageDto);
+    }
+
+    @Test
     void findPostByCategory() {
         when(postRepository.findByCategory(anyString(), eq(this.pageable))).thenReturn(
                 new PageImpl<>(new ArrayList<>()));
         when(postConverter.toDto(ArgumentMatchers.<Page<PostEntity>>any())).thenReturn(postPageDto);
 
-        PostPageDto result = postService.findPostByCategory("category",pageable);
+        PostPageDto result = postService.findPostByCategory("category", pageable);
         Assertions.assertThat(result).isEqualTo(postPageDto);
     }
 

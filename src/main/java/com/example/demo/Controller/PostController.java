@@ -56,6 +56,18 @@ public class PostController {
         return new ResponseEntity<>(status);
     }
 
+    @GetMapping("/uid/{uid}")
+    public ResponseEntity<PostPageDto> getPostByUid(@PathVariable Long uid,
+            @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
+        HttpStatus status = HttpStatus.OK;
+        PostPageDto response = postService.findPostByUid(uid,pageable);
+        if(response.getTotalPages() == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+        return new ResponseEntity<>(response,status);
+    }
+
     @GetMapping("/category/{category}")
     public ResponseEntity<PostPageDto> getPostByCategory(@PathVariable String category,
             @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
