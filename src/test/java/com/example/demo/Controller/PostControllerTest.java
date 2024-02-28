@@ -88,9 +88,24 @@ class PostControllerTest extends RestDocsSetUp {
     }
 
     @Test
+    void getPostByUid() throws Exception {
+        PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
+                .totalPages(2).size(10).numberOfElements(3).totalElements(6L).sorted(true).build();
+        when(postService.findPostByUid(anyLong(), any(Pageable.class))).thenReturn(postPageDto);
+
+        mvc.perform(get("/post/uid/{uid}?page=0&size=10&sort=pid", 1L).with(oauth2Login()))
+                .andDo(restDocs.document(
+                        pathParameters(parameterWithName("uid").description("카테고리")),
+                        getPageQuerySnippet(),
+                        getPostPageSnippet()
+                ))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void getPostByCategory() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
-                .totalPages(2).size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
+                .totalPages(2).size(10).numberOfElements(3).totalElements(6L).sorted(true).build();
         when(postService.findPostByCategory(anyString(), any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post/category/{category}?page=0&size=10&sort=pid", "category").with(oauth2Login()))
@@ -106,7 +121,7 @@ class PostControllerTest extends RestDocsSetUp {
     @Test
     void getPostByTitle() throws Exception {
         PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
-                .totalPages(2).size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
+                .totalPages(2).size(10).numberOfElements(3).totalElements(6L).sorted(true).build();
         when(postService.findPostByTitle(anyString(), any(Pageable.class))).thenReturn(postPageDto);
 
         mvc.perform(get("/post/title/{title}?page=0&size=10&sort=pid", "title").with(oauth2Login()))
@@ -122,9 +137,8 @@ class PostControllerTest extends RestDocsSetUp {
 
     @Test
     void getPostByUsername() throws Exception {
-        PostPageDto postPageDto = PostPageDto.builder()
-                .contents(Collections.singletonList(PostDto.builder().build())).totalPages(2)
-                .size(3).numberOfElements(3).totalElements(6L).sorted(true).build();
+        PostPageDto postPageDto = PostPageDto.builder().contents(Collections.singletonList(PostDto.builder().build()))
+                .totalPages(2).size(10).numberOfElements(10).totalElements(6L).sorted(true).build();
         when(postService.findPostByUsername(any(String.class), any(Pageable.class))).thenReturn(
                 postPageDto);
 

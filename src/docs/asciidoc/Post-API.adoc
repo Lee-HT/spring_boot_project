@@ -14,6 +14,10 @@ operation::post-controller-test/get-post-page[snippets="http-request,query-param
 === 게시글 조회 ( PK )
 operation::post-controller-test/get-post[snippets="http-request,path-parameters,response-fields"]
 
+[[Get-Post-By-Uid]]
+=== 게시글 조회 ( UID )
+operation::post-controller-test/get-post-by-uid[snippets="http-request,path-parameters,query-parameters,response-fields"]
+
 [[Get-Post-By-Title]]
 === 게시글 조회 ( 제목 )
 operation::post-controller-test/get-post-by-title[snippets="http-request,path-parameters,query-parameters,response-fields"]
@@ -21,6 +25,10 @@ operation::post-controller-test/get-post-by-title[snippets="http-request,path-pa
 [[Get-Post-By-Username]]
 === 게시글 조회 ( 유저명 )
 operation::post-controller-test/get-post-by-username[snippets="http-request,path-parameters,query-parameters,response-fields"]
+
+[[Get-Post-By-Category]]
+=== 게시글 조회 ( 카테고리 )
+operation::post-controller-test/get-post-by-category[snippets="http-request,path-parameters,query-parameters,response-fields"]
 
 [[Get-Post-Like]]
 === 게시글 좋아요 조회

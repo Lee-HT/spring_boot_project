@@ -12,6 +12,9 @@ public interface PostService {
     PostPageDto findPostPage(Pageable pageable);
 
     PostDto findPost(Long pid);
+
+    PostPageDto findPostByUid(Long uid, Pageable pageable);
+
     PostPageDto findPostByCategory(String category, Pageable pageable);
 
     PostPageDto findPostByTitle(String title, Pageable pageable);
