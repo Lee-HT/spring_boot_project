@@ -8,18 +8,11 @@ public interface URLPattern {
             "/docs/*",
             "/oauth2/userinfo", "/oauth2/token", "/oauth2/authorization/*",
             "/login", "/login/oauth2/test/*", "/login/test/*",
-            "/error"
+            "/error",
+            "/redis"
     };
     String[] permitAllGetMethod = new String[]{
-            // PostController
-            "/post",
-            "/post/*",
-            "/post/title/*", "/post/username/*",
-            "/post/*/likes",
 
-            // CommentController
-            "/comment/post/*", "/comment/user/*",
-            "/comment/*/likes/*"
     };
     String[] permitAllPostMethod = new String[]{
 

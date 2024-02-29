@@ -52,6 +52,9 @@ dependencies {
 
     // H2
     runtimeOnly("com.h2database:h2")
+
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }
 
 // Spring rest Docs
