@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import com.example.demo.Config.redis.RedisProperties;
 import java.net.URI;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class ApiController {
     @PostMapping("redis")
     public ResponseEntity<?> redisSave() {
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
-        vop.set("key", "value");
+        vop.set("key", "value", RedisProperties.TTL);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
