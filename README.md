@@ -1,7 +1,7 @@
 # 블로그용 Rest API
 
 ### 1인 프로젝트
-#### 블로그를 구현할 때 필요한 API 를 개발해보기 위해 프로젝트를 개발하게 되었습니다.
+#### 블로그를 구현할 때 필요한 Rest API 를 구현 해보기 위해 프로젝트를 개발하게 되었습니다.
 
 
 ## 개발환경
@@ -23,13 +23,16 @@ AWS S3
 Github Actions
 AWS CodeDeploy
 
-## 주요 내용
 
-### ERD
+## ERD
 
-### 로그인
+### ERDCloud
+![ERD](/Image/codelia_erd.png)
 
-#### 구글 oauth2 를 통한 로그인 과정
+
+## Oauth2
+
+### 구글 oauth2 를 통한 로그인 과정
 ![oauth2](/Image/codelia_oauth2.png)
 
 #### refreshToken (7d)
@@ -40,11 +43,40 @@ CSRF 에 취약 XSS 에 상대적으로 안전
 sessionStorage 에 저장 , Authorization Header 로 전송
 XSS 에 취약 CSRF 에 안전
 
+### 프론트와 Origin 이 다르기 때문에 Cors 설정
 
-### API
+#### WebMvc
+![Cors](/Image/cors/codelia_webmvc_cors.png)
+#### Spring Security
+![Cors](/Image/cors/codelia_security_cors.png)
 
-#### Controller, Service, Repository 테스트 코드 작성
 
-![oauth2](/Image/codelia_testcode.png)
+## API
 
-#### API 문서화를 위해 RestDocs 사용
+### Controller, Service, Repository 단위 테스트 코드 작성
+
+![testCode](/Image/codelia_testcode.png)
+
+### API 문서화를 위해 RestDocs 사용
+
+#### 코드 반복을 줄이기 위해 공통 부분을 분리 하였습니다.
+
+문서 이름 클래스 & 메소드 이름 으로 설정, pretty json 적용, 호스트 및 포트 표기
+
+![restDocs](/Image/restdocs/codelia_restdocs_config.png)
+
+RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이징
+
+![restDocs](/Image/restdocs/codelia_restdocs_setup.png)
+
+
+#### RestDocs 문서 Uri
+
+배포 주소 https://codelia.shop/api/docs/index.html
+
+로컬 주소 http://localhost:6550/api/docs/index.html
+
+![restDocs](/Image/restdocs/codelia_restdocs_post.png)
+
+
+## Redis
