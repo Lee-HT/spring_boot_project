@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @Setter
@@ -21,10 +19,8 @@ import org.springframework.data.redis.core.RedisHash;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RedisHash(value = "posts",timeToLive = 3600*2)
 public class PostDto {
 
-    @Id
     private Long pid;
     private Long uid;
     private String username;
