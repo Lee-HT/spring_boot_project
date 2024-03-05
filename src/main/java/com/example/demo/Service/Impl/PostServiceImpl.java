@@ -149,6 +149,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public PostDto updatePost(PostDto postDto) {
         Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
@@ -162,6 +163,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
         if (postEntity.isPresent() && equalUid(postEntity.get())) {
@@ -172,6 +174,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public Integer deletePosts(List<Long> pid) {
         Optional<UserEntity> userEntity = getUserProv();
         List<PostEntity> posts = new ArrayList<>();

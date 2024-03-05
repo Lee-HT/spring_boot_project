@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -29,10 +31,12 @@ public class CommentEntity extends BaseTimeEntity {
     private Long cid;
     @ManyToOne
     @JoinColumn(name = "uid",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity uid;
     private String username;
     @ManyToOne
     @JoinColumn(name = "pid")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private PostEntity pid;
     @Column(nullable = false, length = 512)
     private String contents;

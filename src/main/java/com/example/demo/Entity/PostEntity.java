@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -31,6 +33,7 @@ public class PostEntity extends BaseTimeEntity {
     // JoinColumn : referencedColumnName 없을 시 기본 키를 컬럼으로 지정
     @ManyToOne
     @JoinColumn(name = "uid",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity uid;
     @Column(length = 31)
     private String username;
