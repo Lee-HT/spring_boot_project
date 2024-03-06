@@ -6,9 +6,11 @@ import com.example.demo.Entity.PostLikeEntity;
 import com.example.demo.Entity.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class PostLikeConverter {
 
     public PostLikeEntity toEntity(PostLikeDto postLikeDto, UserEntity uid, PostEntity pid) {
@@ -26,13 +28,18 @@ public class PostLikeConverter {
     }
 
     public PostLikeDto toDto(PostLikeEntity postLike) {
-        return PostLikeDto.builder().likes(postLike.getLikes()).uid(postLike.getUid().getUid())
-                .pid(postLike.getPid().getPid()).build();
+        try {
+            return PostLikeDto.builder().likes(postLike.getLikes()).uid(postLike.getUid().getUid())
+                    .pid(postLike.getPid().getPid()).build();
+        } catch (Exception e) {
+            log.info(e.toString());
+        }
+        return PostLikeDto.builder().build();
     }
 
-    public List<PostLikeDto> toDto(List<PostLikeEntity> postLike){
+    public List<PostLikeDto> toDto(List<PostLikeEntity> postLike) {
         List<PostLikeDto> postLikeDto = new ArrayList<>();
-        for (PostLikeEntity ett: postLike){
+        for (PostLikeEntity ett : postLike) {
             postLikeDto.add(toDto(ett));
         }
         return postLikeDto;
