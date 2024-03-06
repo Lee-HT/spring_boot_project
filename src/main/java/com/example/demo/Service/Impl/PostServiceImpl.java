@@ -169,9 +169,13 @@ public class PostServiceImpl implements PostService {
             @CacheEvict(cacheNames = "posts", key = "#pid")})
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
-        if (postEntity.isPresent() && equalUid(postEntity.get())) {
-            postRepository.delete(postEntity.get());
-            return pid;
+        if (postEntity.isPresent()) {
+            if (equalUid(postEntity.get())) {
+                postRepository.delete(postEntity.get());
+                return pid;
+            } else {
+                return -1L;
+            }
         }
         return 0L;
     }

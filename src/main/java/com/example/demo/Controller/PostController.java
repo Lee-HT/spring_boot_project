@@ -60,12 +60,12 @@ public class PostController {
     public ResponseEntity<PostPageDto> getPostByUid(@PathVariable Long uid,
             @PageableDefault(sort = "pid", direction = Direction.DESC) Pageable pageable) {
         HttpStatus status = HttpStatus.OK;
-        PostPageDto response = postService.findPostByUid(uid,pageable);
-        if(response.getTotalPages() == null) {
+        PostPageDto response = postService.findPostByUid(uid, pageable);
+        if (response.getTotalPages() == null) {
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
         }
-        return new ResponseEntity<>(response,status);
+        return new ResponseEntity<>(response, status);
     }
 
     @GetMapping("/category/{category}")
@@ -150,8 +150,11 @@ public class PostController {
     @DeleteMapping("/{pid}")
     public ResponseEntity<?> deleteByPid(@PathVariable("pid") Long pid) {
         HttpStatus status = HttpStatus.NO_CONTENT;
-        if (postService.deletePost(pid) == 0) {
+        Long response = postService.deletePost(pid);
+        if (response == 0) {
             status = HttpStatus.NOT_FOUND;
+        } else if (response == -1) {
+            status = HttpStatus.FORBIDDEN;
         }
         return new ResponseEntity<>(status);
     }
