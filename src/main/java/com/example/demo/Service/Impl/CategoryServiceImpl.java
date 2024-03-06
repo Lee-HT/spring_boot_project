@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +29,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(cacheNames = "categories")
     public List<CategoryDto> getCategory() {
         List<CategoryEntity> response = categoryRepository.findAll();
         return categoryConverter.toDto(response);
     }
 
     @Override
-    public Map<String,Map<String,?>> getCategoryGroup() {
+    @Cacheable(cacheNames = "categoriesGroup")
+    public Map<String, Map<String, ?>> getCategoryGroup() {
         List<CategoryEntity> categories = categoryRepository.findAll();
-        Map<String,Map<String,?>> response = new HashMap<>();
+        Map<String, Map<String, ?>> response = new HashMap<>();
         Map<String, List<String>> groups = getParentGrouping(categories);
-        response.put("contents",groups);
+        response.put("contents", groups);
         return response;
     }
 
@@ -47,11 +52,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "categories", allEntries = true),
+            @CacheEvict(cacheNames = "categoriesGroup", allEntries = true)})
     public CategoryDto saveCategory(CategoryDto categoryDto) {
         return categoryConverter.toDto(categoryRepository.save(categoryConverter.toEntity(categoryDto)));
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "categories", allEntries = true),
+            @CacheEvict(cacheNames = "categoriesGroup", allEntries = true)})
     public Long deleteCategory(Long id) {
         Optional<CategoryEntity> categoryEntity = categoryRepository.findById(id);
         if (categoryEntity.isPresent()) {
