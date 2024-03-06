@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -16,9 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 //@WithMockUser(roles = "USER")
 class ApiControllerTest extends RestDocsSetUp {
 
+    @MockBean
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    public ApiControllerTest(RestDocumentationResultHandler restDocs, MockMvc mvc){
-        super(restDocs,mvc);
+    public ApiControllerTest(RestDocumentationResultHandler restDocs, MockMvc mvc) {
+        super(restDocs, mvc);
     }
 
     @Test
@@ -26,5 +31,4 @@ class ApiControllerTest extends RestDocsSetUp {
         mvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection());
     }
-
 }
