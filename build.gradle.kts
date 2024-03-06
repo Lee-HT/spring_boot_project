@@ -52,6 +52,11 @@ dependencies {
 
     // H2
     runtimeOnly("com.h2database:h2")
+
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    // 역직렬화
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 // Spring rest Docs

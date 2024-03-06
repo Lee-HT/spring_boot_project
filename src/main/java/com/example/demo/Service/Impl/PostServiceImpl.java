@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,11 +50,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Cacheable(cacheNames = "postPages", value = "postPages",
+            key = "#pageable.pageSize + '_' + #pageable.pageNumber", condition = "#pageable.pageNumber == 0")
     public PostPageDto findPostPage(Pageable pageable) {
         return postConverter.toDto(postRepository.findAll(pageable));
     }
 
     @Override
+    @Cacheable(cacheNames = "posts", value = "posts", key = "#pid")
     public PostDto findPost(Long pid) {
         PostEntity postEntity = postRepository.findByPid(pid)
                 .orElseGet(() -> PostEntity.builder().build());
@@ -62,8 +67,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostPageDto findPostByUid(Long uid, Pageable pageable) {
         Optional<UserEntity> userEntity = userRepository.findByUid(uid);
-        if (userEntity.isPresent()){
-            return postConverter.toDto(postRepository.findByUid(userEntity.get(),pageable));
+        if (userEntity.isPresent()) {
+            return postConverter.toDto(postRepository.findByUid(userEntity.get(), pageable));
         }
         return PostPageDto.builder().build();
     }
@@ -107,6 +112,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public PostDto savePost(PostDto postDto) {
         Optional<UserEntity> userEntity = getUserProv();
 
@@ -143,6 +149,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public PostDto updatePost(PostDto postDto) {
         Optional<PostEntity> postEntity = postRepository.findByPid(postDto.getPid());
 
@@ -156,6 +163,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
         if (postEntity.isPresent() && equalUid(postEntity.get())) {
@@ -166,6 +174,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "postPages", allEntries = true)
     public Integer deletePosts(List<Long> pid) {
         Optional<UserEntity> userEntity = getUserProv();
         List<PostEntity> posts = new ArrayList<>();
