@@ -22,6 +22,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,14 +51,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Cacheable(cacheNames = "postPages", value = "postPages",
-            key = "#pageable.pageSize + '_' + #pageable.pageNumber", condition = "#pageable.pageNumber == 0")
+    @Cacheable(cacheNames = "postPages", key = "#pageable.pageSize + '_' + #pageable.pageNumber",
+            condition = "#pageable.pageNumber == 0")
     public PostPageDto findPostPage(Pageable pageable) {
         return postConverter.toDto(postRepository.findAll(pageable));
     }
 
     @Override
-    @Cacheable(cacheNames = "posts", value = "posts", key = "#pid")
+    @Cacheable(cacheNames = "posts", key = "#pid")
     public PostDto findPost(Long pid) {
         PostEntity postEntity = postRepository.findByPid(pid)
                 .orElseGet(() -> PostEntity.builder().build());
@@ -163,12 +164,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @CacheEvict(cacheNames = "postPages", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "postPages", allEntries = true),
+            @CacheEvict(cacheNames = "posts", key = "#pid")})
     public Long deletePost(Long pid) {
         Optional<PostEntity> postEntity = postRepository.findByPid(pid);
-        if (postEntity.isPresent() && equalUid(postEntity.get())) {
-            postRepository.delete(postEntity.get());
-            return pid;
+        if (postEntity.isPresent()) {
+            if (equalUid(postEntity.get())) {
+                postRepository.delete(postEntity.get());
+                return pid;
+            } else {
+                return -1L;
+            }
         }
         return 0L;
     }

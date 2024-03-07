@@ -127,6 +127,8 @@ public class CommentController {
         Long response = commentService.deleteComment(cid);
         if (response == 0) {
             status = HttpStatus.NOT_FOUND;
+        } else if (response == -1) {
+            status = HttpStatus.FORBIDDEN;
         }
         return new ResponseEntity<>(status);
     }
