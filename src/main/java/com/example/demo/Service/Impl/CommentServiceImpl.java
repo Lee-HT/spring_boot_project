@@ -170,9 +170,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Long deleteComment(Long cid) {
         Optional<CommentEntity> commentEntity = commentRepository.findByCid(cid);
-        if (commentEntity.isPresent() && equalUid(commentEntity.get())) {
-            commentRepository.delete(commentEntity.get());
-            return cid;
+        if (commentEntity.isPresent()) {
+            if(equalUid(commentEntity.get())){
+                commentRepository.delete(commentEntity.get());
+                return cid;
+            }else{
+                return -1L;
+            }
         }
         return 0L;
     }
