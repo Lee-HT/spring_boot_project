@@ -3,6 +3,6 @@ package com.example.demo.Service;
 import com.example.demo.DTO.ContentsDto;
 
 public interface TranslationService {
-    ContentsDto getTranslationContents(String language);
+    ContentsDto getTranslationContents(String language) throws Exception;
 
 }

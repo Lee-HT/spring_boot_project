@@ -57,6 +57,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     // 역직렬화
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    // Google Translate
+    implementation("com.google.cloud:google-cloud-translate:2.36.0")
 }
 
 // Spring rest Docs
