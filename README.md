@@ -80,3 +80,22 @@ RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이�
 
 
 ## Redis
+
+성능 개선을 위해 자주 요청될 것으로 예상되는
+최근 게시글 목록, 최근 요청된 단일 게시글, 카테고리 목록에 대해
+Redis Cache 를 적용해 조회 성능을 개선 하였습니다
+
+### ngrinder 성능 테스트
+
+Redis Cache 를 적용 한 후에 최근 게시글 조회 메소드 요청의
+평균 테스트 시간이 264.72ms 에서 7.64ms 로 감소하였고
+TPS 또한 20배 증가하는 것을 확인 하였습니다.
+
+#### 캐시 적용 전
+
+![cache_not](/Image/redis/codelia_cache_not_apply.png)
+
+
+#### 캐시 적용 후
+
+![cache_apply](/Image/redis/codelia_cache_apply.png)
