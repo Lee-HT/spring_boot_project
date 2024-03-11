@@ -2,6 +2,7 @@ package com.example.demo.Service;
 
 import com.example.demo.Service.Impl.TranslationServiceImpl;
 import java.io.IOException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,6 @@ public class TranslationServiceTest {
     void getTranslationContents() throws IOException {
         String response = translationService.getTranslationContents("구글 번역 기능", "en").getContents();
 
-        System.out.println("response : " + response);
+        Assertions.assertThat(response).isInstanceOf(String.class);
     }
 }

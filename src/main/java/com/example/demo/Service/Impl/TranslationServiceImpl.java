@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,14 +25,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @Slf4j
 public class TranslationServiceImpl implements TranslationService {
+
     private final WebClient webClient;
     @Value("${google.project-id}")
-    private String projectId;
+    private final String projectId;
     @Value("${google.location}")
-    private String location; // 작업 실행 Region
+    private final String location; // 작업 실행 Region
 
     @Autowired
-    public TranslationServiceImpl() {
+    public TranslationServiceImpl(String projectId, String location) {
+        this.projectId = projectId;
+        this.location = location;
         String baseUrl = "https://translate.googleapis.com";
 
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
@@ -45,9 +48,16 @@ public class TranslationServiceImpl implements TranslationService {
         log.info(projectId);
 
         String sourceLanguage = detectionLanguage(projectId, text);
-        String transText = translateText(projectId, sourceLanguage, targetLanguage, text);
+        if (languages.contains(targetLanguage)){
+            if (!Objects.equals(sourceLanguage, targetLanguage)){
+                String transText = translateText(projectId, sourceLanguage, targetLanguage, text);
+                return ContentsDto.builder().contents(transText).build();
+            }
+        }
 
-        return ContentsDto.builder().contents(transText).build();
+        return ContentsDto.builder().contents(text).build();
+
+
     }
 
     private String detectionLanguage(String projectId, String text) throws IOException {
@@ -61,10 +71,12 @@ public class TranslationServiceImpl implements TranslationService {
                     .build();
 
             DetectLanguageResponse response = client.detectLanguage(request);
-
-            log.info("detection result : " + response.getLanguagesList());
+//            log.info("detection result : " + response.getLanguagesList());
 
             return response.getLanguages(0).getLanguageCode();
+        } catch (IOException e) {
+            log.info(e.toString());
+            return null;
         }
     }
 
@@ -81,15 +93,12 @@ public class TranslationServiceImpl implements TranslationService {
                     .setTargetLanguageCode(targetLanguage)
                     .addContents(text)
                     .build();
-            TranslateTextResponse response = client.translateText(request);
 
-            log.info("translate result : " + response.getTranslationsList());
+            TranslateTextResponse response = client.translateText(request);
+//            log.info("translate result : " + response.getTranslationsList());
 
             return response.getTranslations(0).getTranslatedText();
 
-//            for (Translation translation : response.getTranslationsList()) {
-//                translation.getTranslatedText();
-//            }
         } catch (IOException e) {
             log.info(e.toString());
             return null;
