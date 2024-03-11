@@ -2,16 +2,20 @@ package com.example.demo.Service.Impl;
 
 import com.example.demo.DTO.ContentsDto;
 import com.example.demo.Service.TranslationService;
+import com.google.cloud.translate.v3.DetectLanguageRequest;
+import com.google.cloud.translate.v3.DetectLanguageResponse;
 import com.google.cloud.translate.v3.LocationName;
 import com.google.cloud.translate.v3.TranslateTextRequest;
 import com.google.cloud.translate.v3.TranslateTextResponse;
 import com.google.cloud.translate.v3.TranslationServiceClient;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,24 +25,53 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @Slf4j
 public class TranslationServiceImpl implements TranslationService {
+    private final WebClient webClient;
+    @Value("${google.project-id}")
+    private String projectId;
+    @Value("${google.location}")
+    private String location; // 작업 실행 Region
+
+    @Autowired
+    public TranslationServiceImpl() {
+        String baseUrl = "https://translate.googleapis.com";
+
+        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+    }
 
     @Override
-    public ContentsDto getTranslationContents(String text) throws IOException {
+    public ContentsDto getTranslationContents(String text, String targetLanguage) throws IOException {
         List<String> languages = List.of("ko", "en", "ja", "zh-CN", "zh-TW");
-        String projectId = "spring-blog-397204";
-        String sourceLanguage = "ko";
-        String targetLanguage = "en";
+
+        log.info(projectId);
+
+        String sourceLanguage = detectionLanguage(projectId, text);
         String transText = translateText(projectId, sourceLanguage, targetLanguage, text);
 
         return ContentsDto.builder().contents(transText).build();
     }
 
+    private String detectionLanguage(String projectId, String text) throws IOException {
+        try (TranslationServiceClient client = TranslationServiceClient.create()) {
+            LocationName parent = LocationName.of(projectId, location);
+
+            DetectLanguageRequest request = DetectLanguageRequest.newBuilder()
+                    .setParent(parent.toString())
+                    .setMimeType("text/plain")
+                    .setContent(text)
+                    .build();
+
+            DetectLanguageResponse response = client.detectLanguage(request);
+
+            log.info("detection result : " + response.getLanguagesList());
+
+            return response.getLanguages(0).getLanguageCode();
+        }
+    }
+
+    // 클라이언트 라이브러리
     private String translateText(String projectId, String sourceLanguage, String targetLanguage, String text)
             throws IOException {
         try (TranslationServiceClient client = TranslationServiceClient.create()) {
-            // 작업 실행 region
-//            String location = "asia-northeast3";
-            String location = "global";
             LocationName parent = LocationName.of(projectId, location);
 
             TranslateTextRequest request = TranslateTextRequest.newBuilder()
@@ -50,7 +83,7 @@ public class TranslationServiceImpl implements TranslationService {
                     .build();
             TranslateTextResponse response = client.translateText(request);
 
-            log.info(response.getTranslationsList().toString());
+            log.info("translate result : " + response.getTranslationsList());
 
             return response.getTranslations(0).getTranslatedText();
 
@@ -63,19 +96,20 @@ public class TranslationServiceImpl implements TranslationService {
         }
     }
 
-    private void translateTextRest() {
-        String baseUrl = "https://translate.googleapis.com";
-        WebClient webClient = WebClient.builder().baseUrl(baseUrl).build();
+    // REST API
+    private String translateTextRest(String projectId, String sourceLanguage, String targetLanguage, String text) {
+        String location = "global";
 
         try {
             Map<String, Object> body = new HashMap<>() {{
-                put("contents", new ArrayList<>());
-                put("sourceLanguageCode", "");
-                put("targetLanguageCode", "");
+                put("contents", List.of("구글 번역 사용"));
+                put("sourceLanguageCode", "kr");
+                put("targetLanguageCode", "en");
             }};
 
-            Map response = webClient.post()
-                    .uri(uriBuilder -> uriBuilder.path("/projects/{project-id}/locations/{location-id}").build())
+            Map<?, ?> response = webClient.post()
+                    .uri(uriBuilder -> uriBuilder.path("/v3/projects/{project-id}:translateText")
+                            .build(projectId))
                     .headers(httpHeaders -> {
                         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
                     })
@@ -83,10 +117,13 @@ public class TranslationServiceImpl implements TranslationService {
                     .bodyToMono(Map.class)
                     .block();
             assert response != null;
-            response.get("translations");
+            log.info(response.toString());
+            Object translate = response.get("translations");
+            return translate.toString();
 
         } catch (Exception e) {
             log.info(e.toString());
+            return null;
         }
     }
 }
