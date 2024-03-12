@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -28,14 +27,11 @@ public class TranslateServiceImpl implements TranslateService {
 
     private final WebClient webClient;
     @Value("${google.project-id}")
-    private final String projectId;
+    private String projectId;
     @Value("${google.location}")
-    private final String location; // 작업 실행 Region
+    private String location; // 작업 실행 Region
 
-    @Autowired
-    public TranslateServiceImpl(String projectId, String location) {
-        this.projectId = projectId;
-        this.location = location;
+    public TranslateServiceImpl() {
         String baseUrl = "https://translate.googleapis.com";
 
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
