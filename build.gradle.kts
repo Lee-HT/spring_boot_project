@@ -36,6 +36,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("org.springframework:spring-webflux:6.0.11")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
