@@ -1,6 +1,6 @@
 package com.example.demo.Service;
 
-import com.example.demo.Service.Impl.TranslationServiceImpl;
+import com.example.demo.Service.Impl.TranslateServiceImpl;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class TranslationServiceTest {
+class TranslateServiceTest {
 
     @InjectMocks
-    private TranslationServiceImpl translationService;
+    private TranslateServiceImpl translationService;
 
     @BeforeEach
     void init(){
@@ -25,6 +25,8 @@ public class TranslationServiceTest {
     @Test
     void getTranslationContents() throws IOException {
         String response = translationService.getTranslationContents("구글 번역 기능", "en").getContents();
+
+        System.out.println(response);
 
         Assertions.assertThat(response).isInstanceOf(String.class);
     }

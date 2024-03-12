@@ -2,7 +2,7 @@ package com.example.demo.Service;
 
 import com.example.demo.DTO.ContentsDto;
 
-public interface TranslationService {
+public interface TranslateService {
     ContentsDto getTranslationContents(String language,String targetLanguage) throws Exception;
 
 }

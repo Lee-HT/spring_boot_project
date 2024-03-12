@@ -1,7 +1,7 @@
 package com.example.demo.Service.Impl;
 
 import com.example.demo.DTO.ContentsDto;
-import com.example.demo.Service.TranslationService;
+import com.example.demo.Service.TranslateService;
 import com.google.cloud.translate.v3.DetectLanguageRequest;
 import com.google.cloud.translate.v3.DetectLanguageResponse;
 import com.google.cloud.translate.v3.LocationName;
@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Transactional
 @Service
 @Slf4j
-public class TranslationServiceImpl implements TranslationService {
+public class TranslateServiceImpl implements TranslateService {
 
     private final WebClient webClient;
     @Value("${google.project-id}")
@@ -33,7 +33,7 @@ public class TranslationServiceImpl implements TranslationService {
     private final String location; // 작업 실행 Region
 
     @Autowired
-    public TranslationServiceImpl(String projectId, String location) {
+    public TranslateServiceImpl(String projectId, String location) {
         this.projectId = projectId;
         this.location = location;
         String baseUrl = "https://translate.googleapis.com";
@@ -45,12 +45,10 @@ public class TranslationServiceImpl implements TranslationService {
     public ContentsDto getTranslationContents(String text, String targetLanguage) throws IOException {
         List<String> languages = List.of("ko", "en", "ja", "zh-CN", "zh-TW");
 
-        log.info(projectId);
-
-        String sourceLanguage = detectionLanguage(projectId, text);
-        if (languages.contains(targetLanguage)){
-            if (!Objects.equals(sourceLanguage, targetLanguage)){
-                String transText = translateText(projectId, sourceLanguage, targetLanguage, text);
+        String sourceLanguage = detectionLanguage(text);
+        if (languages.contains(targetLanguage)) {
+            if (!Objects.equals(sourceLanguage, targetLanguage)) {
+                String transText = translateText(sourceLanguage, targetLanguage, text);
                 return ContentsDto.builder().contents(transText).build();
             }
         }
@@ -60,7 +58,7 @@ public class TranslationServiceImpl implements TranslationService {
 
     }
 
-    private String detectionLanguage(String projectId, String text) throws IOException {
+    private String detectionLanguage(String text) throws IOException {
         try (TranslationServiceClient client = TranslationServiceClient.create()) {
             LocationName parent = LocationName.of(projectId, location);
 
@@ -81,8 +79,7 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     // 클라이언트 라이브러리
-    private String translateText(String projectId, String sourceLanguage, String targetLanguage, String text)
-            throws IOException {
+    private String translateText(String sourceLanguage, String targetLanguage, String text) throws IOException {
         try (TranslationServiceClient client = TranslationServiceClient.create()) {
             LocationName parent = LocationName.of(projectId, location);
 
@@ -106,9 +103,7 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     // REST API
-    private String translateTextRest(String projectId, String sourceLanguage, String targetLanguage, String text) {
-        String location = "global";
-
+    private String translateTextRest(String sourceLanguage, String targetLanguage, String text) {
         try {
             Map<String, Object> body = new HashMap<>() {{
                 put("contents", List.of("구글 번역 사용"));
