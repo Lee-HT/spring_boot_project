@@ -25,15 +25,13 @@ public class TranslateController {
     }
 
     @PostMapping()
-    public ResponseEntity<ContentsDto> getTranslateText(@Valid @RequestBody TranslateTextDto dto, Errors errors)
+    public ResponseEntity<?> getTranslateText(@Valid @RequestBody TranslateTextDto dto, Errors errors)
             throws Exception {
-        String text = dto.getText();
         if (errors.hasErrors()){
-            return new ResponseEntity<>(ContentsDto.builder().contents(text).build(),HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("내용이 형식과 맞지 않습니다");
         }
-        HttpStatus status = HttpStatus.CREATED;
-        ContentsDto response = translateService.getTranslationContents(text, dto.getTargetLanguage());
+        ContentsDto response = translateService.getTranslationContents(dto.getText(), dto.getTargetLanguage());
 
-        return new ResponseEntity<>(response, status);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
