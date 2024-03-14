@@ -1,5 +1,6 @@
 package com.example.demo.Service.Impl;
 
+import com.example.demo.Config.language.LanguageProperties;
 import com.example.demo.DTO.ContentsDto;
 import com.example.demo.Service.TranslateService;
 import com.google.cloud.translate.v3.DetectLanguageRequest;
@@ -39,7 +40,7 @@ public class TranslateServiceImpl implements TranslateService {
 
     @Override
     public ContentsDto getTranslationContents(String text, String targetLanguage) throws IOException {
-        List<String> languages = List.of("ko", "en", "ja", "zh-CN", "zh-TW");
+        List<String> languages = LanguageProperties.languages;
 
         String sourceLanguage = detectionLanguage(text);
         if (languages.contains(targetLanguage)) {

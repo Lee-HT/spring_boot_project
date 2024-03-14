@@ -39,7 +39,7 @@ class TranslateControllerTest extends RestDocsSetUp {
 
     @Test
     void getTranslateText() throws Exception {
-        TranslateTextDto dto = TranslateTextDto.builder().text("구글 번역 테스트").targetLanguage("en").build();
+        TranslateTextDto dto = TranslateTextDto.builder().text("구글 번역 테스트").targetLanguage("ko").build();
         when(translateService.getTranslationContents(anyString(), anyString())).thenReturn(
                 ContentsDto.builder().contents("google translate test").build());
 

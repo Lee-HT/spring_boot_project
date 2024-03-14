@@ -2,6 +2,7 @@ package com.example.demo.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class TranslateTextDto {
     @Size(min = 1,max = 2000)
     private String text;
     @NotBlank
+    @Pattern(regexp = "(ko)|(en)|(ja)")
     private String targetLanguage;
 
 }
