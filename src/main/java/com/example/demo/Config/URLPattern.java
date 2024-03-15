@@ -15,6 +15,7 @@ public interface URLPattern {
 
     };
     String[] permitAllPostMethod = new String[]{
+            "/translate"
 
     };
 
