@@ -32,6 +32,9 @@ AWS CodeDeploy
 
 ## Oauth2
 
+최초 로그인 시에 provider 를 통해 인증, 인가 후 유저 정보를 저장한 뒤
+무상태성을 위해 매번 인증없이 Jwt 를 사용하여 유저를 인증, 식별
+
 ### 구글 oauth2 를 통한 로그인 과정
 ![oauth2](/Image/codelia_oauth2.png)
 
@@ -83,13 +86,13 @@ RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이�
 
 성능 개선을 위해 자주 요청될 것으로 예상되는
 최근 게시글 목록, 최근 요청된 단일 게시글, 카테고리 목록에 대해
-Redis Cache 를 적용해 조회 성능을 개선 하였습니다
+Redis Cache 를 적용해 조회 성능을 개선
 
 ### ngrinder 성능 테스트
 
 Redis Cache 를 적용 한 후에 최근 게시글 조회 메소드 요청의
 평균 테스트 시간이 264.72ms 에서 7.64ms 로 감소하였고
-TPS 또한 20배 증가하는 것을 확인 하였습니다.
+TPS 또한 20배 정도 증가하는 것을 확인
 
 #### 캐시 적용 전
 
@@ -99,3 +102,26 @@ TPS 또한 20배 증가하는 것을 확인 하였습니다.
 #### 캐시 적용 후
 
 ![cache_apply](/Image/redis/codelia_cache_apply.png)
+
+
+## JPA N + 1
+
+연관관계가 있는 엔티티 목록을 조회 할 때 연관된 엔티티들을 하나씩 조회하여
+n + 1 만큼 쿼리 수행으로 성능이 감소되는 문제가 있음
+
+### batch_size 적용 전
+
+게시글 엔티티들 조회 시 연관된 유저 엔티티 만큼 조회 (n + 1)
+
+![jpa_n+1](/Image/jpa/codelia_jpa_n+1.png)
+
+### batch_size 적용 후
+
+게시글 엔티티들 조회 시 연관된 유저 엔티티를 batch 로 묶어서 조회 ( n // batch_size + 1)
+
+![jpa_batch](/Image/jpa/codelia_jpa_batchsize.png)
+
+
+## Google Translation API
+
+### Google Cloud translate 라이브러리
