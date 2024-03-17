@@ -108,6 +108,8 @@ TPS 또한 20배 정도 증가하는 것을 확인
 
 연관관계가 있는 엔티티 목록을 조회 할 때 연관된 엔티티들을 하나씩 조회하여
 n + 1 만큼 쿼리 수행으로 성능이 감소되는 문제가 있음
+->
+batch 단위로 연관 엔티티를 한번에 조회하여 해결
 
 ### batch_size 적용 전
 
@@ -124,4 +126,19 @@ n + 1 만큼 쿼리 수행으로 성능이 감소되는 문제가 있음
 
 ## Google Translation API
 
-### Google Cloud translate 라이브러리
+### Google Cloud translation 라이브러리
+
+#### API Logic
+
+게시글 내용 번역 post 메소드 request ->
+텍스트 문자열 언어 인식 ->
+텍스트 번역 ->
+번역 된 테스트 응답
+
+#### Detect language
+
+![detection_language](/Image/translate/codelia_detection_language.png)
+
+#### Translate text
+
+[!translate_text](/Image/translate/codelia_translate_text.png)
