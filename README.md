@@ -128,11 +128,13 @@ batch 단위로 연관 엔티티를 한번에 조회하여 해결
 
 ### Google Cloud translation 라이브러리
 
-#### API Logic
+#### API
+
+![translate_api](/Image/translate/codelia_translate_api.png)
 
 게시글 내용 번역 post 메소드 request ->
-텍스트 문자열 언어 인식 ->
-텍스트 번역 ->
+텍스트 문자열 언어 인식 ( Translation API ) ->
+텍스트 번역 (Translation API) ->
 번역 된 테스트 응답
 
 #### Detect language
