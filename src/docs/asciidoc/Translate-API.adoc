@@ -1,0 +1,11 @@
+:doctype: book
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
+[[Translate-API]]
+== Translate API
+
+[[Post-Translate-Text]]
+=== 번역 텍스트 생성
+operation::translate-controller-test/get-translate-text[snippets="http-request,request-fields,response-fields"]
