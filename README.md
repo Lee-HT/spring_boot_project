@@ -3,12 +3,14 @@
 ### 1인 프로젝트
 #### 블로그를 구현할 때 필요한 Rest API 를 구현 해보기 위해 프로젝트를 개발하게 되었습니다.
 
+### 배포 URL
+#### https://codelia.shop/api
 
 ## 개발환경
 Spring Boot (3.1.2)
-JAVA 
+JAVA (17)
 
-#### 사용 IDE
+#### IDE
 Intellij
 
 #### 데이터베이스
@@ -29,11 +31,21 @@ AWS CodeDeploy
 ### ERDCloud
 ![ERD](/Image/codelia_erd.png)
 
+## CI/CD
 
-## Oauth2
 
-최초 로그인 시에 provider 를 통해 인증, 인가 후 유저 정보를 저장한 뒤
-무상태성을 위해 매번 인증없이 Jwt 를 사용하여 유저를 인증, 식별
+
+
+## Authentication
+
+#### 별도의 Id,Pw 저장 없이 Oauth2 만을 이용한 로그인으로 인증하도록 하였습니다.
+
+#### Provider : Google, Naver
+
+### Oauth2
+
+#### 무 상태성을 위해 최초 로그인 시에 provider 로 인증, 인가 후 유저 정보를 jwt 에 저장한 뒤
+#### 매번 재인증 없이 Jwt 를 사용하여 유저를 인증, 식별
 
 ### 구글 oauth2 를 통한 로그인 과정
 ![oauth2](/Image/codelia_oauth2.png)
@@ -46,10 +58,11 @@ CSRF 에 취약 XSS 에 상대적으로 안전
 sessionStorage 에 저장 , Authorization Header 로 전송
 XSS 에 취약 CSRF 에 안전
 
-### 프론트와 Origin 이 다르기 때문에 Cors 설정
+### 프론트와 Origin 이 달라 교차 출처 리소스 공유를 위해 CORS 설정
 
 #### WebMvc
 ![Cors](/Image/cors/codelia_webmvc_cors.png)
+
 #### Spring Security
 ![Cors](/Image/cors/codelia_security_cors.png)
 
@@ -119,7 +132,7 @@ batch 단위로 연관 엔티티를 한번에 조회하여 해결
 
 ### batch_size 적용 후
 
-게시글 엔티티들 조회 시 연관된 유저 엔티티를 batch 로 묶어서 조회 ( n // batch_size + 1)
+게시글 엔티티들 조회 시 연관된 유저 엔티티를 batch 로 묶어서 조회 ( ( n // batch_size ) + 2)
 
 ![jpa_batch](/Image/jpa/codelia_jpa_batchsize.png)
 
@@ -132,15 +145,15 @@ batch 단위로 연관 엔티티를 한번에 조회하여 해결
 
 ![translate_api](/Image/translate/codelia_translate_api.png)
 
-게시글 내용 번역 post 메소드 request ->
-텍스트 문자열 언어 인식 ( Translation API ) ->
-텍스트 번역 (Translation API) ->
-번역 된 테스트 응답
+#### 게시글 내용 번역 post 메소드 request ->
+#### 텍스트 문자열 언어 인식 ( Translation API ) ->
+#### 텍스트 번역 (Translation API) ->
+#### 번역 된 테스트 응답
 
-#### Detect language
+### Detect language
 
 ![detection_language](/Image/translate/codelia_detection_language.png)
 
-#### Translate text
+### Translate text
 
-[!translate_text](/Image/translate/codelia_translate_text.png)
+![translate_text](/Image/translate/codelia_translate_text.png)
