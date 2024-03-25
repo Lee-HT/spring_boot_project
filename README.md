@@ -33,7 +33,15 @@ AWS CodeDeploy
 
 ## CI/CD
 
+### 구성
 
+### GitHub Action
+
+#### 노출 되면 안되는 내용은 환경 변수에 담아서 사용
+![workflows_1](/Image/cicd/codelia_cicd_1.png)
+
+#### 빌드 후 AWS S3 를 통해 AWS Code Deploy 에서 배포 수행
+![workflows_2](/Image/cicd/codelia_cicd_2.png)
 
 
 ## Authentication
