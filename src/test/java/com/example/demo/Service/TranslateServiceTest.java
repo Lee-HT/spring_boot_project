@@ -1,7 +1,10 @@
 package com.example.demo.Service;
 
 import com.example.demo.Service.Impl.TranslateServiceImpl;
+import java.io.IOException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,12 +22,12 @@ class TranslateServiceTest {
         ReflectionTestUtils.setField(translationService, "location", "global");
     }
 
-//    @Test
-//    void getTranslationContents() throws IOException {
-//        String response = translationService.getTranslationContents("구글 번역 기능", "en").getContents();
-//
-//        System.out.println(response);
-//
-//        Assertions.assertThat(response).isInstanceOf(String.class);
-//    }
+    @Test
+    void getTranslationContents() throws IOException {
+        String response = translationService.getTranslationContents("구글 번역 기능", "en").getContents();
+
+        System.out.println(response);
+
+        Assertions.assertThat(response).isInstanceOf(String.class);
+    }
 }
