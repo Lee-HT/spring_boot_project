@@ -55,6 +55,12 @@ jobs:
           name: application-test.yml
           path: ./src/main/resources/application-test.yml
 
+      # Google ADC
+      - name: Google ADC
+        uses: google-github-actions/@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_SERVICE_KEY }}
+
       # gradlew 실행 권한 추가
       - name: Grant excute permission for gradlew
         run: chmod +x ./gradlew
