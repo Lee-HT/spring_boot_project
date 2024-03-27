@@ -20,6 +20,9 @@ else
   kill -15 "$CURRENT_PID"
 fi
 
+echo "> 환경 변수 적용 ( 구글 ADC )"
+source "$HOME/.bashrc"
+
 # background 실행
 echo "> new application deploy"
 # 2>&1 == 표준 에러만 표준 출력 , & == background 실행
