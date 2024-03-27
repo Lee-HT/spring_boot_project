@@ -21,7 +21,8 @@ else
 fi
 
 echo "> 환경 변수 적용 ( 구글 ADC )"
-source "$HOME/.bashrc"
+export GOOGLE_APPLICATION_CREDENTIALS="/root/google_translate.json"
+source ~/.bashrc
 
 # background 실행
 echo "> new application deploy"
