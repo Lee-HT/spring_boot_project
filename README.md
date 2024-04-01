@@ -26,10 +26,13 @@ Github Actions
 AWS CodeDeploy
 
 
+
 ## ERD
 
 ### ERDCloud
 ![ERD](/Image/codelia_erd.png)
+
+
 
 ## CI/CD
 
@@ -39,11 +42,25 @@ AWS CodeDeploy
 
 ### GitHub Action
 
-#### 환경 변수 설정
-![workflows_1](/Image/cicd/codelia_cicd_1.png)
+#### 환경 변수 설정 후
+#### AWS S3 를 통해 AWS CodeDeploy 에서 배포 수행
+![Workflows](/Image/cicd/codelia_cicd.png)
 
-#### 빌드 후 AWS S3 를 통해 AWS Code Deploy 에서 배포 수행
-![workflows_2](/Image/cicd/codelia_cicd_2.png)
+
+
+## HTTPS
+
+#### 로그인 시 토큰 탈취, 유저 정보 노출 등을 막기 위해
+#### HTTPS 를 적용해 데이터 전송 시 암호화를 적용 하였습니다.
+
+### SSL
+
+#### LetsEncrypt 를 이용해 인증서를 발급 받은 뒤
+#### SpringBoot 에 yml 을 설정해주는 것으로 적용 하였습니다.
+![Keystore](/Image/https/codelia_ssl_key.png)
+
+#### ☆ SSL 은 이해가 어려워 추가적인 공부 필요
+
 
 
 ## Authentication
@@ -77,6 +94,7 @@ XSS 에 취약 CSRF 에 안전
 ![Cors](/Image/cors/codelia_security_cors.png)
 
 
+
 ## API
 
 ### Controller, Service, Repository 단위 테스트 코드 작성
@@ -105,6 +123,7 @@ RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이�
 ![restDocs](/Image/restdocs/codelia_restdocs_post.png)
 
 
+
 ## Redis
 
 #### 성능 개선을 위해 자주 요청될 것으로 예상되는
@@ -127,6 +146,7 @@ RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이�
 ![cache_apply](/Image/redis/codelia_cache_apply.png)
 
 
+
 ## JPA N + 1
 
 #### 연관관계가 있는 엔티티 목록을 조회 할 때 연관된 엔티티들을 하나씩 조회하여
@@ -144,6 +164,7 @@ RestDocsConfig 추가, 공통 상속 클래스 선언, MockMvc 커스터마이�
 #### 게시글 엔티티들 조회 시 연관된 유저 엔티티를 batch 로 묶어서 조회 ( ( n // batch_size ) + 2)
 
 ![jpa_batch](/Image/jpa/codelia_jpa_batchsize.png)
+
 
 
 ## Google Translation API
