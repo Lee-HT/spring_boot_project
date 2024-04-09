@@ -26,6 +26,18 @@ public class CookieProvider {
         this.cookie.setPath(path);
     }
 
+    // SameSite 옵션 적용
+    public String getResponseCookie(String name, String path, String value, int expire) {
+        responseCookie = ResponseCookie.from(name, value).path(path).httpOnly(true).secure(true).sameSite("None").maxAge(expire).build();
+        return responseCookie.toString();
+    }
+
+    public String getExpireCookie(String name, String path) {
+        responseCookie = ResponseCookie.from(name, "").path(path).httpOnly(true).secure(true).sameSite("None").maxAge(0).build();
+        return responseCookie.toString();
+    }
+
+    // SameSite 문제로 Deprecated
     public Cookie getCookie(String name, String path, String value, int expire) {
         setCookie(name, path);
         this.cookie.setValue(value);
@@ -33,19 +45,10 @@ public class CookieProvider {
 
         return this.cookie;
     }
-
-    public String getResponseCookie(String name, String path, String value, int expire) {
-        responseCookie = ResponseCookie.from(name, value).path(path).httpOnly(true).secure(true).sameSite("None")
-                .maxAge(expire).build();
-        return responseCookie.toString();
-    }
-
     public Cookie expireCookie(String name, String path) {
         setCookie(name, path);
         this.cookie.setMaxAge(0);
 
         return this.cookie;
     }
-
-
 }
