@@ -59,8 +59,6 @@ AWS CodeDeploy
 #### SpringBoot 에 yml 을 설정해주는 것으로 적용 하였습니다.
 ![Keystore](/Image/https/codelia_ssl_key.png)
 
-#### ☆ SSL 은 이해가 어려워 추가적인 공부 필요
-
 
 
 ## Authentication
