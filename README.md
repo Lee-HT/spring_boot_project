@@ -72,9 +72,6 @@ AWS CodeDeploy
 #### 무 상태성을 위해 최초 로그인 시에 provider 로 인증, 인가 후 유저 정보를 jwt 에 저장한 뒤
 #### 매번 재인증 없이 Jwt 를 사용하여 유저를 인증, 식별
 
-### 구글 oauth2 를 통한 로그인 과정
-![oauth2](/Image/codelia_oauth2.png)
-
 #### refreshToken (7d)
 쿠키 (HttpOnly, Secure) 에 저장
 CSRF 에 취약 XSS 에 상대적으로 안전
